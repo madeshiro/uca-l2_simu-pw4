@@ -1,0 +1,5 @@
+# Ignore everything
+*
+# Except this files
+!projectsi_pw4.tex
+!.gitignore

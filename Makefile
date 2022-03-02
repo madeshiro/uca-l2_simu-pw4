@@ -22,7 +22,7 @@ endif
 CC		= gcc $(GDB_OPT)
 ASM		= gcc $(GDB_OPT) -x assembler
 CXX		= g++ $(GDB_OPT)
-LINKER	= gcc $(GDB_OPT)
+LINKER	= g++ $(GDB_OPT)
 STATIC	= ar
 
 ROOT			=
@@ -45,12 +45,23 @@ CXXFLAGS := $(CXXSTD) -Wall -Wextra -pipe $(CXXFLAGS) $(INCPATH) $(DEFINES)
 
 #### FILES ####
 
-INCLUDES = mt19937ar.h
+INCLUDES = mt19937ar.h \
+			entities.h \
+			defines.h \
+			utils.h \
+			simulation.h
 
-SOURCES = main.c \
-			mt19937ar.c
+SOURCES = main.cpp \
+			entities/entities.cpp \
+			simulation.cpp \
+			mt19937ar.c \
+			utils.c
 
-OBJECTS = $(patsubst %.c, %.o, $(SOURCES))
+OBJECTS  = main.cpp.o \
+			entities.cpp.o \
+			simulation.cpp.o \
+			mt19937ar.c.o \
+			utils.c.o
 
 #### INSTRUCTIONS ####
 
@@ -63,8 +74,18 @@ debug:
 
 #### OBJECTS ####
 
-.SUFFIXES: .c
-.c.o:
+main.cpp.o: main.cpp $(INCLUDES)
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+entities.cpp.o: entities/entities.cpp entities.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+rabbit.cpp.o: entities/rabbit.cpp entities.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+simulation.cpp.o: simulation.cpp simulation.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+
+mt19937ar.c.o: mt19937ar.c mt19937ar.h
+	$(CC) $(CFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+utils.c.o: utils.c utils.h defines.h
 	$(CC) $(CFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 .PHONY: clean mrproper
