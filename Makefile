@@ -11,10 +11,10 @@ ifeq ($(DEBUG), true)
 	GDB_OPT = -g
 	GDB_SUFFIX = d
 	DEFINES = -DPW_DEBUG
-	OUT_DIR = make_unix64_debug
+	OUT_DIR = build_unix64_debug
 else
 	DEFINES = -DPW_RELEASE
-	OUT_DIR = make_unix64_release
+	OUT_DIR = build_unix64_release
 endif
 
 #### Compiler Setting ####
@@ -38,10 +38,10 @@ LFLAGS = -fPIC
 CSTD	 = -std=c11
 CXXSTD   = -std=c++11
 
-INCPATH  =
+INCPATH  = -Iinclude/
 DEFINES  := $(DEFINES)
-CFLAGS	 := $(CSTD) -Wall -Wextra -pipe $(CFLAGS) $(DEFINES)
-CXXFLAGS := $(CXXSTD) -Wall -Wextra -pipe $(CXXFLAGS) $(DEFINES)
+CFLAGS	 := $(CSTD) -Wall -Wextra -pipe $(CFLAGS) $(INCPATH) $(DEFINES)
+CXXFLAGS := $(CXXSTD) -Wall -Wextra -pipe $(CXXFLAGS) $(INCPATH) $(DEFINES)
 
 #### FILES ####
 
