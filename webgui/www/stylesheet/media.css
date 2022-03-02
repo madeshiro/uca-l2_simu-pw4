@@ -1,0 +1,11 @@
+/* screen is mobile or similar */
+@media screen {
+    aside.popup-menu {
+        /*display: none;*/
+    }
+}
+
+/* screen is computer 16:9 or alike */
+@media screen {
+
+}
