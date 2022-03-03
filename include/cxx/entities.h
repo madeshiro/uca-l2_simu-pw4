@@ -10,18 +10,22 @@ namespace UCA_L2INFO_PW4
         uint_t lifetime;
     public:
         enum Type {
-            Rabbit = 0x100,
-            Predator = 0x200
+            Rabbit = 0x100
         };
 
         Entities() = default;
         virtual ~Entities() = 0;
 
         hash_t hashCode() const;
-        virtual Entities& reproduction() = 0;
         virtual Entities::Type getEntityType() const = 0;
 
         virtual uint_t getLifetime() const final;
+    };
+
+    class Predator : public Entities
+    {
+    public:
+
     };
 
     class Rabbit : public Entities

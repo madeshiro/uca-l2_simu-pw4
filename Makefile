@@ -46,20 +46,42 @@ CXXFLAGS := $(CXXSTD) -Wall -Wextra -pipe $(CXXFLAGS) $(INCPATH) $(DEFINES)
 #### FILES ####
 
 INCLUDES = mt19937ar.h \
-			entities.h \
 			defines.h \
 			utils.h \
-			simulation.h
+			cxx/entities.h \
+			cxx/simulation.h \
+			cxx/entities_ai.h \
+			cxx/application.h \
+			cxx/oop/container.h \
+			cxx/oop/exception.h \
+			cxx/oop/object.h \
+			cxx/oop/type_traits.hpp \
+			cxx/oop/string.hpp \
+			cxx/json/json.h \
+			cxx/json/jsonvalue.h
 
 SOURCES = main.cpp \
-			entities/entities.cpp \
-			simulation.cpp \
 			mt19937ar.c \
-			utils.c
+			utils.c \
+			cxx/entities.cpp \
+			cxx/simulation.cpp \
+			cxx/entities_ai.cpp \
+			cxx/application.cpp \
+			cxx/oop/exception.cpp \
+			cxx/oop/object.cpp \
+			cxx/oop/string.c++ \
+			cxx/json/json.cpp \
+			cxx/json/jsonvalue.cpp
 
 OBJECTS  = main.cpp.o \
 			entities.cpp.o \
 			simulation.cpp.o \
+			entities_ai.cpp.o \
+			application.cpp.o \
+			object.cpp.o \
+			exception.cpp.o \
+			jsonvalue.cpp.o \
+			json.cpp.o \
 			mt19937ar.c.o \
 			utils.c.o
 
@@ -74,15 +96,35 @@ debug:
 
 #### OBJECTS ####
 
+#### > Project (simulation) Files
 main.cpp.o: main.cpp $(INCLUDES)
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-entities.cpp.o: entities/entities.cpp entities.h defines.h
+entities.cpp.o: cxx/entities.cpp cxx/entities.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-rabbit.cpp.o: entities/rabbit.cpp entities.h defines.h
+simulation.cpp.o: cxx/simulation.cpp cxx/simulation.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-simulation.cpp.o: simulation.cpp simulation.h defines.h
+simulation.cpp.o: cxx/exception.cpp cxx/exception.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+entities_ai.cpp.o: cxx/entities_ai.cpp cxx/entities_ai.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+application.cpp.o: cxx/application.cpp cxx/application.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
+#### > OOP
+object.cpp.o: cxx/oop/object.cpp cxx/oop/object.h cxx/oop/string.c++ defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+exception.cpp.o: cxx/oop/exception.cpp cxx/oop/exception.h cxx/oop/object.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+string.c++.o: cxx/oop/string.c++ cxx/oop/string.h cxx/oop/object.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+
+#### > json
+jsonvalue.cpp.o: cxx/json/jsonvalue.cpp cxx/json/jsonvalue.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+json.cpp.o: cxx/json/json.cpp cxx/json/json.h defines.h cxx/oop/object.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+
+#### > C Files
 mt19937ar.c.o: mt19937ar.c mt19937ar.h
 	$(CC) $(CFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 utils.c.o: utils.c utils.h defines.h

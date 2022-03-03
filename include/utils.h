@@ -6,7 +6,11 @@
 extern "C" {
 #endif // __cplusplus
 
-    ulong_t fibo(uint_t n);
+    __uint128_t fibo(uint_t n);
+    void open_webpage(const char* url);
+
+    char* int128str(llong_t);
+    char* uint128str(ullong_t);
 
 #ifdef __cplusplus
 };

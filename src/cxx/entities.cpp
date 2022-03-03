@@ -1,4 +1,4 @@
-#include "entities.h"
+#include "cxx/entities.h"
 
 namespace UCA_L2INFO_PW4
 {
@@ -10,5 +10,15 @@ namespace UCA_L2INFO_PW4
     uint_t Entities::getLifetime() const
     {
         return this->lifetime;
+    }
+
+    Rabbit::~Rabbit()
+    {
+
+    }
+
+    Entities::Type Rabbit::getEntityType() const noexcept
+    {
+        return Entities::Rabbit;
     }
 }
