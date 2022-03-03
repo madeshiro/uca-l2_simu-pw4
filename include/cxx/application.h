@@ -66,8 +66,8 @@ namespace UCA_L2INFO_PW4
         bool gui_enable;
     public:
         const Logger      * const out;
-        const Logger      * err;
-        const InputStream * in;
+        const Logger      * const err;
+        const InputStream * const in;
 
 
         Application(int argc, char* argv[]);
