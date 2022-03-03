@@ -3,7 +3,10 @@
 
 namespace UCA_L2INFO_PW4
 {
-    Application::Application(int argc, char **argv)
+    Application::Application(int argc, char **argv):
+    out(new Logger(new FileOutputStream(stdout))),
+    err(new Logger(new FileOutputStream(stderr))),
+    in(new FileInputStream(stdin))
     {
         if (master)
         {

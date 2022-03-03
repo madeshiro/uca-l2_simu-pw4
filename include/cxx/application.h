@@ -3,6 +3,7 @@
 #include "defines.h"
 #include "cxx/oop/container.hpp"
 #include "cxx/oop/exception.h"
+#include "cxx/oop/stream.h"
 #include <string>
 
 namespace UCA_L2INFO_PW4
@@ -64,9 +65,9 @@ namespace UCA_L2INFO_PW4
         bool master;
         bool gui_enable;
     public:
-        Logger      const * const out;
-        Logger      const * const err;
-        InputStream const * const in;
+        const Logger      * const out;
+        const Logger      * err;
+        const InputStream * in;
 
 
         Application(int argc, char* argv[]);

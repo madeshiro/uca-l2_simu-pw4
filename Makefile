@@ -57,6 +57,7 @@ INCLUDES = mt19937ar.h \
 			cxx/oop/object.h \
 			cxx/oop/type_traits.hpp \
 			cxx/oop/string.hpp \
+			cxx/oop/stream.h \
 			cxx/json/json.h \
 			cxx/json/jsonvalue.h
 
@@ -69,6 +70,7 @@ SOURCES = main.cpp \
 			cxx/application.cpp \
 			cxx/oop/exception.cpp \
 			cxx/oop/object.cpp \
+			cxx/oop/stream.cpp \
 			cxx/oop/string.c++ \
 			cxx/json/json.cpp \
 			cxx/json/jsonvalue.cpp
@@ -79,6 +81,7 @@ OBJECTS  = main.cpp.o \
 			entities_ai.cpp.o \
 			application.cpp.o \
 			object.cpp.o \
+			stream.cpp.o \
 			exception.cpp.o \
 			jsonvalue.cpp.o \
 			json.cpp.o \
@@ -116,6 +119,8 @@ object.cpp.o: cxx/oop/object.cpp cxx/oop/object.h cxx/oop/string.c++ defines.h
 exception.cpp.o: cxx/oop/exception.cpp cxx/oop/exception.h cxx/oop/object.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 string.c++.o: cxx/oop/string.c++ cxx/oop/string.h cxx/oop/object.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+stream.cpp.o: cxx/oop/stream.cpp cxx/oop/stream.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > json
