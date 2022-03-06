@@ -28,6 +28,7 @@ Compile the program using the makefile as usual
   - default options :
     - gui enable [simulation preview]
     - master
+      - auto-launch slave's thread
 - `slave [master:ip] [master:port] [OPTIONS...]`
   - default options :
     - gui disable

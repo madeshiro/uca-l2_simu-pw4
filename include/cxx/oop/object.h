@@ -1,12 +1,11 @@
-#ifndef CPP_SIMOBJECT_H
-#define CPP_SIMOBJECT_H
+#ifndef CPP_OBJECT_H
+#define CPP_OBJECT_H
 #include "defines.h"
-#include <string>
-#include "type_traits.hpp"
+#include "alloc.hpp"
 
 namespace UCA_L2INFO_PW4
 {
-    template <typename _CharT, typename _Traits = Traits<_CharT>>
+    template <typename _CharT, typename _Traits = Traits<_CharT>, typename _Alloc = Alloc<_CharT>>
     class __String__;
 
     using String    = __String__<char>;
@@ -28,8 +27,12 @@ namespace UCA_L2INFO_PW4
 
         virtual String toString();
         virtual hash_t hashCode();
-        virtual Object copy();
+        virtual Object* clone();
     };
 }
 
-#endif //CPP_SIMOBJECT_H
+#endif // CPP_OBJECT_H
+
+#ifndef CPP_STRING_HPP
+#include "string.hpp"
+#endif  // CPP_STRING_HPP

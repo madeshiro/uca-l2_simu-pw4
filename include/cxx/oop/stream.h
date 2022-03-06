@@ -1,6 +1,7 @@
 #ifndef CPP_STREAM_H
 #define CPP_STREAM_H
 #include "object.h"
+#include "string.hpp"
 
 namespace UCA_L2INFO_PW4
 {
@@ -14,21 +15,6 @@ namespace UCA_L2INFO_PW4
         virtual int  seek(ulong_t pos, ulong_t whence) = 0;
     };
 
-    class FileOutputStream : public OutputStream
-    {
-    protected:
-        FILE* out;
-    public:
-        FileOutputStream(FILE*);
-        virtual ~FileOutputStream();
-
-        virtual int write(const char* buf, size_t size) override;
-
-        virtual void flush() override;
-        virtual void close() override;
-        virtual int  seek(ulong_t pos, ulong_t whence) override;
-    };
-
     class InputStream : public Object
     {
     public:
@@ -39,20 +25,35 @@ namespace UCA_L2INFO_PW4
         virtual int  seek(ulong_t pos, ulong_t whence) = 0;
     };
 
-    class FileInputStream : public InputStream
+    class Logger final
     {
+        OutputStream* stream;
+        String prefix;
+
+        bool _F_tmp = false;
     protected:
-        FILE* in;
+        Logger(const Logger& log, String lvl);
     public:
-        FileInputStream(FILE*);
-        virtual ~FileInputStream();
+        Logger(OutputStream* stream, String prefix = "logger");
+        virtual ~Logger() final;
 
-        virtual char  read() override;
-        virtual char* read(char* __out buf, size_t size) override;
+        void setPrefix(const String p);
+        String& getPrefix();
 
-        virtual void close() override;
-        virtual int  seek(ulong_t pos, ulong_t whence) override;
+        void print(String str);
+        void println(String str);
+
+        template <typename ...T>
+        void format(const char* format, T...);
+
+        char* read(char* buf, uint_t _Size);
+        String readLine();
+
+        Logger info() const;
+        Logger warning() const;
+        Logger severe() const;
     };
+
 }
 
 #endif //CPP_STREAM_H

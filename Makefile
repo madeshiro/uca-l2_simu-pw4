@@ -52,12 +52,16 @@ INCLUDES = mt19937ar.h \
 			cxx/simulation.h \
 			cxx/entities_ai.h \
 			cxx/application.h \
-			cxx/oop/container.h \
+			cxx/oop/container.hpp \
 			cxx/oop/exception.h \
 			cxx/oop/object.h \
 			cxx/oop/type_traits.hpp \
 			cxx/oop/string.hpp \
+			cxx/oop/alloc.hpp \
 			cxx/oop/stream.h \
+			cxx/oop/sock.h \
+			cxx/oop/file.h \
+			cxx/serv/packet.h \
 			cxx/json/json.h \
 			cxx/json/jsonvalue.h
 
@@ -72,6 +76,11 @@ SOURCES = main.cpp \
 			cxx/oop/object.cpp \
 			cxx/oop/stream.cpp \
 			cxx/oop/string.c++ \
+			cxx/oop/alloc.c++ \
+			cxx/oop/type_traits.c++ \
+			cxx/oop/sock.cpp \
+			cxx/oop/file.cpp \
+			cxx/serv/packet.cpp \
 			cxx/json/json.cpp \
 			cxx/json/jsonvalue.cpp
 
@@ -82,7 +91,10 @@ OBJECTS  = main.cpp.o \
 			application.cpp.o \
 			object.cpp.o \
 			stream.cpp.o \
+			sock.cpp.o \
+			file.cpp.o \
 			exception.cpp.o \
+			packet.cpp.o \
 			jsonvalue.cpp.o \
 			json.cpp.o \
 			mt19937ar.c.o \
@@ -106,8 +118,6 @@ entities.cpp.o: cxx/entities.cpp cxx/entities.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 simulation.cpp.o: cxx/simulation.cpp cxx/simulation.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-simulation.cpp.o: cxx/exception.cpp cxx/exception.h defines.h
-	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 entities_ai.cpp.o: cxx/entities_ai.cpp cxx/entities_ai.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 application.cpp.o: cxx/application.cpp cxx/application.h defines.h
@@ -121,6 +131,14 @@ exception.cpp.o: cxx/oop/exception.cpp cxx/oop/exception.h cxx/oop/object.h defi
 string.c++.o: cxx/oop/string.c++ cxx/oop/string.h cxx/oop/object.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 stream.cpp.o: cxx/oop/stream.cpp cxx/oop/stream.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+file.cpp.o: cxx/oop/file.cpp cxx/oop/file.h cxx/oop/stream.h cxx/oop/object.h defines.h utils.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+sock.cpp.o: cxx/oop/sock.cpp cxx/oop/sock.h cxx/oop/stream.h cxx/oop/object.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+
+#### > serv
+packet.cpp.o: cxx/serv/packet.cpp cxx/serv/packet.h cxx/oop/object.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > json

@@ -2,6 +2,7 @@
 #define CPP_CONTAINER_HPP
 #include "type_traits.hpp"
 #include "object.h"
+#include "exception.h"
 
 /* HEADER : CLASS DEFINITION */
 
@@ -57,15 +58,30 @@ namespace UCA_L2INFO_PW4
 
         /* GETTER */
         virtual int size() const = 0;
+        virtual ref_t get(uint_t index) = 0;
 
         /* SETTER */
-
-        virtual ptr_t set(value_t elem, uint_t index) throw();
+        virtual ptr_t set(value_t elem, uint_t index) throw(IndexOutOfBoundException) = 0;
 
         /* ACTIONS */
         virtual bool add(value_t elem) = 0;
         virtual bool remove(const_t elem) = 0;
 
+        /* OPERATORS */
+        virtual ref_t operator[](uint_t index)
+        {
+            return get(index);
+        }
+
+        virtual bool operator +=(value_t elem)
+        {
+            return add(elem);
+        }
+
+        virtual bool operator -=(const_t elem)
+        {
+            return remove(elem);
+        }
     };
 
     template<typename E>

@@ -1,0 +1,61 @@
+@media (prefers-color-scheme: dark) {
+    code {
+        background: #3d3e3a;
+        color: #CCCCCC;
+    }
+
+    .keyword > code {
+        color: #CC7832;
+    }
+
+    .function > code {
+
+    }
+
+    .vfunction > .function {
+        font-style: italic;
+    }
+
+    .identifier > code {
+        color: #000000;
+    }
+
+    .type > code {
+
+    }
+
+    .classtype > .type {
+        font-weight: bold;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    code {
+        background: #3d3e3a;
+        color: #CCCCCC;
+    }
+
+    .keyword > code {
+        color: #CC7832;
+    }
+
+    .function > code {
+
+    }
+
+    .vfunction > .function {
+        font-style: italic;
+    }
+
+    .identifier > code {
+        color: #000000;
+    }
+
+    .type > code {
+
+    }
+
+    .classtype > .type {
+        font-weight: bold;
+    }
+}

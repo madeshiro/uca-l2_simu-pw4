@@ -10,6 +10,7 @@ typedef long double         ldouble_t;
 
 typedef unsigned char       bool_t;
 typedef unsigned long long  hash_t;
+typedef unsigned long       size_t;
 
 #ifdef __SIZEOF_INT128__
 typedef __uint128_t         ullong_t;

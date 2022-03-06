@@ -23,7 +23,7 @@ namespace UCA_L2INFO_PW4
             {/*...*/}
 
             template<>
-            std::string arg(int index) throw(IndexOutOfBoundException)
+            String arg(int index) throw(IndexOutOfBoundException)
             {
                 return args[index];
             }
@@ -37,33 +37,15 @@ namespace UCA_L2INFO_PW4
 
         AppsArgs(int argc, char* argv[]);
         virtual ~AppsArgs() final;
-    };
 
-    class Logger final
-    {
-        OutputStream* stream;
-        String prefix;
-    public:
-        Logger(OutputStream* stream);
-        virtual ~Logger() final;
+        bool isValid() const;
 
-        void setPrefix(const String prefix);
-        String& getPrefix();
-
-        void print(String str);
-        void println(String str);
-
-        template <typename ...T>
-        void format(const char* format, T...);
-
-        char* read(char* buf, uint_t _Size);
-        String readLine();
+        bool optionEnable(const String option) const;
     };
 
     class Application final
     {
-        bool master;
-        bool gui_enable;
+        AppsArgs appsArgs;
     public:
         const Logger      * const out;
         const Logger      * const err;
@@ -76,6 +58,7 @@ namespace UCA_L2INFO_PW4
         double* draw(ulong_t amount) noexcept;
 
         bool isMaster() const;
+        bool isSlave() const;
         bool isGuiEnable() const;
     };
 }

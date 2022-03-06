@@ -1,15 +1,17 @@
 #ifndef CPP_STRING_HPP
 #define CPP_STRING_HPP
-#include "cxx/oop/object.h"
 #include "defines.h"
-#include "cxx/oop/type_traits.hpp"
+#include "cxx/oop/object.h"
+#include "cxx/oop/alloc.hpp"
 
 namespace UCA_L2INFO_PW4
 {
-    template < typename _CharT, typename _Traits >
+    template < typename _CharT, typename _Traits, typename _Alloc>
     class __String__ : public Object
     {
-        typedef _Traits traits_type;
+        typedef _Traits                     traits_type;
+        typedef _Alloc                      allocator;
+        typedef Delete<_CharT[], _Traits>   deleter;
 
         typedef typename traits_type::value_t   char_t;
         typedef typename traits_type::ref_t     ref_t;
@@ -24,6 +26,8 @@ namespace UCA_L2INFO_PW4
     protected:
         str_t   _F_charseq;
         uint_t  _F_length;
+
+        void __delete();
     public:
         __String__();
         __String__(char_t c);
@@ -31,6 +35,9 @@ namespace UCA_L2INFO_PW4
         __String__(const string_t& str);
 
         virtual ~__String__();
+
+        template < typename ...T >
+        String concat(T... args) const;
 
         /* GETTER */
         uint_t length() const;
@@ -58,6 +65,11 @@ namespace UCA_L2INFO_PW4
         virtual operator const_str_t() const;
 
         /* OPERATOR */
+
+
+        String & operator =(char_t c);
+        String & operator =(const_str_t str);
+        String & operator =(const string_t & str);
 
         /* OBJECT */
         virtual hash_t hashCode() override;
