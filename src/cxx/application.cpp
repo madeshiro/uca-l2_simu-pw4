@@ -13,7 +13,7 @@ namespace UCA_L2INFO_PW4
     {
         if (appsArgs.isValid())
         {
-            if (master)
+            if (isMaster())
             {
                 init_by_array((unsigned long[4]) {0x123, 0x234, 0x345, 0x456}, 4);
             }

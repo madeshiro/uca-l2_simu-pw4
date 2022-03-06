@@ -92,6 +92,7 @@ OBJECTS  = main.cpp.o \
 			object.cpp.o \
 			stream.cpp.o \
 			sock.cpp.o \
+			event.cpp.o \
 			file.cpp.o \
 			exception.cpp.o \
 			packet.cpp.o \
@@ -135,6 +136,8 @@ stream.cpp.o: cxx/oop/stream.cpp cxx/oop/stream.h defines.h
 file.cpp.o: cxx/oop/file.cpp cxx/oop/file.h cxx/oop/stream.h cxx/oop/object.h defines.h utils.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 sock.cpp.o: cxx/oop/sock.cpp cxx/oop/sock.h cxx/oop/stream.h cxx/oop/object.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+event.cpp.o: cxx/oop/event.c++ cxx/oop/event.hpp defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > serv

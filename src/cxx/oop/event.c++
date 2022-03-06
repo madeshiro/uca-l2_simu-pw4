@@ -3,9 +3,9 @@
 namespace UCA_L2INFO_PW4
 {
     template < typename ...Args >
-    void Delegate<Args...>::operator ()(Args... args)
+    bool Delegate<Args...>::operator ()(Args... args)
     {
-        call(args...);
+        return call(args...);
     }
 
     template < typename ...Args >
@@ -21,9 +21,9 @@ namespace UCA_L2INFO_PW4
     { /* ... */ }
 
     template < typename ...Args >
-    void GlobalDelegate<Args...>::call(Args ...args)
+    bool GlobalDelegate<Args...>::call(Args ...args)
     {
-        _F_fn(args...);
+        return _F_fn(args...);
     }
 
     template < typename ...Args >
@@ -57,9 +57,9 @@ namespace UCA_L2INFO_PW4
     }
 
     template < class Class, typename ...Args >
-    void ClassDelegate<Class, Args...>::call(Args ...args)
+    bool ClassDelegate<Class, Args...>::call(Args ...args)
     {
-        ((*_F_obj).*_F_fn)(args...);
+        return ((*_F_obj).*_F_fn)(args...);
     }
 
     template < class Class, typename ...Args >
