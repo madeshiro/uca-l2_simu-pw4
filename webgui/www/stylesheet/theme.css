@@ -2,3 +2,7 @@ body
 {
     background-color: #3d3e3a;
 }
+
+@media only screen and (orientation: portrait) {
+    
+}
