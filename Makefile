@@ -53,6 +53,8 @@ INCLUDES = mt19937ar.h \
 			cxx/entities_ai.h \
 			cxx/application.h \
 			cxx/oop/container.hpp \
+			cxx/cdfpdf.h \
+			cxx/oop/container.hpp \
 			cxx/oop/exception.h \
 			cxx/oop/object.h \
 			cxx/oop/type_traits.hpp \
@@ -72,6 +74,7 @@ SOURCES = main.cpp \
 			cxx/simulation.cpp \
 			cxx/entities_ai.cpp \
 			cxx/application.cpp \
+			cxx/cdfpdf.cpp \
 			cxx/oop/exception.cpp \
 			cxx/oop/object.cpp \
 			cxx/oop/stream.cpp \
@@ -89,6 +92,7 @@ OBJECTS  = main.cpp.o \
 			simulation.cpp.o \
 			entities_ai.cpp.o \
 			application.cpp.o \
+			cdfpdf.cpp.o \
 			object.cpp.o \
 			stream.cpp.o \
 			sock.cpp.o \
@@ -96,6 +100,7 @@ OBJECTS  = main.cpp.o \
 			file.cpp.o \
 			exception.cpp.o \
 			packet.cpp.o \
+			container.cpp.o \
 			jsonvalue.cpp.o \
 			json.cpp.o \
 			mt19937ar.c.o \
@@ -118,6 +123,8 @@ main.cpp.o: main.cpp $(INCLUDES)
 entities.cpp.o: cxx/entities.cpp cxx/entities.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 simulation.cpp.o: cxx/simulation.cpp cxx/simulation.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+simulation.cpp.o: cxx/exception.cpp cxx/exception.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 entities_ai.cpp.o: cxx/entities_ai.cpp cxx/entities_ai.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
@@ -142,6 +149,8 @@ event.cpp.o: cxx/oop/event.c++ cxx/oop/event.hpp defines.h
 
 #### > serv
 packet.cpp.o: cxx/serv/packet.cpp cxx/serv/packet.h cxx/oop/object.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+container.cpp.o: cxx/oop/container.c++ cxx/oop/container.hpp defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > json

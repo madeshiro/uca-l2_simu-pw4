@@ -2,15 +2,15 @@
 #define CPP_CONTAINER_HPP
 #include "type_traits.hpp"
 #include "object.h"
-#include "exception.h"
 
 /* HEADER : CLASS DEFINITION */
 
 namespace UCA_L2INFO_PW4
 {
-    template <typename T, typename traits_type>
+    template < typename T, typename _Traits = Traits<T> >
     struct Iterator
     {
+        typedef _Traits traits_type;
     protected:
         typedef typename traits_type::value_t   value_t;
         typedef typename traits_type::ref_t     ref_t;
@@ -20,22 +20,34 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_t       const_t;
         typedef typename traits_type::const_ref_t   const_ref_t;
         typedef typename traits_type::const_ptr_t   const_ptr_t;
-    public:
 
+    public:
+        ptr_t _F_begin, _F_end;
+
+        Iterator(ptr_t begin, ptr_t end);
+        virtual ~Iterator() = delete;
     };
 
-    template <typename T, typename traits_type>
-    class Iterable : public Object
+    template < typename T, typename _Traits = Traits<T> >
+    struct Iterable : public Object
     {
-    protected:
-        Iterator<T, traits_type> iterator;
-    public:
-        Iterable(Iterator<T, traits_type> it): iterator(it)
-        {/* ... */}
+        typedef _Traits traits_type;
+        typedef typename traits_type::ptr_t         ptr_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
 
-        virtual ~Iterable() = 0;
+        virtual Iterator<T, traits_type> iterator() = 0;
 
+        ptr_t begin();
+        ptr_t end();
 
+        ptr_t rbegin();
+        ptr_t rend();
+
+        const_ptr_t cbegin() const;
+        const_ptr_t cend() const;
+
+        const_ptr_t crbegin() const;
+        const_ptr_t crend() const;
     };
 
     template<typename E>
@@ -61,7 +73,7 @@ namespace UCA_L2INFO_PW4
         virtual ref_t get(uint_t index) = 0;
 
         /* SETTER */
-        virtual ptr_t set(value_t elem, uint_t index) throw(IndexOutOfBoundException) = 0;
+        virtual ptr_t set(value_t elem, uint_t index) = 0;
 
         /* ACTIONS */
         virtual bool add(value_t elem) = 0;
@@ -88,6 +100,24 @@ namespace UCA_L2INFO_PW4
     class ArrayList : public List<E>
     {
 
+    };
+
+    template<typename E>
+    class SortedList : public List<E>
+    {
+    public:
+        enum SortedMethod : int
+        {
+            ASC,
+            DESC
+        };
+
+        SortedList(int sortMethod = ASC);
+        SortedList(const SortedList<E> &list);
+        virtual ~SortedList() override;
+
+        virtual void setSortMethod(SortedMethod method);
+        virtual SortedMethod getSortMethode() const;
     };
 
     template<typename E>

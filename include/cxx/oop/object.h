@@ -29,6 +29,24 @@ namespace UCA_L2INFO_PW4
         virtual hash_t hashCode();
         virtual Object* clone();
     };
+
+    template < typename T >
+    class Comparable
+    {
+        /**
+         * Compares the class instance with another value.
+         * <ul>
+         *  <li>Returns -1 if *this < obj</li>
+         *  <li>Returns 0 if equals</li>
+         *  <li>Return 1 if *this > obj</li>
+         * </ul>
+         * This function may be useful for sorted list. Otherwise, if this function
+         * isn't implemented, SortedList will use Object#hashCode() if available.
+         * @param obj The object to compare this instance with.
+         * @return -1, 0 or 1 depends of the comparaison results
+         */
+        virtual int compareTo(const T& obj) = 0;
+    };
 }
 
 #endif // CPP_OBJECT_H
