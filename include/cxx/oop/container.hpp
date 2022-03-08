@@ -77,6 +77,8 @@ namespace UCA_L2INFO_PW4
 
         /* ACTIONS */
         virtual bool add(value_t elem) = 0;
+        virtual bool add(const ref_t& elem);
+
         virtual bool remove(const_t elem) = 0;
 
         /* OPERATORS */
@@ -99,12 +101,39 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class ArrayList : public List<E>
     {
+    protected:
+        typedef typename List<E>::traits_type traits_type;
 
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+    public:
+        ArrayList();
+        ArrayList(const ArrayList<E>& obj);
+        virtual ~ArrayList() override;
+
+        virtual bool add(value_t elem) = 0;
     };
 
     template<typename E>
     class SortedList : public List<E>
     {
+    protected:
+        typedef typename List<E>::traits_type traits_type;
+
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
     public:
         enum SortedMethod : int
         {
@@ -129,7 +158,19 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class Set : public List<E>
     {
+    protected:
+        typedef typename List<E>::traits_type traits_type;
 
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+    public:
+        bool add(value_t elem) override;
     };
 
     template <typename E>

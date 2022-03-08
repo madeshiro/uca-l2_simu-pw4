@@ -1,11 +1,60 @@
-#include "../../../include/cxx/oop/event.hpp"
-
+#include "cxx/oop/event.hpp"
 namespace UCA_L2INFO_PW4
 {
     template < typename ...Args >
     bool Delegate<Args...>::operator ()(Args... args)
     {
         return call(args...);
+    }
+
+    template < typename ...Args >
+    Event<Args...>::~Event<Args...>()
+    {
+        delete[] _F_dlgts;
+    }
+
+    template < typename ...Args >
+    void Event<Args...>::connect(Delegate<Args...> *&&dlgt)
+    {
+        _F_dlgts[dlgt->priority()].add(dlgt);
+    }
+
+    template < typename ...Args >
+    void Event<Args...>::disconnect(const Delegate<Args...> &dlgt)
+    {
+        _F_dlgts[dlgt.priority()].remove(dlgt);
+    }
+
+    template < typename ...Args >
+    void Event<Args...>::emit(Args ...args)
+    {
+        for (Priority p = Critical; p >= Lowest; --p)
+        {
+            for (Delegate<Args...> &dlgt : _F_dlgts[p])
+            {
+                if (!dlgt.call(args...))
+                {
+                    return;
+                }
+            }
+        }
+    }
+
+    template < typename ...Args >
+    bool Event<Args...>::operator()(Args... args)
+    {
+        emit(args...);
+    }
+
+    template < typename ...Args >
+    uint_t Event<Args...>::connectedCount() const
+    {
+        uint_t connected = 0;
+        for (uint_t i = 0; i <= Priority::Critical; i++)
+        {
+            connected += _F_dlgts[i].size();
+        }
+        return connected;
     }
 
     template < typename ...Args >
@@ -33,7 +82,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < class Class, typename ...Args >
-    ClassDelegate<Class, Args...>::ClassDelegate(Class *obj, Function fn, int priority):
+    ClassDelegate<Class, Args...>::ClassDelegate(Class &obj, Function fn, int priority):
         Delegate<Args...>(priority), _F_obj(obj), _F_fn(fn)
     { /* ... */ }
 
@@ -59,7 +108,7 @@ namespace UCA_L2INFO_PW4
     template < class Class, typename ...Args >
     bool ClassDelegate<Class, Args...>::call(Args ...args)
     {
-        return ((*_F_obj).*_F_fn)(args...);
+        return (_F_obj.*_F_fn)(args...);
     }
 
     template < class Class, typename ...Args >

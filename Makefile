@@ -124,11 +124,11 @@ entities.cpp.o: cxx/entities.cpp cxx/entities.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 simulation.cpp.o: cxx/simulation.cpp cxx/simulation.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-simulation.cpp.o: cxx/exception.cpp cxx/exception.h defines.h
-	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 entities_ai.cpp.o: cxx/entities_ai.cpp cxx/entities_ai.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 application.cpp.o: cxx/application.cpp cxx/application.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+cdfpdf.cpp.o: cxx/cdfpdf.cpp cxx/cdfpdf.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > OOP
