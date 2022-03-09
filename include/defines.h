@@ -1,9 +1,11 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+typedef unsigned short      ushort_t;
 typedef unsigned int        uint_t;
 typedef unsigned long long  ulong_t;
 
+typedef signed short        short_t;
 typedef signed int          int_t;
 typedef signed long long    long_t;
 typedef long double         ldouble_t;

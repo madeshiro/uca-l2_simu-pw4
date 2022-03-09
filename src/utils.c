@@ -77,3 +77,35 @@ void open_webpage(const char* url)
         free(cmd);
     }
 }
+
+void* memcopy(void* ptr, size_t nmemb, size_t __sizeof)
+{
+    void* cpy = malloc(__sizeof);
+    union {
+        void*       bit8;
+        ushort_t*   bit16;
+        uint_t*     bit32;
+        ulong_t*    bit64;
+    } __ptr;
+
+    __ptr.bit8 = ptr;
+
+    if (cpy)
+    {
+        switch (__sizeof)
+        {
+            default: case 1u:
+
+                break;
+            case 2u:
+
+                break;
+            case 4u:
+
+                break;
+            case 8u:
+
+                break;
+        }
+    }
+}

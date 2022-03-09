@@ -19,7 +19,7 @@ namespace UCA_L2INFO_PW4
         typedef ulong_t     size_t;
 
         static hash_t hash_code(const_t obj);
-        static ptr_t  copy(const_ptr_t ptr, size_t __sizeof);
+        static ptr_t  copy(const_ptr_t ptr, size_t __size);
         static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
     };
     
@@ -44,12 +44,12 @@ namespace UCA_L2INFO_PW4
     template < typename T >
     struct Traits<T&>
     {
-        typedef T   value_t;
+        typedef T&  value_t;
         typedef T&  ref_t;
         typedef T&& rvalue_t;
         typedef T*  ptr_t;
 
-        typedef const T     const_t;
+        typedef const T&    const_t;
         typedef const T*    const_ptr_t;
         typedef const T&    const_ref_t;
 

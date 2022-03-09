@@ -1,40 +1,41 @@
 #ifndef CPP_ENTITIES_H
 #define CPP_ENTITIES_H
-#include "../../defines.h"
+#include "defines.h"
+#include "cxx/oop/object.h"
+#include "cxx/oop/container.hpp"
+#include "cxx/json/json.h"
+#include "cxx/oop/binary.h"
 
 namespace UCA_L2INFO_PW4
 {
-    class Entities
+    using json::JsonStringifyable;
+
+    class Rabbit : public JsonStringifyable
     {
     private:
+        hash_t hash_code;
         uint_t lifetime;
     public:
-        enum Type {
-            Rabbit = 0x100
-        };
 
-        Entities() = default;
-        virtual ~Entities() = 0;
-
-        hash_t hashCode() const;
-        virtual Entities::Type getEntityType() const = 0;
-
-        virtual uint_t getLifetime() const final;
-    };
-
-    class Predator : public Entities
-    {
-    public:
-
-    };
-
-    class Rabbit : public Entities
-    {
-    public:
         Rabbit() = default;
-        virtual ~Rabbit();
+        virtual ~Rabbit() = default;
 
-        Entities::Type getEntityType() const noexcept override;
+        virtual hash_t hashCode() override;
+        virtual uint_t getLifetime() const final;
+        virtual String toString() override;
+    };
+
+    class EntityManager final : public JsonStringifyable, Binaries
+    {
+        hash_t currentUnusedHash = 0;
+        Queue<hash_t> unusedHash;
+
+        Collection<Rabbit>* collection;
+    public:
+        EntityManager();
+        virtual ~EntityManager() final;
+
+        hash_t generateHashCode();
     };
 }
 

@@ -2,23 +2,33 @@
 
 namespace UCA_L2INFO_PW4
 {
-    hash_t Entities::hashCode() const
+    hash_t Rabbit::hashCode()
     {
-        return (getEntityType() << 8);
+        return hash_code;
     }
 
-    uint_t Entities::getLifetime() const
+    uint_t Rabbit::getLifetime() const
     {
         return this->lifetime;
     }
 
-    Rabbit::~Rabbit()
+    EntityManager::EntityManager(): unusedHash(1000000)
     {
-
+        /* ... */
     }
 
-    Entities::Type Rabbit::getEntityType() const noexcept
+    hash_t EntityManager::generateHashCode()
     {
-        return Entities::Rabbit;
+        if (currentUnusedHash != 0xffffffffffffffff)
+        {
+            return currentUnusedHash++;
+        }
+        else if (!unusedHash.isEmpty())
+        {
+            return unusedHash.next();
+        }
+        else
+        {
+        }
     }
 }

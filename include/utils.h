@@ -12,6 +12,8 @@ extern "C" {
     char* int128str(llong_t);
     char* uint128str(ullong_t);
 
+    void* memcopy(void* ptr, size_t nmembn, size_t __sizeof);
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus

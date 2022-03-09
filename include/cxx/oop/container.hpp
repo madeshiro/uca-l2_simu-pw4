@@ -64,7 +64,31 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_t       const_t;
         typedef typename traits_type::const_ref_t   const_ref_t;
         typedef typename traits_type::const_ptr_t   const_ptr_t;
+    public:
+        bool add(value_t elem) = 0;
+        bool remove(value_t elem) = 0;
 
+        ptr_t set(uint_t index, value_t elem) = 0;
+        ref_t get(uint_t index) = 0;
+        bool isEmpty() const = 0;
+        size_t size() const = 0;
+
+        /* OPERATORS */
+
+        virtual ref_t operator[](uint_t index)
+        {
+            return get(index);
+        }
+
+        virtual bool operator +=(value_t elem)
+        {
+            return add(elem);
+        }
+
+        virtual bool operator -=(const_t elem)
+        {
+            return remove(elem);
+        }
     };
 
     template<typename E>
@@ -86,33 +110,14 @@ namespace UCA_L2INFO_PW4
         virtual ~List() = 0;
 
         /* GETTER */
-        virtual int size() const = 0;
-        virtual ref_t get(uint_t index) = 0;
 
         /* SETTER */
         virtual ptr_t set(value_t elem, uint_t index) = 0;
 
         /* ACTIONS */
-        virtual bool add(value_t elem) = 0;
-
-        virtual bool remove(rvalue_t elem) = 0;
-        virtual bool remove(const_ref_t elem) = 0;
 
         /* OPERATORS */
-        virtual ref_t operator[](uint_t index)
-        {
-            return get(index);
-        }
 
-        virtual bool operator +=(value_t elem)
-        {
-            return add(elem);
-        }
-
-        virtual bool operator -=(const_t elem)
-        {
-            return remove(elem);
-        }
     };
 
     template<typename E>
@@ -161,10 +166,70 @@ namespace UCA_L2INFO_PW4
         bool add(value_t elem) = 0;
     };
 
+    template<typename E>
+    class SortedSet : public Set<E>
+    {
+
+    };
+
     template <typename E>
     class HashSet : public Set<E>
     {
 
+    };
+
+    template<typename E>
+    class ChainedList : public Collection<E>
+    {
+    protected:
+        typedef typename Collection<E>::traits_type traits_type;
+
+        typedef typename Collection<E>::value_t   value_t;
+        typedef typename Collection<E>::ref_t     ref_t;
+        typedef typename Collection<E>::ptr_t     ptr_t;
+        typedef typename Collection<E>::rvalue_t  rvalue_t;
+
+        typedef typename Collection<E>::const_t       const_t;
+        typedef typename Collection<E>::const_ref_t   const_ref_t;
+        typedef typename Collection<E>::const_ptr_t   const_ptr_t;
+    public:
+        ChainedList();
+        ChainedList(const Collection<E>& collection);
+        virtual ~ChainedList() override;
+
+    };
+
+    template<typename E>
+    class Queue : public ChainedList<E>
+    {
+    protected:
+        typedef typename ChainedList<E>::traits_type traits_type;
+
+        typedef typename ChainedList<E>::value_t   value_t;
+        typedef typename ChainedList<E>::ref_t     ref_t;
+        typedef typename ChainedList<E>::ptr_t     ptr_t;
+        typedef typename ChainedList<E>::rvalue_t  rvalue_t;
+
+        typedef typename ChainedList<E>::const_t       const_t;
+        typedef typename ChainedList<E>::const_ref_t   const_ref_t;
+        typedef typename ChainedList<E>::const_ptr_t   const_ptr_t;
+
+        uint_t _F_limit;
+    public:
+        Queue(uint_t limit = 0);
+        Queue(const Collection<E>& collection);
+
+        value_t next();
+        uint_t getLimit() const;
+
+        /**
+         * Defines a new limit size for this Queue list. If the limit is lower than
+         * the current queue's size, all values beyonds the limit will be removed.
+         * @note newLimit = 0 equivalent to infinite
+         * @param newLimit the new queue size's limit.
+         * @return
+         */
+        void   setLimit(uint_t newLimit);
     };
 
     template<typename K, typename V>
@@ -180,12 +245,6 @@ namespace UCA_L2INFO_PW4
     {
 
     };
-}
-
-/* TEMPLATE CLASS IMPLEMENTATION */
-namespace UCA_L2INFO_PW4
-{
-
 }
 
 #endif //CPP_CONTAINER_HPP
