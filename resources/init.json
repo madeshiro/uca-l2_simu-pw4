@@ -1,0 +1,16 @@
+{
+  "type": "initialization",
+  "request": {
+    "month_duration": 240,
+    "replication": 30
+  },
+  "setup" : {
+    "mt" : [
+      "0x123", "0x234", "0x345", "0x456"
+    ],
+    "entities": {
+      "male": 4,
+      "female": 4
+    }
+  }
+}

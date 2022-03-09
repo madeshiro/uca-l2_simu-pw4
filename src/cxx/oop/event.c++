@@ -8,6 +8,18 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename ...Args >
+    Event<Args...>::Event(): _F_dlgts(new Delegate<Args...>[5])
+    {
+        /* ... */
+    }
+
+    template < typename ...Args >
+    Event<Args...>::Event(const Event<Args...>& obj): _F_dlgts(obj._F_dlgts)
+    {
+        /* ... */
+    }
+
+    template < typename ...Args >
     Event<Args...>::~Event<Args...>()
     {
         delete[] _F_dlgts;
@@ -41,7 +53,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename ...Args >
-    bool Event<Args...>::operator()(Args... args)
+    void Event<Args...>::operator()(Args... args)
     {
         emit(args...);
     }

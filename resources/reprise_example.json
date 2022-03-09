@@ -1,0 +1,17 @@
+{
+  "uid": "uuid",
+  "type": "reprise",
+  "request" : {
+    "replication": 30,
+    "month_duration": 240,
+    "mt_init_state": [],
+    "setup": {
+      "male": 4,
+      "female": 4
+    }
+  },
+  "setup" : {
+    "mt": "<byte array>",
+    "data": "./${uuid}/"
+  }
+}

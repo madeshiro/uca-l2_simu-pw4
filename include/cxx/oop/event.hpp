@@ -11,6 +11,8 @@
 #include "pointer.hpp"
 #include "container.hpp"
 
+#define event(args...) const Event<args>
+
 namespace UCA_L2INFO_PW4
 {
     template < typename... Args > class Event;
@@ -51,9 +53,10 @@ namespace UCA_L2INFO_PW4
             Critical = 0x5
         };
     private:
-        HashSet< SharedPointer< Delegate<Args...> > > _F_dlgts[];
+        SharedPointer<HashSet< Delegate<Args...>& > > _F_dlgts;
     public:
-        Event(const Event&) = delete;
+        Event();
+        Event(const Event&);
         virtual ~Event() override;
 
         void connect(Delegate<Args...>* && dlgt);

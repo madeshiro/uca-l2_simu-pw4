@@ -8,7 +8,6 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Traits = Traits<T> >
     struct Alloc
     {
-    private:
         typedef _Traits traits_type;
 
         typedef typename traits_type::value_t   value_t;
@@ -21,7 +20,7 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_ptr_t   const_ptr_t;
 
         typedef typename traits_type::size_t        size_t;
-    public:
+
         static ptr_t alloc();
         static ptr_t alloc(size_t nmemb);
         static ptr_t calloc(size_t nmemb);
@@ -32,7 +31,6 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Traits = Traits<T> >
     struct Delete
     {
-    private:
         typedef _Traits traits_type;
 
         typedef typename traits_type::value_t   value_t;
@@ -45,14 +43,13 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_ptr_t   const_ptr_t;
 
         typedef typename traits_type::size_t        size_t;
-    public:
+
         static void free(ptr_t ptr);
     };
 
     template <typename T, typename _Traits>
     struct Delete<T[], _Traits>
     {
-    private:
         typedef _Traits traits_type;
 
         typedef typename traits_type::value_t   value_t;
@@ -65,7 +62,7 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_ptr_t   const_ptr_t;
 
         typedef typename traits_type::size_t        size_t;
-    public:
+
         static void free(ptr_t ptr);
     };
 }

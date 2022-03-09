@@ -1,6 +1,6 @@
 #ifndef CPP_ENTITIES_H
 #define CPP_ENTITIES_H
-#include "defines.h"
+#include "../../defines.h"
 
 namespace UCA_L2INFO_PW4
 {

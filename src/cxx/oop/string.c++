@@ -25,6 +25,13 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename _CharT, typename _Traits, typename _Alloc >
+    __String__<_CharT, _Traits, _Alloc>::__String__(const_str_t str, uint_t size):
+    _F_charseq(traits_type::copy(str, size)), _F_length(size)
+    {
+        /* Nothing to do here */
+    }
+
+    template < typename _CharT, typename _Traits, typename _Alloc >
     __String__<_CharT, _Traits, _Alloc>::__String__(const string_t &str):
     _F_charseq(traits_type::copy(str._F_charseq, str._F_length)),
     _F_length(str._F_length)
@@ -50,7 +57,17 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
-    String &__String__<_CharT, _Traits, _Alloc>::operator=(char_t c)
+    template<typename... T>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+        __String__<_CharT, _Traits, _Alloc>::concat(T... args) const
+    {
+            string_t str;
+
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t &
+        __String__<_CharT, _Traits, _Alloc>::operator=(char_t c)
     {
         __delete();
 
@@ -58,14 +75,16 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
-    String &__String__<_CharT, _Traits, _Alloc>::operator=(const_str_t)
+    typename __String__<_CharT, _Traits, _Alloc>::string_t &
+        __String__<_CharT, _Traits, _Alloc>::operator=(const_str_t str)
     {
 
         return *this;
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
-    String &__String__<_CharT, _Traits, _Alloc>::operator=(const string_t &str)
+    typename __String__<_CharT, _Traits, _Alloc>::string_t &
+        __String__<_CharT, _Traits, _Alloc>::operator=(const string_t &str)
     {
 
         return *this;

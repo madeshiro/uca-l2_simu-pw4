@@ -8,16 +8,18 @@ namespace UCA_L2INFO_PW4
 {
     namespace json
     {
-        class JSONObject : public Object
+        class JsonObject : public Object
         {
         public:
 
             virtual bool isArray() = 0;
             virtual bool isMap() = 0;
             virtual bool isValue() = 0;
+
+            virtual String stringify(bool doIndentation = true);
         };
 
-        class JSONValue : public JSONObject
+        class JsonValue : public JsonObject
         {
             union jvalue_t
             {
@@ -50,23 +52,13 @@ namespace UCA_L2INFO_PW4
                 String
             };
 
-            virtual ~JSONValue();
+            virtual ~JsonValue();
 
             template <typename T>
             T getValue()
             {
                 return value;
             }
-        };
-
-        class JSONMap : public HashMap<std::string, JSONObject &>
-        {
-
-        };
-
-        class JSONArray : public ArrayList<JSONObject&>
-        {
-
         };
     }
 }
