@@ -17,21 +17,21 @@ namespace UCA_L2INFO_PW4
         Object()            = default;
         virtual ~Object()   = default;
 
-        virtual bool equals(Object &&obj);
-        virtual bool equals(Object & obj);
-        virtual bool equals(Object * obj);
+        virtual bool equals(const Object &&obj) const;
+        virtual bool equals(const Object & obj) const;
+        virtual bool equals(const Object * obj) const;
 
-        virtual bool operator ==(Object &&obj);
-        virtual bool operator ==(Object & obj);
-        virtual bool operator ==(Object * obj);
+        virtual bool operator ==(const Object &&obj) const;
+        virtual bool operator ==(const Object & obj) const;
+        virtual bool operator ==(const Object * obj) const;
 
-        virtual String toString();
-        virtual hash_t hashCode();
-        virtual Object* clone();
+        virtual String toString() const;
+        virtual hash_t hashCode() const;
+        virtual Object* clone() const;
     };
 
     template < typename T >
-    class Comparable
+    struct Comparable
     {
         /**
          * Compares the class instance with another value.
@@ -45,12 +45,8 @@ namespace UCA_L2INFO_PW4
          * @param obj The object to compare this instance with.
          * @return -1, 0 or 1 depends of the comparaison results
          */
-        virtual int compareTo(const T& obj) = 0;
+        virtual int compareTo(const T& obj) const = 0;
     };
 }
 
 #endif // CPP_OBJECT_H
-
-#ifndef CPP_STRING_HPP
-#include "string.hpp"
-#endif  // CPP_STRING_HPP

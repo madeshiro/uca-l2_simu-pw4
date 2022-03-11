@@ -10,7 +10,7 @@ namespace UCA_L2INFO_PW4
     protected:
         String msg;
     public:
-        Exception(std::string msg);
+        Exception(String msg);
         virtual ~Exception() = default;
 
         virtual String getName() const;
@@ -21,9 +21,14 @@ namespace UCA_L2INFO_PW4
     class IndexOutOfBoundException : public Exception
     {
     public:
-        IndexOutOfBoundException(std::string msg);
+        IndexOutOfBoundException(String msg);
 
         virtual String getName() const;
+    };
+
+    class AllocationException : public Exception
+    {
+
     };
 }
 
