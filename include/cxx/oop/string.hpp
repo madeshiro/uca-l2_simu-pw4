@@ -104,6 +104,10 @@ namespace UCA_L2INFO_PW4
 
         uint_t length() const override;
 
+        string_t& prepend(char_t c);
+        string_t& prepend(const_str_t str);
+        string_t& prepend(const string_t& str);
+
         string_t& remove(char_t c);
         string_t& remove(const_str_t str);
         string_t& remove(const string_t& str);
@@ -141,14 +145,11 @@ namespace UCA_L2INFO_PW4
         int         toInteger() const;
         long_t      toLong() const;
         double      toDouble() const;
-        llong_t     toLLong() const;
-        ldouble_t   toLDouble() const;
 
         virtual operator int() const;
         virtual operator long_t() const;
+        virtual operator float() const;
         virtual operator double() const;
-        virtual operator llong_t() const;
-        virtual operator ldouble_t() const;
 
         virtual operator const_str_t() const;
 
@@ -158,9 +159,9 @@ namespace UCA_L2INFO_PW4
         string_t & operator =(const_str_t str);
         string_t & operator =(const string_t & str);
 
-        string_t   operator +(char_t c);
-        string_t   operator +(const_str_t str);
-        string_t   operator +(const string_t & str);
+        string_t   operator +(char_t c) const;
+        string_t   operator +(const_str_t str) const;
+        string_t   operator +(const string_t & str) const;
 
         string_t & operator +=(char_t c);
         string_t & operator +=(const_str_t str);
@@ -175,7 +176,7 @@ namespace UCA_L2INFO_PW4
 
         /* STATIC METHODS */
 
-        static string_t toString(char);
+        static string_t toString(char_t);
         static string_t toString(int);
         static string_t toString(long);
         static string_t toString(float);
@@ -193,10 +194,10 @@ namespace UCA_L2INFO_PW4
     };
 
     using String    = __String__<char>;
-    using WString   = __String__<wchar_t>;
-
-    using StringBuilder  = __StringBuilder__<char>;
-    using WStringBuilder = __StringBuilder__<wchar_t>;
+//     using WString   = __String__<wchar_t>;
+//
+//     using StringBuilder  = __StringBuilder__<char>;
+//     using WStringBuilder = __StringBuilder__<wchar_t>;
 
 #ifndef OOP_IMPL_TEMPLATE_STRING
     extern template class __String__<char>;
@@ -255,9 +256,9 @@ namespace UCA_L2INFO_PW4
         {
             deleter::free(_F_charseq);
         }
-        _F_length = 0;
+        _F_length   = 0;
         _F_capacity = 0;
-        _F_charseq = 0;
+        _F_charseq  = nullptr;
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
@@ -597,6 +598,44 @@ namespace UCA_L2INFO_PW4
     uint_t __String__<_CharT, _Traits, _Alloc>::length() const
     {
         return _F_length;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t &
+    __String__<_CharT, _Traits, _Alloc>::prepend(char_t c)
+    {
+        return this->prepend(string_t(c));
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t &
+    __String__<_CharT, _Traits, _Alloc>::prepend(const_str_t str)
+    {
+        return this->prepend(string_t(str));
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t &
+    __String__<_CharT, _Traits, _Alloc>::prepend(const string_t& str)
+    {
+        uint_t oldLength = _F_length;
+        if (_F_capacity >= length()+str.length())
+        {
+            if (!__grow(1+(_F_capacity - (length()+str.length()))))
+            {
+                return *this;
+            }
+        }
+
+        for (uint_t i = _F_length, j=oldLength-1; j >= 0; i--, j--)
+        {
+            _F_charseq[i] = _F_charseq[j];
+        }
+        for (uint_t i = 0; i < str.length(); i++)
+        {
+            _F_charseq[i] = str[i];
+        }
+        return *this;
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
@@ -948,10 +987,172 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toLowerCase() const
+    {
+        char_t lower = (char_t) 'a';
+        char_t upper = (char_t) 'A', e_upper = 'Z';
+        string_t lowerCase(*this);
+
+        for (uint_t i = 0; i < _F_length; i++)
+        {
+            char_t &c = lowerCase._F_charseq[i];
+            if (c >= upper && c <= e_upper)
+            {
+                c = lower + (c-upper);
+            }
+        }
+
+        return lowerCase;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toUpperCase() const
+    {
+        char_t upper = (char_t) 'A';
+        char_t lower = (char_t) 'a', e_lower = 'z';
+        string_t upperCase(*this);
+
+        for (uint_t i = 0; i < _F_length; i++)
+        {
+            char_t &c = upperCase._F_charseq[i];
+            if (c >= lower && c <= e_lower)
+            {
+                c = upper + (c-lower);
+            }
+        }
+
+        return upperCase;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::const_str_t
     __String__<_CharT, _Traits, _Alloc>::getCharSequence() const
     {
         return _F_charseq;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    int __String__<_CharT, _Traits, _Alloc>::toInteger() const
+    {
+        int value(0), offset(0);
+        bool negative(false);
+
+        if (_F_length > 0)
+        {
+            switch (_F_charseq[0])
+            {
+                case '-':
+                    negative = true;
+                case '+':
+                    offset++;
+                    break;
+            }
+
+            for (int i = 0, pow = length()-offset; i < length(); i++)
+            {
+                char_t c(_F_charseq[i]);
+
+                value += (int) __builtin_pow((double)((char) c) - '0', (double) pow);
+            }
+        }
+
+        return negative ? -value : value;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    long_t __String__<_CharT, _Traits, _Alloc>::toLong() const
+    {
+        long_t value(0), offset(0);
+        bool negative(false);
+
+        if (_F_length > 0)
+        {
+            switch (_F_charseq[0])
+            {
+                case '-':
+                    negative = true;
+                case '+':
+                    offset++;
+                    break;
+            }
+
+            for (int i = 0, pow = length()-offset; i < length(); i++)
+            {
+                char_t c(_F_charseq[i]);
+
+                value += (long_t) __builtin_pow((double)((char) c) - '0', (double) pow);
+            }
+        }
+
+        return negative ? -value : value;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    double __String__<_CharT, _Traits, _Alloc>::toDouble() const
+    {
+        double value(0), decimal(0), exponent(-1.0);
+        bool negative(false), negativeExp(false);
+        int offset(0);
+
+        // expected char order : '-'/'+' -> digit or {optinal:'.' -> 'digit' -> {optional: 'e + digit...'}}
+        // check sign
+        switch (_F_charseq[0])
+        {
+            case '-':
+                negative = true;
+            case '+':
+                offset++;
+                break;
+        }
+
+        // parseState's value :
+        //  . 0 = digit before dot
+        //  . 1 = digit after dot
+        //  . 2 = ten pow X (scientific)
+        int parseState(0);
+        for (uint_t i = offset; i < _F_length; i++)
+        {
+            char_t ch(_F_charseq[i]);
+            switch (parseState)
+            {
+                case 0: // parse digits before the dot
+                    if (ch == (char_t) '.')
+                    {
+                        parseState++;
+                        continue;
+                    }
+                    value *= 10;
+                    value += (double) ch - ((char_t) '0');
+                    break;
+                case 1: // parse digits after the dot
+                    if (ch == (char_t) 'e')
+                    {
+                        parseState++;
+                        exponent = 0;
+                        switch (_F_charseq[i+1])
+                        {
+                            case '-':
+                                negativeExp = true;
+                            case '+':
+                                i++;
+                                break;
+                        }
+                        continue;
+                    }
+                    decimal += ((double) ch - ((char_t) '0'))*__builtin_pow(10,exponent);
+                    exponent--;
+                    break;
+                case 2: // parse exponent
+                    exponent *= 10;
+                    exponent += (double) ch - ((char_t) '0');
+                    break;
+            }
+        }
+
+        value = (value + decimal) * __builtin_pow(10, negativeExp ? -exponent : exponent);
+        return negative ? -value : value;
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
@@ -967,21 +1168,15 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
+    __String__<_CharT, _Traits, _Alloc>::operator float() const
+    {
+        return (float) toDouble();
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
     __String__<_CharT, _Traits, _Alloc>::operator double() const
     {
         return toDouble();
-    }
-
-    template<typename _CharT, typename _Traits, typename _Alloc>
-    __String__<_CharT, _Traits, _Alloc>::operator llong_t() const
-    {
-        return toLLong();
-    }
-
-    template<typename _CharT, typename _Traits, typename _Alloc>
-    __String__<_CharT, _Traits, _Alloc>::operator ldouble_t() const
-    {
-        return toLDouble();
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
@@ -1017,6 +1212,188 @@ namespace UCA_L2INFO_PW4
     {
         __set(traits_type::copy(str._F_charseq), str._F_length, str._F_length+1);
         return *this;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::operator+(char_t c) const
+    {
+        string_t str(*this);
+        return str.append(c);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::operator+(const_str_t str) const
+    {
+        string_t __this(*this);
+        return __this.append(str);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::operator+(const string_t& str) const
+    {
+        string_t __this(*this);
+        return __this.append(str);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t&
+    __String__<_CharT, _Traits, _Alloc>::operator+=(char_t c)
+    {
+        return append(c);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t&
+    __String__<_CharT, _Traits, _Alloc>::operator+=(const_str_t str)
+    {
+        return append(str);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t&
+    __String__<_CharT, _Traits, _Alloc>::operator+=(const string_t& str)
+    {
+        return append(str);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::char_t
+    __String__<_CharT, _Traits, _Alloc>::operator[](uint_t index) const
+    {
+        return _F_charseq[index];
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    hash_t __String__<_CharT, _Traits, _Alloc>::hashCode() const
+    {
+        hash_t hash(0);
+        for (uint_t i = 0; i < _F_length; i++)
+        {
+            hash += _F_charseq[i]*((hash_t)__builtin_pow(31, _F_length-1-i));
+        }
+        return hash;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    String __String__<_CharT, _Traits, _Alloc>::toString() const
+    {
+        // TODO return toUTF8() instead
+        return String((const char*) _F_charseq);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toString(char_t c)
+    {
+        return string_t(c);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toString(int i)
+    {
+        string_t str(allocator::calloc(12u), 0, 12);
+
+        do
+        {
+            str.prepend((char_t) '0' + i%10);
+            i /= 10;
+        } while (i != 0);
+
+        if (i < 0) str.prepend('-');
+        return str;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toString(long l)
+    {
+        string_t str(allocator::calloc(21u), 0, 21);
+
+        do
+        {
+            str.prepend((char_t) '0' + l%10);
+            l /= 10;
+        } while (l != 0);
+
+            if (l < 0) str.prepend('-');
+        return str;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toString(float f)
+    {
+        return toString((double) f);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toString(double d)
+    {
+        return string_t(); // TODO implement toString(double)
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toString(const_str_t str)
+    {
+        return string_t(str);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toString(const Object& obj)
+    {
+        if (sizeof(char_t) == sizeof(char)) return (string_t) obj.toString();
+        else
+        {
+            String objStr(obj.toString());
+            str_t str = allocator::alloc(objStr.length()+1);
+            str[objStr.length()] = (char_t) 0;
+
+            for (uint_t i = 0; i < objStr.length(); i++)
+                str[i] = (char_t) objStr[i];
+
+            return string_t(str,objStr.length(), objStr._F_capacity);
+        }
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::toHexString(unsigned long ul)
+    {
+        int lowchar[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+        string_t hex;
+        int only0(0);
+
+         do {
+             unsigned char bits = 0xf & ul;
+
+             if (bits == 0) only0++;
+             else
+             {
+                 if (only0 > 0)
+                 {
+                     for (int i = 0; i < only0; i++)
+                         hex.prepend((char_t) '0');
+                     only0=0;
+                 }
+
+                 int ch = lowchar[bits];
+                 hex.prepend((char_t) ch);
+             }
+
+             ul >>= 4;
+         } while (ul != 0);
+
+         if (hex.length() == 0) hex.append((char_t)'0');
+
+         hex.prepend((char_t)'x');
+         hex.prepend((char_t)'0');
     }
 }
 
