@@ -2,10 +2,9 @@
 #define CPP_ALLOC_HPP
 #include "type_traits.hpp"
 
-
 namespace UCA_L2INFO_PW4
 {
-    template < typename T, typename _Traits = Traits<T> >
+    template < typename T, typename _Traits  >
     struct Alloc
     {
         typedef _Traits traits_type;
@@ -65,7 +64,18 @@ namespace UCA_L2INFO_PW4
 
         static void free(ptr_t ptr);
     };
+
+    template<typename T, typename _Traits>
+    void Delete<T, _Traits>::free(ptr_t ptr)
+    {
+        delete ptr;
+    }
+
+    template<typename T, typename _Traits>
+    void Delete<T[], _Traits>::free(ptr_t ptr)
+    {
+        delete[] ptr;
+    }
 }
 
-#include "../src/cxx/oop/alloc.c++"
 #endif //CPP_ALLOC_HPP

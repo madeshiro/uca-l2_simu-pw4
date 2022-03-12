@@ -1,15 +1,18 @@
 #ifndef CPP_OBJECT_H
 #define CPP_OBJECT_H
 #include "defines.h"
-#include "alloc.hpp"
 
 namespace UCA_L2INFO_PW4
 {
+    template <typename T>
+    struct Traits;
+
+    template <typename T, typename _Traits = Traits<T>>
+    struct Alloc;
+
     template <typename _CharT, typename _Traits = Traits<_CharT>, typename _Alloc = Alloc<_CharT>>
     class __String__;
-
     using String    = __String__<char>;
-    using WString   = __String__<wchar_t>;
 
     class Object
     {
@@ -46,6 +49,25 @@ namespace UCA_L2INFO_PW4
          * @return -1, 0 or 1 depends of the comparaison results
          */
         virtual int compareTo(const T& obj) const = 0;
+
+        virtual bool operator <(const T& obj) const { return compareTo(obj) == -1; }
+        virtual bool operator >(const T& obj) const { return compareTo(obj) == 1; }
+        virtual bool operator ==(const T& obj) const { return compareTo(obj) == 0; }
+
+        static int CompateTo(const T& obj1, const T& obj2);
+    };
+
+    template<typename T>
+    int CompareTo(const T& obj1, const T& obj2)
+    {
+        if (obj1 == obj2) return 0;
+        else return obj1 < obj2 ? -1 : 1;
+    }
+
+    template < typename T >
+    struct Predicate
+    {
+        bool test(const T&) const = 0;
     };
 }
 

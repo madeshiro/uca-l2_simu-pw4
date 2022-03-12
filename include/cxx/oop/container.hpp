@@ -1,7 +1,6 @@
 #ifndef CPP_CONTAINER_HPP
 #define CPP_CONTAINER_HPP
-#include "type_traits.hpp"
-#include "object.h"
+#include "pointer.hpp"
 
 /* HEADER : CLASS DEFINITION */
 
@@ -35,7 +34,7 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::ptr_t         ptr_t;
         typedef typename traits_type::const_ptr_t   const_ptr_t;
 
-        virtual Iterator<T, traits_type> iterator() const = 0;
+        virtual Iterator<T, traits_type> iterator() = 0;
 
         ptr_t begin();
         ptr_t end();
@@ -65,30 +64,30 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_ref_t   const_ref_t;
         typedef typename traits_type::const_ptr_t   const_ptr_t;
     public:
-        bool add(value_t elem) = 0;
-        bool remove(value_t elem) = 0;
+        virtual bool add(value_t elem) = 0;
+        virtual bool addAll(const Collection<E>& c) = 0;
 
-        ptr_t set(uint_t index, value_t elem) = 0;
-        ref_t get(uint_t index) = 0;
-        bool isEmpty() const = 0;
-        size_t size() const = 0;
+        virtual void clear() = 0;
+
+        virtual bool contains(value_t elem) = 0;
+        virtual bool containsAll(const Collection<E>& c) = 0;
+
+        virtual bool isEmpty() const = 0;
+
+        virtual bool remove(value_t elem) = 0;
+        virtual bool removeAll(const Collection<E>& c) = 0;
+        virtual bool removeIf(const Predicate<E>& filter) = 0;
+
+        virtual bool retainAll(const Collection<E>& c) = 0;
+
+        virtual size_t size() const = 0;
+
+        virtual UniquePointer<E> toArray() const = 0;
 
         /* OPERATORS */
 
-        virtual ref_t operator[](uint_t index)
-        {
-            return get(index);
-        }
-
-        virtual bool operator +=(value_t elem)
-        {
-            return add(elem);
-        }
-
-        virtual bool operator -=(const_t elem)
-        {
-            return remove(elem);
-        }
+        virtual bool operator +=(value_t elem) {return add(elem);}
+        virtual bool operator -=(const_t elem) {return remove(elem);}
     };
 
     template<typename E>
@@ -109,15 +108,8 @@ namespace UCA_L2INFO_PW4
         List() = default;
         virtual ~List() = 0;
 
-        /* GETTER */
-
-        /* SETTER */
         virtual ptr_t set(value_t elem, uint_t index) = 0;
-
-        /* ACTIONS */
-
-        /* OPERATORS */
-
+        virtual ref_t get(uint_t index) = 0;
     };
 
     template<typename E>
@@ -134,12 +126,34 @@ namespace UCA_L2INFO_PW4
         typedef typename List<E>::const_t       const_t;
         typedef typename List<E>::const_ref_t   const_ref_t;
         typedef typename List<E>::const_ptr_t   const_ptr_t;
+
+        ptr_t  _F_array;
+        uint_t _F_size;
     public:
         ArrayList();
         ArrayList(const ArrayList<E>& obj);
         virtual ~ArrayList() override;
 
         virtual bool add(value_t elem) = 0;
+        virtual bool addAll(const Collection<E>& c) = 0;
+
+        virtual void clear() = 0;
+
+        virtual bool contains(value_t elem) = 0;
+        virtual bool containsAll(const Collection<E>& c) = 0;
+
+        virtual bool isEmpty() const = 0;
+
+        virtual bool remove(value_t elem) = 0;
+        virtual bool removeAll(const Collection<E>& c) = 0;
+        virtual bool removeIf(const Predicate<E>& filter) = 0;
+
+        virtual bool retainAll(const Collection<E>& c) = 0;
+
+        virtual size_t size() const = 0;
+
+        virtual UniquePointer<E> toArray() const = 0;
+
     };
 
     template < typename E >
@@ -162,14 +176,57 @@ namespace UCA_L2INFO_PW4
         typedef typename Collection<E>::const_t       const_t;
         typedef typename Collection<E>::const_ref_t   const_ref_t;
         typedef typename Collection<E>::const_ptr_t   const_ptr_t;
+
+        bool _F_needUpdate;
+        UniquePointer<E[]> _F_toArray;
+
+        Set(): _F_needUpdate(false), _F_toArray(nullptr) {}
+        virtual void setNeedUpdate(bool status = true) final {_F_needUpdate=status;}
+        virtual bool needUpdate() const final {return _F_needUpdate;}
     public:
-        bool add(value_t elem) = 0;
+        virtual Iterator<E> iterator() override;
     };
 
     template<typename E>
+    /**
+     * @warning E needs to have these 3 operators {<, >, ==} !
+     */
     class SortedSet : public Set<E>
     {
+    protected:
+        typedef Traits<E> traits_type;
 
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+    public:
+        SortedSet();
+        virtual ~SortedSet() override;
+
+        virtual bool add(value_t elem);
+        virtual bool addAll(const Collection<E>& c);
+
+        virtual void clear();
+
+        virtual bool contains(value_t elem);
+        virtual bool containsAll(const Collection<E>& c);
+
+        virtual bool isEmpty() const;
+
+        virtual bool remove(value_t elem);
+        virtual bool removeAll(const Collection<E>& c);
+        virtual bool removeIf(const Predicate<E>& filter);
+
+        virtual bool retainAll(const Collection<E>& c);
+
+        virtual size_t size() const;
+
+        virtual UniquePointer<E> toArray() const;
     };
 
     template <typename E>
@@ -299,6 +356,17 @@ namespace UCA_L2INFO_PW4
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crend() const
     {
         return iterator()._F_begin-1;
+    }
+
+    template < typename E >
+    Iterator<E> Set<E>::iterator()
+    {
+        if (needUpdate())
+        {
+            _F_toArray = this->toArray();
+        }
+
+        return Iterable<E>(_F_toArray.pointer(), _F_toArray.pointer()+this->size());
     }
 }
 

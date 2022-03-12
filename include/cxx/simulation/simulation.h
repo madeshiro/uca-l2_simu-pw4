@@ -1,7 +1,6 @@
 #ifndef CPP_SIMULATION_H
 #define CPP_SIMULATION_H
-
-#include "cxx/oop/event.hpp"
+#include "cxx/oop/object"
 
 namespace UCA_L2INFO_PW4
 {
@@ -15,7 +14,7 @@ namespace UCA_L2INFO_PW4
     private:
 
     protected:
-        bool caching(List<>)
+        bool caching(List<int/*change*/>);
     public:
         virtual ~Simulation();
 

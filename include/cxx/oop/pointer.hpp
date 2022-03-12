@@ -1,12 +1,13 @@
 #ifndef CPP_POINTER_HPP
 #define CPP_POINTER_HPP
+#include "defines.h"
 #include "alloc.hpp"
-#include "../../defines.h"
+#include "object.h"
 
 namespace UCA_L2INFO_PW4
 {
     template < typename T, typename _Deleter = Delete<T> >
-    class Pointer
+    class Pointer : public Object
     {
     protected:
         typedef _Deleter deleter;
@@ -21,35 +22,33 @@ namespace UCA_L2INFO_PW4
 
         typedef Pointer<T, _Deleter> pointer_t;
 
-        ptr_t origin, value;
-        Pointer(ptr_t ptr): origin(ptr), value(ptr) {/*...*/}
-        virtual ~Pointer() { /* do nothing */ }
+        ptr_t _F_ptr;
+        Pointer(ptr_t ptr);
+        virtual ~Pointer() = 0;
     public:
-        virtual ptr_t pointer() { return value; }
+        virtual ptr_t pointer() const;
 
-        virtual ref_t operator *();
-        virtual ptr_t operator ->();
-        virtual ref_t operator [](size_t __index);
+        inline virtual ref_t operator *();
+        inline virtual ptr_t operator ->();
+        inline virtual ref_t operator [](size_t __index);
 
-        virtual pointer_t & operator ++();
-        virtual pointer_t & operator --();
+        virtual Pointer<T, _Deleter>& operator =(ptr_t ptr) = 0;
 
-        virtual pointer_t operator +(size_t) const;
-        virtual pointer_t operator -(size_t) const;
+        virtual bool operator ==(const_ptr_t ptr) const;
+        virtual bool operator <=(const_ptr_t ptr) const;
+        virtual bool operator >=(const_ptr_t ptr) const;
+        virtual bool operator >(const_ptr_t ptr) const;
+        virtual bool operator <(const_ptr_t ptr) const;
 
-        virtual pointer_t & operator +=(size_t);
-        virtual pointer_t & operator -=(size_t);
+        inline virtual operator bool() const;
+        inline virtual operator ptr_t() const;
 
-        virtual operator bool() const;
-        virtual operator ptr_t() const;
+        hash_t hashCode() const override;
     };
 
     template < typename T, typename _Deleter = Delete<T> >
-    class SharedPointer : Pointer<T, _Deleter>
+    class UniquePointer : Pointer<T, _Deleter>
     {
-    protected:
-        typedef _Deleter deleter;
-
         typedef typename Pointer<T, _Deleter>::value_t   value_t;
         typedef typename Pointer<T, _Deleter>::ref_t     ref_t;
         typedef typename Pointer<T, _Deleter>::rvalue_t  rvalue_t;
@@ -59,17 +58,290 @@ namespace UCA_L2INFO_PW4
         typedef typename Pointer<T, _Deleter>::const_ptr_t const_ptr_t;
         typedef typename Pointer<T, _Deleter>::const_ref_t const_ref_t;
 
-        typedef SharedPointer<T, _Deleter> pointer_t;
-
-        uint_t _F_useCount;
+        typedef typename Pointer<T, _Deleter>::deleter deleter;
+        typedef UniquePointer<T, _Deleter>             pointer_t;
     public:
-        SharedPointer(ptr_t ptr);
+        UniquePointer(ptr_t ptr = nullptr);
+        UniquePointer(pointer_t& ptr);
+        virtual ~UniquePointer() override;
+
+        virtual void reset(ptr_t ptr);
+        virtual ptr_t release();
+        virtual void swap(UniquePointer<T, _Deleter> &sp);
+
+        virtual UniquePointer<T, _Deleter>& operator =(ptr_t ptr) override;
+        UniquePointer<T, _Deleter>& operator =(UniquePointer<T, _Deleter>& up);
+    };
+
+
+    template < typename T, typename _Deleter = Delete<T> >
+    class SharedPointer : Pointer<T, _Deleter>
+    {
+    protected:
+        typedef typename Pointer<T, _Deleter>::value_t   value_t;
+        typedef typename Pointer<T, _Deleter>::ref_t     ref_t;
+        typedef typename Pointer<T, _Deleter>::rvalue_t  rvalue_t;
+        typedef typename Pointer<T, _Deleter>::ptr_t     ptr_t;
+
+        typedef typename Pointer<T, _Deleter>::const_t     const_t;
+        typedef typename Pointer<T, _Deleter>::const_ptr_t const_ptr_t;
+        typedef typename Pointer<T, _Deleter>::const_ref_t const_ref_t;
+
+        typedef typename Pointer<T, _Deleter>::deleter deleter;
+        typedef SharedPointer<T, _Deleter>             pointer_t;
+
+        uint_t *_F_useCount;
+    public:
+        SharedPointer(ptr_t ptr = nullptr);
         SharedPointer(const pointer_t & cpy);
         virtual ~SharedPointer() override;
 
+        virtual void reset(ptr_t ptr);
+        virtual void swap(SharedPointer<T, _Deleter> &sp);
         virtual uint_t use_count() const final;
-    };
-}
 
+        virtual SharedPointer<T, _Deleter>& operator =(ptr_t ptr) override;
+        virtual SharedPointer<T, _Deleter>& operator =(const UniquePointer<T, _Deleter>& ptr);
+        virtual SharedPointer<T, _Deleter>& operator =(const SharedPointer<T, _Deleter>& ptr);
+    };
+
+    template<typename T, typename _Deleter>
+    Pointer<T, _Deleter>::Pointer(ptr_t ptr): _F_ptr(ptr)
+    {/* ... */}
+
+    template<typename T, typename _Deleter>
+    typename Pointer<T, _Deleter>::ptr_t Pointer<T, _Deleter>::pointer() const
+    {
+        return _F_ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    inline typename Pointer<T, _Deleter>::ref_t Pointer<T, _Deleter>::operator*()
+    {
+        return *_F_ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    inline typename Pointer<T, _Deleter>::ptr_t Pointer<T, _Deleter>::operator->()
+    {
+        return _F_ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    inline typename Pointer<T, _Deleter>::ref_t Pointer<T, _Deleter>::operator[](size_t __index)
+    {
+        return _F_ptr[__index];
+    }
+
+    template<typename T, typename _Deleter>
+    bool Pointer<T, _Deleter>::operator==(const_ptr_t ptr) const
+    {
+        return _F_ptr == ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    bool Pointer<T, _Deleter>::operator<=(const_ptr_t ptr) const
+    {
+        return _F_ptr <= ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    bool Pointer<T, _Deleter>::operator>=(const_ptr_t ptr) const
+    {
+        return _F_ptr >= ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    bool Pointer<T, _Deleter>::operator >(const_ptr_t ptr) const
+    {
+        return _F_ptr > ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    bool Pointer<T, _Deleter>::operator <(const_ptr_t ptr) const
+    {
+        return _F_ptr < ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    inline Pointer<T, _Deleter>::operator bool() const
+    {
+        return _F_ptr != nullptr;
+    }
+
+    template<typename T, typename _Deleter>
+    inline Pointer<T, _Deleter>::operator ptr_t() const
+    {
+        return _F_ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    hash_t Pointer<T, _Deleter>::hashCode() const
+    {
+        return _F_ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    UniquePointer<T, _Deleter>::UniquePointer(ptr_t ptr): Pointer<T, _Deleter>(ptr)
+    {
+        /* ... */
+    }
+
+    template<typename T, typename _Deleter>
+    UniquePointer<T, _Deleter>::UniquePointer(pointer_t& ptr): Pointer<T, _Deleter>(ptr.release())
+    {
+        /* ... */
+    }
+
+    template<typename T, typename _Deleter>
+    UniquePointer<T, _Deleter>::~UniquePointer()
+    {
+        if (this->_F_ptr)
+        {
+            deleter::free(this->_F_ptr);
+        }
+    }
+
+    template<typename T, typename _Deleter>
+    void UniquePointer<T, _Deleter>::reset(ptr_t ptr)
+    {
+        if (this->_F_ptr)
+        {
+            deleter::free(this->_F_ptr);
+        }
+
+        this->_F_ptr = ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    typename UniquePointer<T, _Deleter>::ptr_t UniquePointer<T, _Deleter>::release()
+    {
+        ptr_t ptr = this->_F_ptr;
+        this->_F_ptr = nullptr;
+        return ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    void UniquePointer<T, _Deleter>::swap(UniquePointer<T, _Deleter> &sp)
+    {
+        ptr_t __ptr = this->_F_ptr;
+        this->_F_ptr = sp._F_ptr;
+        sp._F_ptr = __ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    UniquePointer<T, _Deleter>& UniquePointer<T, _Deleter>::operator =(ptr_t ptr)
+    {
+        reset(ptr);
+        return *this;
+    }
+
+    template<typename T, typename _Deleter>
+    UniquePointer<T, _Deleter>& UniquePointer<T, _Deleter>::operator =(UniquePointer<T, _Deleter>& up)
+    {
+        reset(up.release());
+        return *this;
+    }
+
+    template<typename T, typename _Deleter>
+    SharedPointer<T, _Deleter>::SharedPointer(ptr_t ptr):
+        Pointer<T, _Deleter>(ptr), _F_useCount(ptr ? new uint_t(1u) : nullptr)
+    {
+        /* ... */
+    }
+
+    template<typename T, typename _Deleter>
+    SharedPointer<T, _Deleter>::SharedPointer(const pointer_t& cpy):
+        Pointer<T, _Deleter>(cpy._F_ptr), _F_useCount(cpy._F_useCount)
+    {
+        (*_F_useCount)++;
+    }
+
+    template<typename T, typename _Deleter>
+    SharedPointer<T, _Deleter>::~SharedPointer()
+    {
+        (*_F_useCount)--;
+        if (*_F_useCount == 0)
+        {
+            delete _F_useCount;
+            deleter::free(_F_useCount);
+        }
+    }
+
+    template<typename T, typename _Deleter>
+    void SharedPointer<T, _Deleter>::reset(ptr_t ptr)
+    {
+        if (this->_F_ptr != ptr && this->_F_ptr)
+        {
+            (*_F_useCount)--;
+            if (*_F_useCount == 0)
+            {
+                deleter::free(this->_F_ptr);
+                delete _F_useCount;
+            }
+        }
+
+        this->_F_ptr = ptr;
+        if (ptr)
+        {
+            _F_useCount = new uint_t(1u);
+        }
+    }
+
+    template<typename T, typename _Deleter>
+    void SharedPointer<T, _Deleter>::swap(SharedPointer<T, _Deleter> &sp)
+    {
+        ptr_t   __ptr = sp.pointer();
+        uint_t* __uc  = sp._F_useCount;
+
+        sp._F_ptr      = this->_F_ptr;
+        sp._F_useCount = _F_useCount;
+        this->_F_ptr        = __ptr;
+        this->_F_useCount   = __uc;
+    }
+
+    template<typename T, typename _Deleter>
+    uint_t SharedPointer<T, _Deleter>::use_count() const
+    {
+        return *_F_useCount;
+    }
+
+    template<typename T, typename _Deleter>
+    SharedPointer<T, _Deleter>& SharedPointer<T, _Deleter>::operator =(ptr_t ptr)
+    {
+        reset(ptr);
+        return *this;
+    }
+
+    template<typename T, typename _Deleter>
+    SharedPointer<T, _Deleter>& SharedPointer<T, _Deleter>::operator=(const SharedPointer<T, _Deleter> &ptr)
+    {
+        if (this->_F_ptr != ptr && this->_F_ptr)
+        {
+            (*_F_useCount)--;
+            if (*_F_useCount == 0)
+            {
+                deleter::free(this->_F_ptr);
+                delete _F_useCount;
+            }
+        }
+
+        this->_F_ptr = ptr.pointer();
+        this->_F_useCount = ptr._F_useCount;
+        if (this->_F_ptr)
+        {
+            (*_F_useCount)++;
+        }
+
+        return *this;
+    }
+
+    template<typename T, typename _Deleter>
+    SharedPointer<T, _Deleter>& SharedPointer<T, _Deleter>::operator=(const UniquePointer<T, _Deleter> &ptr)
+    {
+        reset(ptr.release());
+        return *this;
+    }
+}
 
 #endif //CPP_POINTER_HPP

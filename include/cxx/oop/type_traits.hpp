@@ -1,10 +1,12 @@
 #ifndef CPP_TYPE_TRAITS_HPP
 #define CPP_TYPE_TRAITS_HPP
 #include "defines.h"
+#include "object.h"
+#include <stdlib.h>
 
 namespace UCA_L2INFO_PW4
 {
-    template < typename T >
+    template <typename T>
     struct Traits
     {
         typedef T   value_t;
@@ -121,6 +123,42 @@ namespace UCA_L2INFO_PW4
         static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
         static size_t len(const_ptr_t str);
     };
+
+    template < typename T >
+    hash_t Traits<T>::hash_code(const_t obj)
+    {
+        if (dynamic_cast<Object*>(&obj))
+        {
+            return ((Object*)&obj)->hashCode();
+        }
+        else
+        {
+            return static_cast<hash_t>(obj);
+        }
+    }
+
+    template < typename T >
+    typename Traits<T>::ptr_t Traits<T>::copy(const_ptr_t ptr, size_t __size)
+    {
+        ptr_t cpy = (ptr_t) malloc(sizeof(T)*__size);
+        if (cpy)
+        {
+
+        }
+    }
+
+    template < typename T >
+    hash_t Traits<T&>::hash_code(const_t obj)
+    {
+        return Traits<T>::hash_code(obj);
+    }
+
+    Traits<char>::size_t Traits<char>::len(Traits<char>::const_ptr_t str)
+    {
+        size_t len = 0;
+        while(str[len] != '\0') len++;
+        return len;
+    }
 }
 
 #endif //CPP_TYPE_TRAITS_HPP

@@ -2,9 +2,8 @@
 #define CPP_STRING_HPP
 #include "defines.h"
 #include "cxx/oop/object.h"
-#include "cxx/oop/container.hpp"
 #include "cxx/oop/alloc.hpp"
-
+#include "cxx/oop/container.hpp"
 
 namespace UCA_L2INFO_PW4
 {
@@ -100,7 +99,7 @@ namespace UCA_L2INFO_PW4
         SortedSet<uint_t> findAll(const_str_t str) const;
         SortedSet<uint_t> findAll(const string_t& str) const;
 
-        Iterator<char_t, traits_type> iterator() const override;
+        Iterator<char_t, traits_type> iterator() override;
 
         uint_t length() const override;
 
@@ -589,7 +588,7 @@ namespace UCA_L2INFO_PW4
     template<typename _CharT, typename _Traits, typename _Alloc>
     Iterator<typename __String__<_CharT, _Traits, _Alloc>::char_t,
              typename __String__<_CharT, _Traits, _Alloc>::traits_type>
-    __String__<_CharT, _Traits, _Alloc>::iterator() const
+    __String__<_CharT, _Traits, _Alloc>::iterator()
     {
         return Iterator<char_t, traits_type>(_F_charseq, _F_charseq+_F_length);
     }
@@ -651,13 +650,13 @@ namespace UCA_L2INFO_PW4
             str_t newStr   = allocator::alloc(newCap);
             newStr[newLen] = (char_t) 0;
 
-            for (uint_t i = 0, j = 0, k = 0; i < _F_length; i++)
+            for (uint_t i = 0, j = 0; i < _F_length; i++)
             {
-                if (finds.get(k) != i)
+                if (!finds.contains(i))
                 {
                     newStr[j] = _F_charseq[i];
                     j++;
-                } else k++;
+                }
             }
 
             __set(newStr, newLen, newCap);
@@ -686,16 +685,15 @@ namespace UCA_L2INFO_PW4
             str_t newStr   = allocator::alloc(newCap);
             newStr[newLen] = (char_t) 0;
 
-            for (uint_t i = 0, j = 0, k = 0; i < _F_length; i++)
+            for (uint_t i = 0, j = 0; i < _F_length; i++)
             {
-                if (finds.get(k) != i)
+                if (!finds.contains(i))
                 {
                     newStr[j] = _F_charseq[i];
                     j++;
                 }
                 else
                 {
-                    k++;
                     i+=str.length();
                 }
             }
