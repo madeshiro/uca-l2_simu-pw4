@@ -54,11 +54,11 @@ namespace UCA_L2INFO_PW4
         virtual bool operator >(const T& obj) const { return compareTo(obj) == 1; }
         virtual bool operator ==(const T& obj) const { return compareTo(obj) == 0; }
 
-        static int CompateTo(const T& obj1, const T& obj2);
+        static int CompareTo(const T& obj1, const T& obj2);
     };
 
     template<typename T>
-    int CompareTo(const T& obj1, const T& obj2)
+    int Comparable<T>::CompareTo(const T& obj1, const T& obj2)
     {
         if (obj1 == obj2) return 0;
         else return obj1 < obj2 ? -1 : 1;

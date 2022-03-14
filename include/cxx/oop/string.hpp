@@ -186,23 +186,12 @@ namespace UCA_L2INFO_PW4
         static string_t toHexString(unsigned long);
     };
 
-    template < typename _CharT, typename _Traits = Traits<_CharT>, typename _Alloc = Alloc<_CharT> >
-    class __StringBuilder__
-    {
-    public:
-    };
-
     using String    = __String__<char>;
 //     using WString   = __String__<wchar_t>;
-//
-//     using StringBuilder  = __StringBuilder__<char>;
-//     using WStringBuilder = __StringBuilder__<wchar_t>;
 
 #ifndef OOP_IMPL_TEMPLATE_STRING
     extern template class __String__<char>;
     extern template class __String__<wchar_t>;
-    extern template class __StringBuilder__<char>;
-    extern template class __StringBuilder__<wchar_t>;
 #endif //OOP_IMPL_TEMPLATE_STRING
 
     template < typename _CharT, typename _Traits, typename _Alloc >
@@ -805,9 +794,9 @@ namespace UCA_L2INFO_PW4
             str_t newStr   = allocator::alloc(newCap);
             newStr[newLen] = (char_t) 0;
 
-            for (uint_t i = 0, j = 0, k = 0; i < _F_length; i++)
+            for (uint_t i = 0, j = 0; i < _F_length; i++)
             {
-                if (finds[k] != i)
+                if (finds.contains(i))
                 {
                     newStr[j] = _F_charseq[i];
                     j++;
@@ -820,7 +809,6 @@ namespace UCA_L2INFO_PW4
                         j++;
                     }
                     i += __old.length();
-                    k++;
                 }
             }
 

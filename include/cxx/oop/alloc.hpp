@@ -46,7 +46,7 @@ namespace UCA_L2INFO_PW4
         static void free(ptr_t ptr);
     };
 
-    template <typename T, typename _Traits>
+    template <typename T, typename _Traits >
     struct Delete<T[], _Traits>
     {
         typedef _Traits traits_type;
@@ -64,6 +64,30 @@ namespace UCA_L2INFO_PW4
 
         static void free(ptr_t ptr);
     };
+
+    template<typename T, typename _Traits>
+    typename Alloc<T, _Traits>::ptr_t Alloc<T, _Traits>::alloc()
+    {
+        return (ptr_t) ::malloc(sizeof(T));
+    }
+
+    template<typename T, typename _Traits>
+    typename Alloc<T, _Traits>::ptr_t Alloc<T, _Traits>::alloc(size_t nmemb)
+    {
+        return new value_t[nmemb];
+    }
+
+    template<typename T, typename _Traits>
+    typename Alloc<T, _Traits>::ptr_t Alloc<T, _Traits>::calloc(size_t nmemb)
+    {
+        return (ptr_t) ::calloc(nmemb, sizeof(value_t));
+    }
+
+    template<typename T, typename _Traits>
+    typename Alloc<T, _Traits>::size_t Alloc<T, _Traits>::sizeOf()
+    {
+        return sizeof(value_t);
+    }
 
     template<typename T, typename _Traits>
     void Delete<T, _Traits>::free(ptr_t ptr)

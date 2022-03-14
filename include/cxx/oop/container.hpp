@@ -204,8 +204,24 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_t       const_t;
         typedef typename traits_type::const_ref_t   const_ref_t;
         typedef typename traits_type::const_ptr_t   const_ptr_t;
+
+        struct Node
+        {
+            Node* parent, *left, *right;
+            E element;
+        };
     public:
-        SortedSet();
+        enum SortMethod : int
+        {
+            ASC = 0x1,
+            DESC = 0x2
+        };
+    private:
+        Node *_F_tree;
+        SortMethod _F_sortMethod = ASC;
+    public:
+        SortedSet(SortMethod sort = ASC);
+        SortedSet(const SortedSet<E> &cpy);
         virtual ~SortedSet() override;
 
         virtual bool add(value_t elem);
@@ -232,7 +248,47 @@ namespace UCA_L2INFO_PW4
     template <typename E>
     class HashSet : public Set<E>
     {
+    protected:
+        typedef Traits<E> traits_type;
 
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+
+        struct Node
+        {
+            Node* parent, *left, *right;
+            E element;
+        };
+    public:
+        HashSet();
+        HashSet(const HashSet<E>& set);
+        ~HashSet();
+
+        virtual bool add(value_t elem);
+        virtual bool addAll(const Collection<E>& c);
+
+        virtual void clear();
+
+        virtual bool contains(value_t elem);
+        virtual bool containsAll(const Collection<E>& c);
+
+        virtual bool isEmpty() const;
+
+        virtual bool remove(value_t elem);
+        virtual bool removeAll(const Collection<E>& c);
+        virtual bool removeIf(const Predicate<E>& filter);
+
+        virtual bool retainAll(const Collection<E>& c);
+
+        virtual size_t size() const;
+
+        virtual UniquePointer<E> toArray() const;
     };
 
     template<typename E>

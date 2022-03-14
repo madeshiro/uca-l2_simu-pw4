@@ -6,8 +6,6 @@ namespace UCA_L2INFO_PW4
 {
     template class __String__<char>;
     template class __String__<wchar_t>;
-    template class __StringBuilder__<char>;
-    template class __StringBuilder__<wchar_t>;
 
     bool Object::equals(const Object &&obj) const
     {

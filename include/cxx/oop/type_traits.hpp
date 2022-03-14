@@ -159,6 +159,12 @@ namespace UCA_L2INFO_PW4
         while(str[len] != '\0') len++;
         return len;
     }
+
+    template < typename T >
+    hash_t Traits<T*>::hash_code(const_t obj)
+    {
+        return (hash_t) obj;
+    }
 }
 
 #endif //CPP_TYPE_TRAITS_HPP
