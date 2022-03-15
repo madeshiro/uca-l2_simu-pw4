@@ -105,6 +105,34 @@ namespace UCA_L2INFO_PW4
         virtual SharedPointer<T, _Deleter>& operator =(const SharedPointer<T, _Deleter>& ptr);
     };
 
+    template < typename T, typename _Deleter = Delete<T> >
+    class WeakPointer : Pointer<T, _Deleter>
+    {
+    protected:
+        typedef typename Pointer<T, _Deleter>::value_t   value_t;
+        typedef typename Pointer<T, _Deleter>::ref_t     ref_t;
+        typedef typename Pointer<T, _Deleter>::rvalue_t  rvalue_t;
+        typedef typename Pointer<T, _Deleter>::ptr_t     ptr_t;
+
+        typedef typename Pointer<T, _Deleter>::const_t     const_t;
+        typedef typename Pointer<T, _Deleter>::const_ptr_t const_ptr_t;
+        typedef typename Pointer<T, _Deleter>::const_ref_t const_ref_t;
+
+        typedef typename Pointer<T, _Deleter>::deleter deleter;
+        typedef WeakPointer<T, _Deleter>             pointer_t;
+    public:
+        WeakPointer(ptr_t ptr = nullptr);
+        WeakPointer(const pointer_t & cpy);
+        virtual ~WeakPointer() override;
+
+        virtual void reset(ptr_t ptr);
+        virtual void swap(WeakPointer<T, _Deleter> &sp);
+        virtual uint_t use_count() const final;
+
+        virtual WeakPointer<T, _Deleter>& operator =(ptr_t ptr) override;
+        virtual WeakPointer<T, _Deleter>& operator =(const SharedPointer<T, _Deleter>& ptr);
+    };
+
     template<typename T, typename _Deleter>
     Pointer<T, _Deleter>::Pointer(ptr_t ptr): _F_ptr(ptr)
     {/* ... */}
