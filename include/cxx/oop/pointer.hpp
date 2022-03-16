@@ -47,7 +47,7 @@ namespace UCA_L2INFO_PW4
     };
 
     template < typename T, typename _Deleter = Delete<T> >
-    class UniquePointer : Pointer<T, _Deleter>
+    class UniquePointer : public Pointer<T, _Deleter>
     {
         typedef typename Pointer<T, _Deleter>::value_t   value_t;
         typedef typename Pointer<T, _Deleter>::ref_t     ref_t;
@@ -75,7 +75,7 @@ namespace UCA_L2INFO_PW4
 
 
     template < typename T, typename _Deleter = Delete<T> >
-    class SharedPointer : Pointer<T, _Deleter>
+    class SharedPointer : public Pointer<T, _Deleter>
     {
     protected:
         typedef typename Pointer<T, _Deleter>::value_t   value_t;
@@ -106,7 +106,7 @@ namespace UCA_L2INFO_PW4
     };
 
     template < typename T, typename _Deleter = Delete<T> >
-    class WeakPointer : Pointer<T, _Deleter>
+    class WeakPointer : public Pointer<T, _Deleter>
     {
     protected:
         typedef typename Pointer<T, _Deleter>::value_t   value_t;

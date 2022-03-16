@@ -925,7 +925,7 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool ArrayList<E>::removeAll(const Collection<E> &c)
     {
-        int* elemIndexes(new int[c.size()]);
+        UniquePointer<int[]> elemIndexes(new int[c.size()]);
         uint_t f(0);
 
         for (value_t elem : c)
@@ -947,7 +947,54 @@ namespace UCA_L2INFO_PW4
                 {
                     if (elemIndexes[f] != -1 && (size_t) elemIndexes[f] == i)
                     {
-                        elemIndexes++;
+                        f++;
+                    }
+                    else
+                    {
+                        newArray[j] = this->_F_array[i];
+                        j++;
+                    }
+                }
+
+                deleter::free(this->_F_array);
+                this->_F_array = newArray;
+                this->_F_size -= f;
+            }
+            else return false;
+        }
+        else if (this->_F_size - f == 0)
+        {
+            this->clear();
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool ArrayList<E>::removeIf(const Predicate<E> &filter)
+    {
+        UniquePointer<size_t[]> elemIndexes(new size_t[this->size()]);
+        uint_t f(0);
+
+        for (size_t i(0); i < this->_F_size; i++)
+        {
+            if (filter.test(this->_F_array[i]))
+            {
+                elemIndexes[f] = i;
+                f++;
+            }
+        }
+
+        if (f > 0 && this->_F_size - f > 0)
+        {
+            ptr_t newArray = allocator::alloc(this->_F_size - f);
+            if (newArray)
+            {
+                for (size_t i(0), j(0), k(0); i < this->_F_size; i++)
+                {
+                    if (k < f && elemIndexes[k] == i)
+                    {
+                        k++;
                     }
                     else
                     {
