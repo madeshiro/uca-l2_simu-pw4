@@ -11,22 +11,7 @@ namespace UCA_L2INFO_PW4
     class CharSequence : public Iterable<_CharT, _Traits>
     {
     protected:
-        typedef _Traits                         traits_type;
-        typedef typename traits_type::value_t   char_t;
-        typedef typename traits_type::ptr_t     str_t;
-
-        typedef CharSequence<_CharT, _Traits, _Alloc> charsequence_t;
-    public:
-        virtual char_t charAt(uint_t index) const = 0;
-        virtual uint_t length() const = 0;
-        virtual str_t  subSequence(uint_t offset, uint_t len) const = 0;
-    };
-
-    template < typename _CharT, typename _Traits, typename _Alloc>
-    class __String__ : public CharSequence<_CharT, _Traits, _Alloc>,
-                              Comparable< __String__<_CharT, _Traits, _Alloc> >
-    {
-        typedef _Traits                     traits_type;
+        typedef _Traits traits_type;
         typedef _Alloc                      allocator;
         typedef Delete<_CharT[], _Traits>   deleter;
 
@@ -38,6 +23,28 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_t       const_t;
         typedef typename traits_type::const_ref_t   const_ref_t;
         typedef typename traits_type::const_ptr_t   const_str_t;
+    public:
+        virtual char_t charAt(uint_t index) const = 0;
+        virtual uint_t length() const = 0;
+        virtual str_t  subSequence(uint_t offset, uint_t len) const = 0;
+    };
+
+    template < typename _CharT, typename _Traits, typename _Alloc>
+    class __String__ : public CharSequence<_CharT, _Traits, _Alloc>,
+                              Comparable< __String__<_CharT, _Traits, _Alloc> >
+    {
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::traits_type traits_type;
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::allocator   allocator;
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::deleter     deleter;
+
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::char_t   char_t;
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::ref_t     ref_t;
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::ptr_t     str_t;
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::rvalue_t  rvalue_t;
+
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::const_t       const_t;
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::const_ref_t   const_ref_t;
+        typedef typename CharSequence<_CharT, _Traits, _Alloc>::const_ptr_t   const_str_t;
 
         typedef __String__<_CharT, _Traits> string_t;
     protected:
@@ -100,6 +107,7 @@ namespace UCA_L2INFO_PW4
         SortedSet<uint_t> findAll(const string_t& str) const;
 
         Iterator<char_t, traits_type> iterator() override;
+        ConstIterator<char_t, traits_type> const_iterator() const override;
 
         uint_t length() const override;
 
@@ -580,6 +588,14 @@ namespace UCA_L2INFO_PW4
     __String__<_CharT, _Traits, _Alloc>::iterator()
     {
         return Iterator<char_t, traits_type>(_F_charseq, _F_charseq+_F_length);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    ConstIterator<typename __String__<_CharT, _Traits, _Alloc>::char_t,
+            typename __String__<_CharT, _Traits, _Alloc>::traits_type>
+    __String__<_CharT, _Traits, _Alloc>::const_iterator() const
+    {
+        return ConstIterator<char_t, traits_type>(_F_charseq, _F_charseq+_F_length);
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>

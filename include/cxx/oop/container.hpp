@@ -15,16 +15,26 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::ref_t     ref_t;
         typedef typename traits_type::ptr_t     ptr_t;
         typedef typename traits_type::rvalue_t  rvalue_t;
-
-        typedef typename traits_type::const_t       const_t;
-        typedef typename traits_type::const_ref_t   const_ref_t;
-        typedef typename traits_type::const_ptr_t   const_ptr_t;
-
     public:
         ptr_t _F_begin, _F_end;
 
         Iterator(ptr_t begin, ptr_t end);
         virtual ~Iterator() = delete;
+    };
+
+    template < typename T, typename _Traits = Traits<T> >
+    struct ConstIterator
+    {
+        typedef _Traits traits_type;
+    protected:
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+    public:
+        const_ptr_t _F_begin, _F_end;
+
+        ConstIterator(const_ptr_t begin, const_ptr_t end);
+        virtual ~ConstIterator() = delete;
     };
 
     template < typename T, typename _Traits = Traits<T> >
@@ -35,6 +45,7 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_ptr_t   const_ptr_t;
 
         virtual Iterator<T, traits_type> iterator() = 0;
+        virtual ConstIterator<T, traits_type> const_iterator() const = 0;
 
         ptr_t begin();
         ptr_t end();
@@ -53,7 +64,9 @@ namespace UCA_L2INFO_PW4
     class Collection : public Iterable< E, Traits<E> >
     {
     protected:
-        typedef Traits<E> traits_type;
+        typedef Traits<E>                traits_type;
+        typedef Alloc<E[], traits_type>  allocator;
+        typedef Delete<E[], traits_type> deleter;
 
         typedef typename traits_type::value_t   value_t;
         typedef typename traits_type::ref_t     ref_t;
@@ -95,6 +108,8 @@ namespace UCA_L2INFO_PW4
     {
     protected:
         typedef typename Collection<E>::traits_type traits_type;
+        typedef typename Collection<E>::allocator allocator;
+        typedef typename Collection<E>::deleter   deleter;
 
         typedef typename Collection<E>::value_t   value_t;
         typedef typename Collection<E>::ref_t     ref_t;
@@ -108,8 +123,10 @@ namespace UCA_L2INFO_PW4
         List() = default;
         virtual ~List() = 0;
 
-        virtual ptr_t set(value_t elem, uint_t index) = 0;
+        virtual UniquePointer<E> set(value_t elem, uint_t index) = 0;
         virtual ref_t get(uint_t index) = 0;
+
+        virtual int indexOf(const_ref_t elem) const = 0;
 
         virtual ref_t operator[](uint_t index) { return get(index); }
     };
@@ -119,6 +136,8 @@ namespace UCA_L2INFO_PW4
     {
     protected:
         typedef typename List<E>::traits_type traits_type;
+        typedef typename List<E>::allocator allocator;
+        typedef typename List<E>::deleter   deleter;
 
         typedef typename List<E>::value_t   value_t;
         typedef typename List<E>::ref_t     ref_t;
@@ -130,10 +149,12 @@ namespace UCA_L2INFO_PW4
         typedef typename List<E>::const_ptr_t   const_ptr_t;
 
         ptr_t  _F_array;
-        uint_t _F_size;
+        size_t _F_size;
 
-        AbstractList();
-        AbstractList(ptr_t array, uint_t size = 0);
+        AbstractList(uint_t initCapacity = 0);
+        AbstractList(ptr_t array, size_t size = 0);
+
+        virtual bool grow(size_t currentCapacity, size_t addCapacity = 1u);
     public:
         AbstractList(const AbstractList<E>& obj);
         virtual ~AbstractList() override;
@@ -145,15 +166,20 @@ namespace UCA_L2INFO_PW4
 
         virtual ref_t get(uint_t index) override;
 
+        virtual int indexOf(const_ref_t elem) const override;
+
         virtual bool isEmpty() const override;
 
         virtual bool retainAll(const Collection<E>& c) override;
 
-        virtual ptr_t set(value_t elem, uint_t index) override;
+        virtual UniquePointer<E> set(value_t elem, uint_t index) override;
 
         virtual size_t size() const override;
 
         virtual UniquePointer<E[]> toArray() const override;
+
+        virtual Iterator<E, traits_type> iterator();
+        virtual ConstIterator<E, traits_type> const_iterator() const;
     };
 
     template<typename E>
@@ -161,6 +187,8 @@ namespace UCA_L2INFO_PW4
     {
     protected:
         typedef typename AbstractList<E>::traits_type traits_type;
+        typedef typename AbstractList<E>::allocator   allocator;
+        typedef typename AbstractList<E>::deleter     deleter;
 
         typedef typename AbstractList<E>::value_t   value_t;
         typedef typename AbstractList<E>::ref_t     ref_t;
@@ -173,7 +201,6 @@ namespace UCA_L2INFO_PW4
     public:
         ArrayList();
         ArrayList(const ArrayList<E>& obj);
-        virtual ~ArrayList() override;
 
         virtual bool add(value_t elem) override;
         virtual bool addAll(const Collection<E>& c) override;
@@ -188,6 +215,7 @@ namespace UCA_L2INFO_PW4
     {
     protected:
         typedef typename AbstractList<E>::traits_type traits_type;
+        typedef typename AbstractList<E>::allocator   allocator;
 
         typedef typename AbstractList<E>::value_t   value_t;
         typedef typename AbstractList<E>::ref_t     ref_t;
@@ -246,6 +274,7 @@ namespace UCA_L2INFO_PW4
         virtual bool doNeedUpdate() const final {return _F_needUpdate;}
     public:
         virtual Iterator<E> iterator() override;
+        virtual ConstIterator<E> const_iterator() const override;
     };
 
     template<typename E>
@@ -501,25 +530,25 @@ namespace UCA_L2INFO_PW4
     class HashMap : public Map<K, V>
     {
     protected:
-        typedef typename Map<K, V>::key_traits key_traits;
-        typedef typename key_traits::value_t   key_t;
-        typedef typename key_traits::ref_t     key_ref_t;
-        typedef typename key_traits::ptr_t     key_ptr_t;
-        typedef typename key_traits::rvalue_t  key_rvalue_t;
+        typedef typename Map<K, V>::key_traits    key_traits;
+        typedef typename Map<K, V>::value_t       key_t;
+        typedef typename Map<K, V>::ref_t         key_ref_t;
+        typedef typename Map<K, V>::ptr_t         key_ptr_t;
+        typedef typename Map<K, V>::rvalue_t      key_rvalue_t;
 
-        typedef typename key_traits::const_t       key_const_t;
-        typedef typename key_traits::const_ref_t   key_const_ref_t;
-        typedef typename key_traits::const_ptr_t   key_const_ptr_t;
+        typedef typename Map<K, V>::const_t       key_const_t;
+        typedef typename Map<K, V>::const_ref_t   key_const_ref_t;
+        typedef typename Map<K, V>::const_ptr_t   key_const_ptr_t;
 
-        typedef typename Map<K, V>::value_traits value_traits;
-        typedef typename value_traits::value_t   value_t;
-        typedef typename value_traits::ref_t     value_ref_t;
-        typedef typename value_traits::ptr_t     value_ptr_t;
-        typedef typename value_traits::rvalue_t  value_rvalue_t;
+        typedef typename Map<K, V>::value_traits  value_traits;
+        typedef typename Map<K, V>::value_t       value_t;
+        typedef typename Map<K, V>::ref_t         value_ref_t;
+        typedef typename Map<K, V>::ptr_t         value_ptr_t;
+        typedef typename Map<K, V>::rvalue_t      value_rvalue_t;
 
-        typedef typename value_traits::const_t       value_const_t;
-        typedef typename value_traits::const_ref_t   value_const_ref_t;
-        typedef typename value_traits::const_ptr_t   value_const_ptr_t;
+        typedef typename Map<K, V>::const_t       value_const_t;
+        typedef typename Map<K, V>::const_ref_t   value_const_ref_t;
+        typedef typename Map<K, V>::const_ptr_t   value_const_ptr_t;
 
         struct HashNode : public Object
         {
@@ -569,6 +598,13 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename T, typename _Traits >
+    ConstIterator<T, _Traits>::ConstIterator(const_ptr_t begin, const_ptr_t end)
+    {
+        _F_begin = begin;
+        _F_end = end;
+    }
+
+    template < typename T, typename _Traits >
     typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::begin()
     {
         return iterator()._F_begin;
@@ -583,13 +619,13 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Traits >
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::cbegin() const
     {
-        return iterator()._F_begin;
+        return const_iterator()._F_begin;
     }
 
     template < typename T, typename _Traits >
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::cend() const
     {
-        return iterator()._F_end;
+        return const_iterator()._F_end;
     }
 
     template < typename T, typename _Traits >
@@ -607,13 +643,13 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Traits >
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crbegin() const
     {
-        return iterator()._F_end-1;
+        return const_iterator()._F_end-1;
     }
 
     template < typename T, typename _Traits >
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crend() const
     {
-        return iterator()._F_begin-1;
+        return const_iterator()._F_begin-1;
     }
 
     template < typename E >
@@ -624,13 +660,314 @@ namespace UCA_L2INFO_PW4
             _F_toArray = this->toArray();
         }
 
-        return Iterable<E>(_F_toArray.pointer(), _F_toArray.pointer()+this->size());
+        return Iterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
+    }
+
+    template < typename E >
+    ConstIterator<E> Set<E>::const_iterator() const
+    {
+        if (needUpdate())
+        {
+            _F_toArray = this->toArray();
+        }
+
+        return ConstIterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
+    }
+
+    template < typename E >
+    AbstractList<E>::AbstractList(uint_t initCapacity):
+        _F_array(initCapacity ? allocator::alloc(initCapacity) : nullptr),
+        _F_size(0u)
+    {
+        /* ... */
+    }
+
+    template < typename E >
+    AbstractList<E>::AbstractList(ptr_t array, size_t size):
+        _F_array(array), _F_size(size)
+    {
+        /* ... */
+    }
+
+    template < typename E >
+    bool AbstractList<E>::grow(size_t currentCapacity, size_t addCapacity)
+    {
+        ptr_t newArray(allocator::alloc(currentCapacity+addCapacity));
+        if (newArray)
+        {
+            return _F_size == traits_type::fill(_F_array, newArray, _F_size);
+        }
+        else return false;
+    }
+
+    template < typename E >
+    AbstractList<E>::AbstractList(const AbstractList<E> &obj):
+        AbstractList<E>(traits_type::copy(obj._F_array, obj._F_size), obj._F_size)
+    {
+        /* ... */
+    }
+
+    template < typename E >
+    AbstractList<E>::~AbstractList()
+    {
+        AbstractList<E>::clear();
+    }
+
+    template < typename E >
+    void AbstractList<E>::clear()
+    {
+        if (_F_array)
+        {
+            delete[] _F_array;
+        }
+
+        _F_size = 0u;
+    }
+
+    template < typename E >
+    bool AbstractList<E>::contains(value_t elem)
+    {
+        for (value_t e : (*this))
+        {
+            if (e == elem)
+                return true;
+        }
+
+        return false;
+    }
+
+    template < typename E >
+    bool AbstractList<E>::containsAll(const Collection<E> &c)
+    {
+        for (value_t elem : c)
+        {
+            if (contains(elem) == false)
+                return false;
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    typename AbstractList<E>::ref_t AbstractList<E>::get(uint_t index)
+    {
+        return _F_array[index];
+    }
+
+    template < typename E >
+    int AbstractList<E>::indexOf(const_ref_t elem) const
+    {
+        for (int i = 0; (uint_t) i < _F_size; i++)
+        {
+            if (_F_array[i] == elem)
+                return i;
+        }
+        return -1;
+    }
+
+    template < typename E >
+    bool AbstractList<E>::isEmpty() const
+    {
+        return _F_size > 0;
+    }
+
+    template < typename E >
+    bool AbstractList<E>::retainAll(const Collection<E> &c)
+    {
+        ptr_t newArray = allocator::alloc(c.size()), __p = newArray;
+        if (newArray)
+        {
+            for (const_t elem : c)
+            {
+                int _indexOf(indexOf(elem));
+                if (_indexOf >= 0)
+                {
+                    (*__p) = _F_array[_indexOf];
+                    __p++;
+                }
+            }
+
+            this->clear();
+
+            _F_array = newArray;
+            _F_size  = (__p - newArray)/sizeof(value_t);
+        }
+        else return false;
+    }
+
+    template < typename E >
+    UniquePointer<E> AbstractList<E>::set(value_t elem, uint_t index)
+    {
+        if (index >= _F_size)
+            return UniquePointer<E>(nullptr);
+        else
+        {
+            ptr_t p = allocator::alloc();
+            if (p) (*p) = _F_array[index];
+
+            _F_array[index] = elem;
+            return p;
+        }
+    }
+
+    template < typename E >
+    size_t AbstractList<E>::size() const
+    {
+        return _F_size;
     }
 
     template < typename E >
     UniquePointer<E[]> AbstractList<E>::toArray() const
     {
         return UniquePointer<E[]>(traits_type::copy(_F_array, _F_size));
+    }
+
+    template < typename E >
+    Iterator<E, typename AbstractList<E>::traits_type> AbstractList<E>::iterator()
+    {
+        return Iterator<E, traits_type>(_F_array, (&_F_array[_F_size]) - 1);
+    }
+
+    template < typename E >
+    ConstIterator<E, typename AbstractList<E>::traits_type> AbstractList<E>::const_iterator() const
+    {
+        return ConstIterator<E, traits_type>(_F_array, (&_F_array[_F_size]) - 1);
+    }
+
+    template < typename E >
+    ArrayList<E>::ArrayList(): AbstractList<E>()
+    {
+        /* ... */
+    }
+
+    template < typename E >
+    ArrayList<E>::ArrayList(const ArrayList<E> &obj): AbstractList<E>(obj)
+    {
+        /* ... */
+    }
+
+    template < typename E >
+    bool ArrayList<E>::add(value_t elem)
+    {
+        if (AbstractList<E>::grow(this->_F_size))
+        {
+            this->_F_array[this->_F_size] = elem;
+            this->_F_size++;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    template < typename E >
+    bool ArrayList<E>::addAll(const Collection<E> &c)
+    {
+        if (AbstractList<E>::grow(this->_F_size, c.size()))
+        {
+            UniquePointer<E[]> collection = c.toArray();
+            for (size_t i = 0; i < c.size(); i++)
+            {
+                this->_F_array[i+this->_F_size] = collection[i];
+            }
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    template < typename E >
+    bool ArrayList<E>::remove(value_t elem)
+    {
+        int index(-1);
+        for (size_t i = 0; i < this->_F_size; i++)
+        {
+            if (this->_F_array[i] == elem)
+            {
+                index = (int) i;
+                break;
+            }
+        }
+
+        if (index != -1)
+        {
+            if (this->_F_size > 1)
+            {
+                ptr_t newArray = allocator::alloc(this->_F_size-1);
+                if (newArray)
+                {
+                    for (size_t i(0), j(0); i < this->_F_size; i++)
+                    {
+                        if (i != (size_t) index)
+                        {
+                            newArray[j] = this->_F_array[i];
+                            j++;
+                        }
+                    }
+
+                    deleter::free(this->_F_array);
+                    this->_F_size--;
+                }
+                else return false;
+            }
+            else
+            {
+                this->clear();
+            }
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool ArrayList<E>::removeAll(const Collection<E> &c)
+    {
+        int* elemIndexes(new int[c.size()]);
+        uint_t f(0);
+
+        for (value_t elem : c)
+        {
+            int index(this->indexOf(c));
+            if (index != -1)
+            {
+                elemIndexes[f] = index;
+                f++;
+            }
+        }
+
+        if (f > 0 && this->_F_size - f > 0)
+        {
+            ptr_t newArray = allocator::alloc(this->_F_size - f);
+            if (newArray)
+            {
+                for (size_t i(0), j(0); i < this->_F_size; i++)
+                {
+                    if (elemIndexes[f] != -1 && (size_t) elemIndexes[f] == i)
+                    {
+                        elemIndexes++;
+                    }
+                    else
+                    {
+                        newArray[j] = this->_F_array[i];
+                        j++;
+                    }
+                }
+
+                deleter::free(this->_F_array);
+                this->_F_array = newArray;
+                this->_F_size -= f;
+            }
+            else return false;
+        }
+        else if (this->_F_size - f == 0)
+        {
+            this->clear();
+        }
+
+        return true;
     }
 }
 
