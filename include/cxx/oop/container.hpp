@@ -9,13 +9,14 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Traits = Traits<T> >
     struct Iterator
     {
+    public:
         typedef _Traits traits_type;
-    protected:
+
         typedef typename traits_type::value_t   value_t;
         typedef typename traits_type::ref_t     ref_t;
         typedef typename traits_type::ptr_t     ptr_t;
         typedef typename traits_type::rvalue_t  rvalue_t;
-    public:
+
         ptr_t _F_begin, _F_end;
 
         Iterator(ptr_t begin, ptr_t end);
@@ -25,12 +26,13 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Traits = Traits<T> >
     struct ConstIterator
     {
+    public:
         typedef _Traits traits_type;
-    protected:
+
         typedef typename traits_type::const_t       const_t;
         typedef typename traits_type::const_ref_t   const_ref_t;
         typedef typename traits_type::const_ptr_t   const_ptr_t;
-    public:
+
         const_ptr_t _F_begin, _F_end;
 
         ConstIterator(const_ptr_t begin, const_ptr_t end);
@@ -63,7 +65,7 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class Collection : public Iterable< E, Traits<E> >
     {
-    protected:
+    public:
         typedef Traits<E>                traits_type;
         typedef Alloc<E[], traits_type>  allocator;
         typedef Delete<E[], traits_type> deleter;
@@ -76,7 +78,7 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_t       const_t;
         typedef typename traits_type::const_ref_t   const_ref_t;
         typedef typename traits_type::const_ptr_t   const_ptr_t;
-    public:
+
         virtual bool add(value_t elem) = 0;
         virtual bool addAll(const Collection<E>& c) = 0;
 
@@ -89,7 +91,7 @@ namespace UCA_L2INFO_PW4
 
         virtual bool remove(value_t elem) = 0;
         virtual bool removeAll(const Collection<E>& c) = 0;
-        virtual bool removeIf(const Predicate<E>& filter) = 0;
+        virtual bool removeIf(Predicate<const_ref_t>& filter) = 0;
 
         virtual bool retainAll(const Collection<E>& c) = 0;
 
@@ -106,7 +108,7 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class List /* interface */ : public Collection<E>
     {
-    protected:
+    public:
         typedef typename Collection<E>::traits_type traits_type;
         typedef typename Collection<E>::allocator allocator;
         typedef typename Collection<E>::deleter   deleter;
@@ -119,11 +121,11 @@ namespace UCA_L2INFO_PW4
         typedef typename Collection<E>::const_t       const_t;
         typedef typename Collection<E>::const_ref_t   const_ref_t;
         typedef typename Collection<E>::const_ptr_t   const_ptr_t;
-    public:
+
         List() = default;
         virtual ~List() = 0;
 
-        virtual bool remove(uint_t index);
+        virtual bool remove(uint_t index) = 0;
         virtual UniquePointer<E> set(value_t elem, uint_t index) = 0;
         virtual ref_t get(uint_t index) = 0;
 
@@ -135,10 +137,10 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class AbstractList : public List<E>
     {
-    protected:
+    public:
         typedef typename List<E>::traits_type traits_type;
-        typedef typename List<E>::allocator allocator;
-        typedef typename List<E>::deleter   deleter;
+        typedef typename List<E>::allocator   allocator;
+        typedef typename List<E>::deleter     deleter;
 
         typedef typename List<E>::value_t   value_t;
         typedef typename List<E>::ref_t     ref_t;
@@ -149,6 +151,7 @@ namespace UCA_L2INFO_PW4
         typedef typename List<E>::const_ref_t   const_ref_t;
         typedef typename List<E>::const_ptr_t   const_ptr_t;
 
+    protected:
         ptr_t  _F_array;
         size_t _F_size;
 
@@ -186,7 +189,7 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class ArrayList : public List<E>
     {
-    protected:
+    public:
         typedef typename AbstractList<E>::traits_type traits_type;
         typedef typename AbstractList<E>::allocator   allocator;
         typedef typename AbstractList<E>::deleter     deleter;
@@ -199,7 +202,7 @@ namespace UCA_L2INFO_PW4
         typedef typename AbstractList<E>::const_t       const_t;
         typedef typename AbstractList<E>::const_ref_t   const_ref_t;
         typedef typename AbstractList<E>::const_ptr_t   const_ptr_t;
-    public:
+
         ArrayList();
         ArrayList(const ArrayList<E>& obj);
 
@@ -209,13 +212,13 @@ namespace UCA_L2INFO_PW4
         virtual bool remove(value_t elem) override;
         virtual bool remove(uint_t index) override;
         virtual bool removeAll(const Collection<E>& c);
-        virtual bool removeIf(const Predicate<E>& filter);
+        virtual bool removeIf(Predicate<const_ref_t>& filter);
     };
 
     template < typename E >
     class Vector : public AbstractList<E>
     {
-    protected:
+    public:
         typedef typename AbstractList<E>::traits_type traits_type;
         typedef typename AbstractList<E>::allocator   allocator;
         typedef typename AbstractList<E>::deleter     deleter;
@@ -229,6 +232,7 @@ namespace UCA_L2INFO_PW4
         typedef typename AbstractList<E>::const_ref_t   const_ref_t;
         typedef typename AbstractList<E>::const_ptr_t   const_ptr_t;
 
+    protected:
         uint_t _F_capacity;
         uint_t _F_capacityIncrement;
 
@@ -248,7 +252,7 @@ namespace UCA_L2INFO_PW4
         virtual bool remove(value_t elem) override;
         virtual bool remove(uint_t index) override;
         virtual bool removeAll(const Collection<E>& c) override;
-        virtual bool removeIf(const Predicate<E>& filter) override;
+        virtual bool removeIf(Predicate<const_ref_t>& filter) override;
 
         virtual void setCapacityIncrement(uint_t increment) final;
         virtual uint_t getCapacityIncrement() const final;
@@ -257,7 +261,7 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class Set : public Collection<E>
     {
-    protected:
+    public:
         typedef typename Collection<E>::traits_type traits_type;
 
         typedef typename Collection<E>::value_t   value_t;
@@ -269,6 +273,7 @@ namespace UCA_L2INFO_PW4
         typedef typename Collection<E>::const_ref_t   const_ref_t;
         typedef typename Collection<E>::const_ptr_t   const_ptr_t;
 
+    protected:
         bool _F_needUpdate;
         UniquePointer<E[]> _F_toArray;
 
@@ -286,7 +291,7 @@ namespace UCA_L2INFO_PW4
      */
     class SortedSet : public Set<E>
     {
-    protected:
+    public:
         typedef Traits<E> traits_type;
 
         typedef typename traits_type::value_t   value_t;
@@ -300,20 +305,29 @@ namespace UCA_L2INFO_PW4
 
         struct Node
         {
-            Node* parent, *left, *right;
+            Node *left, *right;
             E element;
-        };
-    public:
-        enum SortMethod : int
-        {
-            ASC = 0x1,
-            DESC = 0x2
+
+            Node(): left(nullptr), right(nullptr) {/*...*/}
+            virtual ~Node()
+            {
+                if (left) delete left;
+                if (right) delete right;
+            }
         };
     private:
         Node *_F_tree;
-        SortMethod _F_sortMethod = ASC;
+        uint_t _F_size;
+        SortMethod<const E&, const E&> _F_sortMethod;
+
+    protected:
+        void recursive_assign(Node* current, const Node * const node);
     public:
-        SortedSet(SortMethod sort = ASC);
+        SortedSet(SortMethod<const E&, const E&> sortMethod = [](const E& e1, const E& e2) -> int
+                {
+                    return Comparable<E>::CompareTo(e1, e2);
+                }
+        );
         SortedSet(const SortedSet<E> &cpy);
         virtual ~SortedSet() override;
 
@@ -329,7 +343,7 @@ namespace UCA_L2INFO_PW4
 
         virtual bool remove(value_t elem);
         virtual bool removeAll(const Collection<E>& c);
-        virtual bool removeIf(const Predicate<E>& filter);
+        virtual bool removeIf(Predicate<const_ref_t>& filter);
 
         virtual bool retainAll(const Collection<E>& c);
 
@@ -343,7 +357,7 @@ namespace UCA_L2INFO_PW4
     {
         template<typename K, typename V>
         friend class HashMap;
-    protected:
+    public:
         typedef Traits<E> traits_type;
 
         typedef typename traits_type::value_t   value_t;
@@ -355,10 +369,24 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_ref_t   const_ref_t;
         typedef typename traits_type::const_ptr_t   const_ptr_t;
 
+    private:
         struct Node
         {
-            Node* parent, *left, *right;
-            E element;
+            Node* next = nullptr;
+            value_t element;
+
+            Node() = default;
+            virtual ~Node() {
+                if (next) delete next;
+            }
+
+            virtual bool operator ==(const_ref_t elem) {
+                return hashCode() == traits_type::hash_code(elem);
+            }
+
+            virtual hash_t hashCode() {
+                return traits_type::hash_code(element);
+            }
         } *_F_set;
 
         uint_t _F_size;
@@ -387,7 +415,7 @@ namespace UCA_L2INFO_PW4
 
         virtual bool remove(value_t elem) override;
         virtual bool removeAll(const Collection<E>& c) override;
-        virtual bool removeIf(const Predicate<E>& filter) override;
+        virtual bool removeIf(Predicate<const_ref_t>& filter) override;
 
         virtual bool retainAll(const Collection<E>& c) override;
 
@@ -399,7 +427,7 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class ChainedList : public Collection<E>
     {
-    protected:
+    public:
         typedef typename Collection<E>::traits_type traits_type;
 
         typedef typename Collection<E>::value_t   value_t;
@@ -417,6 +445,7 @@ namespace UCA_L2INFO_PW4
             E elem;
         };
 
+    protected:
         Chain* _F_first;
         uint_t _F_size;
     public:
@@ -436,7 +465,7 @@ namespace UCA_L2INFO_PW4
 
         virtual bool remove(value_t elem) override;
         virtual bool removeAll(const Collection<E>& c) override;
-        virtual bool removeIf(const Predicate<E>& filter) override;
+        virtual bool removeIf(Predicate<const_ref_t>& filter) override;
 
         virtual bool retainAll(const Collection<E>& c) override;
 
@@ -448,7 +477,7 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class Queue : public ChainedList<E>
     {
-    protected:
+    public:
         typedef typename ChainedList<E>::traits_type traits_type;
 
         typedef typename ChainedList<E>::value_t   value_t;
@@ -459,7 +488,7 @@ namespace UCA_L2INFO_PW4
         typedef typename ChainedList<E>::const_t       const_t;
         typedef typename ChainedList<E>::const_ref_t   const_ref_t;
         typedef typename ChainedList<E>::const_ptr_t   const_ptr_t;
-
+    private:
         uint_t _F_limit;
     public:
         Queue(uint_t limit = 0);
@@ -484,7 +513,7 @@ namespace UCA_L2INFO_PW4
     template<typename K, typename V>
     class Map
     {
-    protected:
+    public:
         typedef Traits<K> key_traits;
         typedef typename key_traits::value_t   key_t;
         typedef typename key_traits::ref_t     key_ref_t;
@@ -505,7 +534,6 @@ namespace UCA_L2INFO_PW4
         typedef typename value_traits::const_ref_t   value_const_ref_t;
         typedef typename value_traits::const_ptr_t   value_const_ptr_t;
 
-    public:
         virtual Set<K>  keySet() const = 0;
         virtual List<V> values() const = 0;
         
@@ -532,7 +560,7 @@ namespace UCA_L2INFO_PW4
     template<typename K, typename V>
     class HashMap : public Map<K, V>
     {
-    protected:
+    public:
         typedef typename Map<K, V>::key_traits    key_traits;
         typedef typename Map<K, V>::value_t       key_t;
         typedef typename Map<K, V>::ref_t         key_ref_t;
@@ -564,6 +592,7 @@ namespace UCA_L2INFO_PW4
             }
         };
 
+    private:
         HashSet<HashNode> _F_nodes;
     public:
         HashMap();
@@ -653,28 +682,6 @@ namespace UCA_L2INFO_PW4
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crend() const
     {
         return const_iterator()._F_begin-1;
-    }
-
-    template < typename E >
-    Iterator<E> Set<E>::iterator()
-    {
-        if (needUpdate())
-        {
-            _F_toArray = this->toArray();
-        }
-
-        return Iterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
-    }
-
-    template < typename E >
-    ConstIterator<E> Set<E>::const_iterator() const
-    {
-        if (needUpdate())
-        {
-            _F_toArray = this->toArray();
-        }
-
-        return ConstIterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
     }
 
     template < typename E >
@@ -885,16 +892,35 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool ArrayList<E>::remove(value_t elem)
     {
-        Predicate<E> *predicate = new Predicate<E> {
-
-            bool test(const T& e) {
-
-            }
+        Predicate<const_ref_t> predicate = [elem](const_ref_t e) -> bool {
+            return elem == e;
         };
 
-        bool status = removeIf(*predicate);
-        delete predicate;
-        return status;
+        return removeIf(predicate);
+    }
+
+    template < typename E >
+    bool ArrayList<E>::remove(uint_t index)
+    {
+        if (index < this->_F_size)
+        {
+            ptr_t newArray = allocator::alloc(this->_F_size - 1);
+            if (newArray)
+            {
+                for (uint_t i(0), j(0); i < this->_F_size; i++)
+                {
+                    if (i != index)
+                    {
+                        newArray[j] = this->_F_array[i];
+                        j++;
+                    }
+                }
+
+                this->_F_size--;
+            }
+            else return false;
+        }
+        return true;
     }
 
     template < typename E >
@@ -946,14 +972,14 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool ArrayList<E>::removeIf(const Predicate<E> &filter)
+    bool ArrayList<E>::removeIf(Predicate<const_ref_t> &filter)
     {
         UniquePointer<size_t[]> elemIndexes(new size_t[this->size()]);
         uint_t f(0);
 
         for (size_t i(0); i < this->_F_size; i++)
         {
-            if (filter.test(this->_F_array[i]))
+            if (filter(this->_F_array[i]))
             {
                 elemIndexes[f] = i;
                 f++;
@@ -1130,8 +1156,278 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool Vector<E>::remove(uint_t index)
     {
+        if (index < this->_F_size)
+        {
+            for (uint_t i(0), j(0); i < this->_F_size; i++)
+            {
+                if (i != index)
+                {
+                    if (i != j) this->_F_size[j] = this->_F_size[i];
+                    j++;
+                }
+            }
+
+            this->_F_size--;
+        }
+        return true;
+    }
+
+    template < typename E >
+    bool Vector<E>::removeAll(const Collection<E> &c)
+    {
+        bool status(true);
+
+        for (auto e : c)
+        {
+            status = status && this->remove(e);
+        }
+
+        return status;
+    }
+
+    template < typename E >
+    bool Vector<E>::removeIf(Predicate<const_ref_t> &filter)
+    {
+        UniquePointer<size_t[]> elemIndexes(new size_t[this->size()]);
+        uint_t f(0);
+
+        for (size_t i(0); i < this->_F_size; i++)
+        {
+            if (filter(this->_F_array[i]))
+            {
+                elemIndexes[f] = i;
+                f++;
+            }
+        }
+
+        if (f > 0 && this->_F_size - f > 0)
+        {
+            for (size_t i(0), j(0), k(0); i < this->_F_size; i++)
+            {
+                if (k < f && elemIndexes[k] == i)
+                {
+                    k++;
+                }
+                else
+                {
+                    this->_F_array[j] = this->_F_array[i];
+                    j++;
+                }
+            }
+
+            this->_F_size -= f;
+        }
+        else if (this->_F_size - f == 0)
+        {
+            this->clear();
+        }
 
         return true;
+    }
+
+    template < typename E >
+    void Vector<E>::setCapacityIncrement(uint_t increment)
+    {
+        increment = increment == 0 ? 1 : increment;
+        _F_capacityIncrement = increment;
+    }
+
+    template < typename E >
+    uint_t Vector<E>::getCapacityIncrement() const
+    {
+        return _F_capacityIncrement;
+    }
+
+    template < typename E >
+    Iterator<E> Set<E>::iterator()
+    {
+        if (needUpdate())
+        {
+            _F_toArray = this->toArray();
+        }
+
+        return Iterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
+    }
+
+    template < typename E >
+    ConstIterator<E> Set<E>::const_iterator() const
+    {
+        if (needUpdate())
+        {
+            _F_toArray = this->toArray();
+        }
+
+        return ConstIterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
+    }
+
+    template < typename E >
+    void SortedSet<E>::recursive_assign(Node *current, const Node  * const node)
+    {
+        if (node->left)
+        {
+            current->left    = new Node();
+            current->element = node->element;
+            recursive_assign(current->left, node->left);
+        }
+
+        if (node->right)
+        {
+            current->right   = new Node();
+            current->element = node->element;
+            recursive_assign(current->right, node->right);
+        }
+    }
+
+    template < typename E >
+    SortedSet<E>::SortedSet(SortMethod<const E&, const E&> sortMethod):
+        _F_tree(new Node()),
+        _F_size(0u),
+        _F_sortMethod(sortMethod)
+    {
+        /* ... */
+    }
+
+    template < typename E >
+    SortedSet<E>::SortedSet(const SortedSet<E> &cpy):
+        _F_tree(new Node()),
+        _F_size(cpy.size()),
+        _F_sortMethod(cpy._F_sortMethod)
+    {
+        void (*browse)(Node*, const Node* const) = [&] (Node* dest, const Node* const src)
+        {
+            if (src->left)
+            {
+                dest->left    = new Node();
+                dest->element = src->element;
+                browse(dest->left, src->left);
+            }
+
+            if (src->right)
+            {
+                dest->right   = new Node();
+                dest->element = src->element;
+                browse(dest->right, src->right);
+            }
+        };
+        
+        _F_tree->element = cpy._F_tree->element;
+        browse(_F_tree, cpy._F_tree);
+    }
+
+    template < typename E >
+    SortedSet<E>::~SortedSet<E>()
+    {
+        delete _F_tree;
+    }
+
+    template < typename E >
+    bool SortedSet<E>::add(value_t elem)
+    {
+        Node* (*browse)(Node*) = [&, this](Node* node)
+        {
+            int sort(this->_F_sortMethod(elem, node->element));
+            if (sort < 0)
+            {
+                if (node->left)
+                {
+                    return browse(node->left);
+                }
+                else
+                {
+                    node->left = new Node();
+                    return node->left;
+                }
+            }
+            else if (sort > 0)
+            {
+                if (node->right)
+                {
+                    return browse(node->right);
+                }
+                else
+                {
+                    node->right = new Node();
+                    return node->right;
+                }
+            }
+            else return nullptr;
+        };
+
+        Node* emplacement = (this->_F_size == 0 ? _F_tree : browse(_F_tree));
+        if (emplacement)
+        {
+            emplacement->element = elem;
+            this->_F_size++;
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool SortedSet<E>::addAll(const Collection<E> &c)
+    {
+        for (auto e : c)
+        {
+            add(e);
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    void SortedSet<E>::clear()
+    {
+        delete _F_tree;
+
+        _F_tree = new Node();
+    }
+
+    template < typename E >
+    bool SortedSet<E>::contains(value_t elem)
+    {
+        bool (*browse)(const Node* const) = [&,this] (const Node* const node)
+        {
+            if (!node) return false;
+
+            int comparison(this->_F_sortMethod(elem, node->element));
+            switch (comparison)
+            {
+                case -1:
+                    return browse(node->left);
+                case 0:
+                    return true;
+                case 1:
+                    return browse(node->right);
+                default:
+                    return false;
+            }
+        };
+        
+        return browse(_F_tree);
+    }
+
+    template < typename E >
+    bool SortedSet<E>::containsAll(const Collection<E> &c)
+    {
+        for (auto e : c)
+        {
+            if (!contains(e))
+                return false;
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool SortedSet<E>::isEmpty() const
+    {
+        return this->_F_size == 0;
+    }
+
+    template < typename E >
+    bool SortedSet<E>::remove(value_t elem)
+    {
+
     }
 }
 

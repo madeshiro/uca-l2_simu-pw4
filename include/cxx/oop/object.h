@@ -1,6 +1,7 @@
 #ifndef CPP_OBJECT_H
 #define CPP_OBJECT_H
 #include "defines.h"
+#include <utility>
 
 namespace UCA_L2INFO_PW4
 {
@@ -64,11 +65,65 @@ namespace UCA_L2INFO_PW4
         else return obj1 < obj2 ? -1 : 1;
     }
 
-    template < typename T >
-    struct Predicate
+    template < class F >
+    class Function;
+
+    template <class R, class... Args>
+    class Function<R(Args...)>
     {
-        bool test(const T&) const = 0;
+    protected:
+        typedef R(*function_t)(Args...);
+        function_t _F_function;
+    public:
+        Function(): _F_function(nullptr) {/*...*/}
+        Function(std::nullptr_t): _F_function(nullptr) {/* ... */}
+        Function(function_t function): _F_function(function) {/* ... */}
+        Function(const Function<R(Args...)>& function): _F_function(function._F_function) {/*...*/}
+
+        template < class F >
+        Function(F&& f): _F_function(std::forward<F>(f)) {/* ... */}
+
+        virtual ~Function() = default;
+
+        void swap(Function<R(Args...)> & f)
+        {
+            function_t tmp = f._F_function;
+            f._F_function = this->_F_function;
+            this->_F_function = tmp;
+        }
+
+        R operator()(Args... args)
+        {
+            return _F_function(args...);
+        }
+
+        operator bool() { return _F_function != nullptr; }
+
+        Function<R(Args...)> & operator =(const Function<R(Args...)>& function)
+        {
+            _F_function=function._F_function;
+            return *this;
+        }
+
+        template < class F >
+        Function<R(Args...)> & operator =(F &&predicate)
+        {
+            Predicate(std::forward<F>(predicate)).swap(*this);
+            return *this;
+        }
+
+        Function<R(Args...)> & operator =(function_t&& function)
+        {
+            _F_function=function;
+            return *this;
+        }
     };
+
+    template <class... Args>
+    using Predicate = Function<bool(Args...)>;
+
+    template <class... Args>
+    using SortMethod = Function<int(Args...)>;
 }
 
 #endif // CPP_OBJECT_H
