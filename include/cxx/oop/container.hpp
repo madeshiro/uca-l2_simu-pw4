@@ -123,6 +123,7 @@ namespace UCA_L2INFO_PW4
         List() = default;
         virtual ~List() = 0;
 
+        virtual bool remove(uint_t index);
         virtual UniquePointer<E> set(value_t elem, uint_t index) = 0;
         virtual ref_t get(uint_t index) = 0;
 
@@ -205,7 +206,8 @@ namespace UCA_L2INFO_PW4
         virtual bool add(value_t elem) override;
         virtual bool addAll(const Collection<E>& c) override;
 
-        virtual bool remove(value_t elem);
+        virtual bool remove(value_t elem) override;
+        virtual bool remove(uint_t index) override;
         virtual bool removeAll(const Collection<E>& c);
         virtual bool removeIf(const Predicate<E>& filter);
     };
@@ -216,6 +218,7 @@ namespace UCA_L2INFO_PW4
     protected:
         typedef typename AbstractList<E>::traits_type traits_type;
         typedef typename AbstractList<E>::allocator   allocator;
+        typedef typename AbstractList<E>::deleter     deleter;
 
         typedef typename AbstractList<E>::value_t   value_t;
         typedef typename AbstractList<E>::ref_t     ref_t;
@@ -233,7 +236,6 @@ namespace UCA_L2INFO_PW4
     public:
         Vector(uint_t capacityIncrement = 32);
         Vector(const Vector<E>& obj);
-        virtual ~Vector() override;
 
         virtual bool add(value_t elem) override;
         virtual bool addAll(const Collection<E>& c) override;
@@ -244,6 +246,7 @@ namespace UCA_L2INFO_PW4
         virtual void clearUnused();
 
         virtual bool remove(value_t elem) override;
+        virtual bool remove(uint_t index) override;
         virtual bool removeAll(const Collection<E>& c) override;
         virtual bool removeIf(const Predicate<E>& filter) override;
 
@@ -882,44 +885,16 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool ArrayList<E>::remove(value_t elem)
     {
-        int index(-1);
-        for (size_t i = 0; i < this->_F_size; i++)
-        {
-            if (this->_F_array[i] == elem)
-            {
-                index = (int) i;
-                break;
-            }
-        }
+        Predicate<E> *predicate = new Predicate<E> {
 
-        if (index != -1)
-        {
-            if (this->_F_size > 1)
-            {
-                ptr_t newArray = allocator::alloc(this->_F_size-1);
-                if (newArray)
-                {
-                    for (size_t i(0), j(0); i < this->_F_size; i++)
-                    {
-                        if (i != (size_t) index)
-                        {
-                            newArray[j] = this->_F_array[i];
-                            j++;
-                        }
-                    }
+            bool test(const T& e) {
 
-                    deleter::free(this->_F_array);
-                    this->_F_size--;
-                }
-                else return false;
             }
-            else
-            {
-                this->clear();
-            }
-        }
+        };
 
-        return true;
+        bool status = removeIf(*predicate);
+        delete predicate;
+        return status;
     }
 
     template < typename E >
@@ -1013,6 +988,148 @@ namespace UCA_L2INFO_PW4
         {
             this->clear();
         }
+
+        return true;
+    }
+
+    template < typename E >
+    bool Vector<E>::growVector()
+    {
+        ptr_t newVector = allocator::alloc(_F_capacity+_F_capacityIncrement);
+        if (newVector)
+        {
+            traits_type::fill(this->_F_array, newVector, this->_F_size);
+            deleter::free(this->_F_array);
+
+            _F_capacity += _F_capacityIncrement;
+            this->_F_array = newVector;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    template < typename E >
+    Vector<E>::Vector(uint_t capacityIncrement): AbstractList<E>(capacityIncrement),
+        _F_capacityIncrement(capacityIncrement == 0 ? 1 : capacityIncrement)
+    { /* ... */ }
+
+    template < typename E >
+    Vector<E>::Vector(const Vector<E> &obj): AbstractList<E>()
+    {
+        ptr_t newVector = allocator::alloc(obj.capacity());
+        if (newVector)
+        {
+            traits_type::fill(obj._F_array, newVector, obj.size());
+            this->_F_array = newVector;
+            this->_F_size  = obj.size();
+            _F_capacity    = obj._F_capacity;
+            _F_capacityIncrement = obj._F_capacityIncrement;
+        }
+    }
+
+    template < typename E >
+    bool Vector<E>::add(value_t elem)
+    {
+        if (_F_capacity <= this->_F_size)
+        {
+            if (!growVector())
+            {
+                return false;
+            }
+        }
+
+        this->_F_array[this->_F_size] = elem;
+        this->_F_size++;
+        return true;
+    }
+
+    template < typename E >
+    bool Vector<E>::addAll(const Collection<E> &c)
+    {
+        while (this->_F_size + c.size() >= _F_capacity)
+        {
+            if(!growVector())
+            {
+                return false;
+            }
+        }
+
+        for (const_t elem : c)
+        {
+            this->_F_array[this->_F_size] = elem;
+            this->_F_size++;
+        }
+        return true;
+    }
+
+    template < typename E >
+    uint_t Vector<E>::capacity() const
+    {
+        return _F_capacity;
+    }
+
+    template < typename E >
+    void Vector<E>::clear()
+    {
+        AbstractList<E>::clear();
+        _F_capacity = 0;
+    }
+
+    template < typename E >
+    void Vector<E>::clearUnused()
+    {
+        if (_F_capacity > this->_F_size)
+        {
+            ptr_t clearedVector = allocator::alloc(this->_F_size);
+            if (clearedVector)
+            {
+                traits_type::fill(this->_F_array, clearedVector, this->_F_size);
+                deleter::free(this->_F_array);
+                this->_F_array = clearedVector;
+                _F_capacity = this->_F_size;
+            }
+        }
+    }
+
+    template < typename E >
+    bool Vector<E>::remove(value_t elem)
+    {
+        UniquePointer<uint_t[]> indexes(new uint_t[this->size()]);
+        uint_t nbIndexes(0);
+        for (uint_t i(0); i < this->_F_size; i++)
+        {
+            if (this->_F_array[i] == elem)
+            {
+                indexes[nbIndexes] = i;
+                nbIndexes++;
+            }
+        }
+
+        if (nbIndexes > 0)
+        {
+            for (uint_t i(0), j(0), k(0); i < this->_F_size; i++)
+            {
+                if (k < nbIndexes && i != indexes[k])
+                {
+                    this->_F_array[j] = this->_F_array[i];
+                }
+                else if (i == indexes[k])
+                {
+                    k++;
+                }
+            }
+
+            this->_F_size -= nbIndexes;
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool Vector<E>::remove(uint_t index)
+    {
 
         return true;
     }

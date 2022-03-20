@@ -79,10 +79,7 @@ SOURCES = main.cpp \
 			cxx/oop/exception.cpp \
 			cxx/oop/object.cpp \
 			cxx/oop/stream.cpp \
-			cxx/oop/string.c++ \
-			cxx/oop/alloc.c++ \
 			cxx/oop/binary.cpp \
-			cxx/oop/type_traits.c++ \
 			cxx/oop/sock.cpp \
 			cxx/oop/file.cpp \
 			cxx/serv/packet.cpp \
@@ -90,25 +87,24 @@ SOURCES = main.cpp \
 			cxx/json/jsonvalue.cpp
 
 OBJECTS  = main.cpp.o \
-			application.cpp.o \
+			mt19937ar.c.o \
+			utils.c.o \
+			json.cpp.o \
+			jsoncontainer.cpp.o \
+			jsonvalue.cpp.o \
+			binary.cpp.o \
+			exception.cpp.o \
+			file.cpp.o \
+			object.cpp.o \
+			sock.cpp.o \
+			stream.cpp.o \
+			codec.cpp.o \
+			packet.cpp.o \
+			cdfpdf.cpp.o \
 			entities.cpp.o \
 			simulation.cpp.o \
-			cdfpdf.cpp.o \
 			statisticaltools.cpp.o \
-			object.cpp.o \
-			stream.cpp.o \
-			sock.cpp.o \
-			event.cpp.o \
-			file.cpp.o \
-			exception.cpp.o \
-			binary.cpp.o \
-			type_traits.cpp.o \
-			packet.cpp.o \
-			container.cpp.o \
-			jsonvalue.cpp.o \
-			json.cpp.o \
-			mt19937ar.c.o \
-			utils.c.o
+			application.cpp.o
 
 #### INSTRUCTIONS ####
 
@@ -121,28 +117,26 @@ debug:
 
 #### OBJECTS ####
 
-#### > Project (simulation) Files
+#### > Application's Files
 main.cpp.o: main.cpp $(INCLUDES)
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 application.cpp.o: cxx/application.cpp cxx/application.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
-
+#### > Simulation's Files
+cdfpdf.cpp.o: cxx/simulation/cdfpdf.cpp cxx/simulation/cdfpdf.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 entities.cpp.o: cxx/simulation/entities.cpp cxx/simulation/entities.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 simulation.cpp.o: cxx/simulation/simulation.cpp cxx/simulation/simulation.h defines.h
-	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-cdfpdf.cpp.o: cxx/simulation/cdfpdf.cpp cxx/simulation/cdfpdf.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 statisticaltools.cpp.o: cxx/simulation/statisticaltools.cpp cxx/simulation/statisticaltools.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > OOP
-object.cpp.o: cxx/oop/object.cpp cxx/oop/object.h cxx/oop/string.c++ defines.h
+object.cpp.o: cxx/oop/object.cpp cxx/oop/object.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 exception.cpp.o: cxx/oop/exception.cpp cxx/oop/exception.h cxx/oop/object.h defines.h
-	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-string.c++.o: cxx/oop/string.c++ cxx/oop/string.h cxx/oop/object.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 stream.cpp.o: cxx/oop/stream.cpp cxx/oop/stream.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
@@ -150,23 +144,21 @@ file.cpp.o: cxx/oop/file.cpp cxx/oop/file.h cxx/oop/stream.h cxx/oop/object.h de
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 sock.cpp.o: cxx/oop/sock.cpp cxx/oop/sock.h cxx/oop/stream.h cxx/oop/object.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-event.cpp.o: cxx/oop/event.c++ cxx/oop/event.hpp defines.h
-	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-type_traits.cpp.o: cxx/oop/type_traits.c++ cxx/oop/type_traits.hpp defines.h
-	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 binary.cpp.o: cxx/oop/binary.cpp cxx/oop/binary.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > serv
-packet.cpp.o: cxx/serv/packet.cpp cxx/serv/packet.h cxx/oop/object.h defines.h
+codec.cpp.o: cxx/serv/codec.cpp cxx/serv/codec.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-container.cpp.o: cxx/oop/container.c++ cxx/oop/container.hpp defines.h
+packet.cpp.o: cxx/serv/packet.cpp cxx/serv/packet.h cxx/oop/object.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > json
-jsonvalue.cpp.o: cxx/json/jsonvalue.cpp cxx/json/jsonvalue.h defines.h
+json.cpp.o: cxx/json/json.cpp cxx/json/json.h defines.h cxx/oop/object.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
-json.cpp.o: cxx/json/json.cpp cxx/json/json.h defines.h cxx/oop/object.h
+jsoncontainer.cpp.o: cxx/json/jsoncontainer.cpp cxx/json/jsoncontainer.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+jsonvalue.cpp.o: cxx/json/jsonvalue.cpp cxx/json/jsonvalue.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > C Files
