@@ -77,6 +77,8 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Deleter = Delete<T> >
     class SharedPointer : public Pointer<T, _Deleter>
     {
+        template < typename _T, typename Deleter_ >
+        friend class WeakPointer;
     protected:
         typedef typename Pointer<T, _Deleter>::value_t   value_t;
         typedef typename Pointer<T, _Deleter>::ref_t     ref_t;
@@ -120,17 +122,23 @@ namespace UCA_L2INFO_PW4
 
         typedef typename Pointer<T, _Deleter>::deleter deleter;
         typedef WeakPointer<T, _Deleter>             pointer_t;
+
+        uint_t* _F_useCount;
     public:
         WeakPointer(ptr_t ptr = nullptr);
         WeakPointer(const pointer_t & cpy);
+        WeakPointer(const SharedPointer<T, _Deleter>& sp);
         virtual ~WeakPointer() override;
 
         virtual void reset(ptr_t ptr);
+        virtual void reset(const WeakPointer<T, _Deleter>& wp);
+        virtual void reset(const SharedPointer<T, _Deleter>& sp);
         virtual void swap(WeakPointer<T, _Deleter> &sp);
         virtual uint_t use_count() const final;
 
         virtual WeakPointer<T, _Deleter>& operator =(ptr_t ptr) override;
-        virtual WeakPointer<T, _Deleter>& operator =(const SharedPointer<T, _Deleter>& ptr);
+        virtual WeakPointer<T, _Deleter>& operator =(const WeakPointer<T, _Deleter>& wp);
+        virtual WeakPointer<T, _Deleter>& operator =(const SharedPointer<T, _Deleter>& sp);
     };
 
     template<typename T, typename _Deleter>
@@ -368,6 +376,88 @@ namespace UCA_L2INFO_PW4
     SharedPointer<T, _Deleter>& SharedPointer<T, _Deleter>::operator=(const UniquePointer<T, _Deleter> &ptr)
     {
         reset(ptr.release());
+        return *this;
+    }
+
+    template<typename T, typename _Deleter>
+    WeakPointer<T, _Deleter>::WeakPointer(ptr_t ptr): Pointer<T, _Deleter>(ptr), _F_useCount(nullptr)
+    { /* ... */ }
+
+    template<typename T, typename _Deleter>
+    WeakPointer<T, _Deleter>::WeakPointer(const pointer_t& cpy):
+        Pointer<T, _Deleter>(cpy._F_ptr), _F_useCount(cpy._F_useCount)
+    { /* ... */ }
+
+    template<typename T, typename _Deleter>
+    WeakPointer<T, _Deleter>::WeakPointer(const SharedPointer<T, _Deleter>& sp):
+        Pointer<T, _Deleter>(sp._F_ptr), _F_useCount(sp._F_useCount)
+    { /* ... */ }
+
+    template<typename T, typename _Deleter>
+    WeakPointer<T, _Deleter>::~WeakPointer()
+    {
+        /* do nothing */
+    }
+
+    template<typename T, typename _Deleter>
+    void WeakPointer<T, _Deleter>::reset(ptr_t ptr)
+    {
+        _F_useCount = nullptr;
+        this->_F_ptr = ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    void WeakPointer<T, _Deleter>::reset(const WeakPointer<T, _Deleter> &wp)
+    {
+        _F_useCount = wp._F_useCount;
+        this->_F_ptr = wp._F_ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    void WeakPointer<T, _Deleter>::reset(const SharedPointer<T, _Deleter> &sp)
+    {
+        _F_useCount = sp._F_useCount;
+        this->_F_ptr = sp._F_ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    void WeakPointer<T, _Deleter>::swap(WeakPointer<T, _Deleter> &sp)
+    {
+        uint_t * tmp_usecount = sp._F_useCount;
+        ptr_t    tmp_ptr      = sp._F_ptr;
+        sp._F_useCount = _F_useCount;
+        sp._F_ptr      = this->_F_ptr;
+        this->_F_useCount = tmp_usecount;
+        this->_F_ptr      = tmp_ptr;
+    }
+
+    template<typename T, typename _Deleter>
+    uint_t WeakPointer<T, _Deleter>::use_count() const
+    {
+        if (_F_useCount)
+            return *_F_useCount;
+        else
+            return 1u;
+    }
+
+    template<typename T, typename _Deleter>
+    WeakPointer<T, _Deleter>& WeakPointer<T, _Deleter>::operator=(ptr_t ptr)
+    {
+        reset(ptr);
+        return *this;
+    }
+
+    template<typename T, typename _Deleter>
+    WeakPointer<T, _Deleter>& WeakPointer<T, _Deleter>::operator=(const WeakPointer<T, _Deleter>& wp)
+    {
+        reset(wp);
+        return *this;
+    }
+
+    template<typename T, typename _Deleter>
+    WeakPointer<T, _Deleter>& WeakPointer<T, _Deleter>::operator=(const SharedPointer<T, _Deleter> &sp)
+    {
+        reset(sp);
         return *this;
     }
 }
