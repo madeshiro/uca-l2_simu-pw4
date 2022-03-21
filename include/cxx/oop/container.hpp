@@ -84,8 +84,8 @@ namespace UCA_L2INFO_PW4
 
         virtual void clear() = 0;
 
-        virtual bool contains(value_t elem) = 0;
-        virtual bool containsAll(const Collection<E>& c) = 0;
+        virtual bool contains(value_t elem) const = 0;
+        virtual bool containsAll(const Collection<E>& c) const = 0;
 
         virtual bool isEmpty() const = 0;
 
@@ -165,8 +165,8 @@ namespace UCA_L2INFO_PW4
 
         virtual void clear() override;
 
-        virtual bool contains(value_t elem) override;
-        virtual bool containsAll(const Collection<E>& c) override;
+        virtual bool contains(value_t elem) const override;
+        virtual bool containsAll(const Collection<E>& c) const override;
 
         virtual ref_t get(uint_t index) override;
 
@@ -278,6 +278,8 @@ namespace UCA_L2INFO_PW4
         UniquePointer<E[]> _F_toArray;
 
         Set(): _F_needUpdate(false), _F_toArray(nullptr) {}
+
+        // TODO: Recheck the update thing about Iterator
         virtual void needUpdate(bool status = true) final {_F_needUpdate=status;}
         virtual bool doNeedUpdate() const final {return _F_needUpdate;}
     public:
@@ -336,8 +338,8 @@ namespace UCA_L2INFO_PW4
 
         virtual void clear();
 
-        virtual bool contains(value_t elem);
-        virtual bool containsAll(const Collection<E>& c);
+        virtual bool contains(value_t elem) const;
+        virtual bool containsAll(const Collection<E>& c) const;
 
         virtual bool isEmpty() const;
 
@@ -370,26 +372,53 @@ namespace UCA_L2INFO_PW4
         typedef typename traits_type::const_ptr_t   const_ptr_t;
 
     private:
-        struct Node
+        struct Bucket
         {
-            Node* next = nullptr;
-            value_t element;
+            value_t *element;
 
-            Node() = default;
-            virtual ~Node() {
-                if (next) delete next;
-            }
+            Bucket(): element(nullptr) {/* ... */}
+            virtual ~Bucket() {
+                if (element)
+                {
+                    delete element;
+                }
+            };
 
             virtual bool operator ==(const_ref_t elem) {
-                return hashCode() == traits_type::hash_code(elem);
+                return element ? hashCode() == traits_type::hash_code(elem) : false;
             }
 
             virtual hash_t hashCode() {
-                return traits_type::hash_code(element);
+                return traits_type::hash_code(*element);
+            }
+
+            virtual Bucket& operator =(value_t v) {
+                if (element == nullptr)
+                {
+                    element = new value_t(v);
+                }
+                else
+                {
+                    *element = v;
+                }
+                return *this;
+            }
+
+            virtual operator bool() const {
+                return element == nullptr;
+            }
+
+            virtual void clear() {
+                delete element;
+                element = nullptr;
             }
         } *_F_set;
 
         uint_t _F_size;
+        uint_t _F_capacity;
+        uint_t _F_padding=0;
+
+        float _F_loadFactor;
 
         /**
          * Replaces or adds an element to the set. Because hashCode implementation may differ from time to time,
@@ -397,10 +426,19 @@ namespace UCA_L2INFO_PW4
          * element in the HashSet.
          * @param elem The element to put in the set, replacing or adding it to the list.
          */
-        virtual bool setElement(E elem, bool replace = true);
+        virtual bool setElement(value_t elem, bool replace = true);
+
+        /**
+         *
+         * @param padding
+         */
+        virtual void setPadding(uint_t padding);
+
+        virtual void grow(uint_t addCapacity);
     public:
-        HashSet();
-        HashSet(const HashSet<E>& set);
+        HashSet(uint_t initialCapacity);
+        HashSet(uint_t initialCapacity = 16u, float loadFactor = 0.75);
+        HashSet(const Collection<E>& collection);
         virtual ~HashSet() override;
 
         virtual bool add(value_t elem) override {return setElement(elem, false);}
@@ -408,8 +446,8 @@ namespace UCA_L2INFO_PW4
 
         virtual void clear() override;
 
-        virtual bool contains(value_t elem) override;
-        virtual bool containsAll(const Collection<E>& c) override;
+        virtual bool contains(value_t elem) const override;
+        virtual bool containsAll(const Collection<E>& c) const override;
 
         virtual bool isEmpty() const override;
 
@@ -443,8 +481,27 @@ namespace UCA_L2INFO_PW4
         {
             Chain* prev, *next;
             E elem;
-        };
 
+            Chain() = default;
+            Chain(E elem, Chain* prev = nullptr): prev(prev), next(nullptr), elem(elem) {
+                if (prev)
+                {
+                    prev->next = this;
+                }
+            }
+
+            void unchain() {
+                prev = nullptr;
+                next = nullptr;
+            }
+
+            virtual ~Chain() {
+                if (next)
+                {
+                    delete next;
+                }
+            }
+        };
     protected:
         Chain* _F_first;
         uint_t _F_size;
@@ -472,42 +529,6 @@ namespace UCA_L2INFO_PW4
         virtual size_t size() const override;
 
         virtual UniquePointer<E[]> toArray() const override;
-    };
-
-    template<typename E>
-    class Queue : public ChainedList<E>
-    {
-    public:
-        typedef typename ChainedList<E>::traits_type traits_type;
-
-        typedef typename ChainedList<E>::value_t   value_t;
-        typedef typename ChainedList<E>::ref_t     ref_t;
-        typedef typename ChainedList<E>::ptr_t     ptr_t;
-        typedef typename ChainedList<E>::rvalue_t  rvalue_t;
-
-        typedef typename ChainedList<E>::const_t       const_t;
-        typedef typename ChainedList<E>::const_ref_t   const_ref_t;
-        typedef typename ChainedList<E>::const_ptr_t   const_ptr_t;
-    private:
-        uint_t _F_limit;
-    public:
-        Queue(uint_t limit = 0);
-        Queue(const Collection<E>& collection);
-
-        value_t next();
-        uint_t getLimit() const;
-
-        void push(value_t v);
-        value_t pop();
-
-        /**
-         * Defines a new limit size for this Queue list. If the limit is lower than
-         * the current queue's size, all values beyonds the limit will be removed.
-         * @note newLimit = 0 equivalent to infinite
-         * @param newLimit the new queue size's limit.
-         * @return
-         */
-        void   setLimit(uint_t newLimit);
     };
 
     template<typename K, typename V>
@@ -552,9 +573,17 @@ namespace UCA_L2INFO_PW4
         virtual bool retainAll(const Set<K>& c) = 0;
 
         virtual bool set(key_t key, value_t value) = 0;
-        virtual value_t* get(key_t key) = 0;
+        virtual value_ptr_t get(key_t key) const = 0;
         
         virtual size_t size() const = 0;
+
+        inline virtual value_ptr_t operator[](key_const_t key) const {
+            return this->get(key);
+        };
+
+        inline virtual operator bool() const {
+            return !this->isEmpty();
+        }
     };
 
     template<typename K, typename V>
@@ -596,8 +625,8 @@ namespace UCA_L2INFO_PW4
         HashSet<HashNode> _F_nodes;
     public:
         HashMap();
-        HashMap(const Map<K, V>& map);
-        virtual ~HashMap();
+        HashMap(const HashMap<K, V>& map);
+        virtual ~HashMap() = default;
 
         virtual Set<K>  keySet() const override;
         virtual List<V> values() const override;
@@ -617,7 +646,7 @@ namespace UCA_L2INFO_PW4
         virtual bool retainAll(const Set<K>& c) override;
 
         virtual bool set(key_t key, value_t value) override;
-        virtual value_t* get(key_t key) override;
+        virtual value_ptr_t get(key_t key) const override;
 
         virtual size_t size() const override;
     };
@@ -735,7 +764,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool AbstractList<E>::contains(value_t elem)
+    bool AbstractList<E>::contains(value_t elem) const
     {
         for (value_t e : (*this))
         {
@@ -747,7 +776,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool AbstractList<E>::containsAll(const Collection<E> &c)
+    bool AbstractList<E>::containsAll(const Collection<E> &c) const
     {
         for (value_t elem : c)
         {
@@ -1383,7 +1412,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool SortedSet<E>::contains(value_t elem)
+    bool SortedSet<E>::contains(value_t elem) const
     {
         bool (*browse)(const Node* const) = [&,this] (const Node* const node)
         {
@@ -1407,7 +1436,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool SortedSet<E>::containsAll(const Collection<E> &c)
+    bool SortedSet<E>::containsAll(const Collection<E> &c) const
     {
         for (auto e : c)
         {
@@ -1427,7 +1456,572 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool SortedSet<E>::remove(value_t elem)
     {
+        return removeIf([=](const_ref_t e) -> bool {return elem == e;});
+    }
 
+    template < typename E >
+    bool SortedSet<E>::removeAll(const Collection<E> &c)
+    {
+        for (auto e : c)
+        {
+            remove(e);
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool SortedSet<E>::removeIf(Predicate<const_ref_t> &filter)
+    {
+        // TODO: SortedSet<E>::removeIf
+        return false;
+    }
+
+    template < typename E >
+    bool SortedSet<E>::retainAll(const Collection<E> &c)
+    {
+        // TODO: SortedSet<E>::retainAll
+        return false;
+    }
+
+    template < typename E >
+    size_t SortedSet<E>::size() const
+    {
+        return _F_size;
+    }
+
+    template < typename E >
+    UniquePointer<E[]> SortedSet<E>::toArray() const
+    {
+        // TODO: SortedSet<E>::toArray
+        return nullptr;
+    }
+
+    template < typename E >
+    HashSet<E>::HashSet(uint_t initialCapacity): HashSet(initialCapacity, .75f)
+    { /* ... */ }
+
+    template < typename E >
+    HashSet<E>::HashSet(uint_t initialCapacity, float loadFactor):
+        _F_set(new Bucket[initialCapacity]), _F_capacity(initialCapacity), _F_size(0u), _F_loadFactor(loadFactor)
+    {
+        /* ... */
+    }
+
+    template < typename E >
+    HashSet<E>::HashSet(const Collection<E> &collection): HashSet(collection.size()/.75f, .75f)
+    {
+        for (auto e : collection)
+        {
+            add(e);
+        }
+    }
+
+    template < typename E >
+    HashSet<E>::~HashSet()
+    {
+        if (_F_set)
+        {
+            delete[] _F_set;
+        }
+    }
+
+    template < typename E >
+    bool HashSet<E>::setElement(value_t elem, bool replace)
+    {
+        hash_t elemHash(traits_type::hash_code(elem));
+        uint_t index = elemHash%_F_capacity;
+
+        bool (*browse)(int) = [&, this](int off) -> bool {
+            if (off > _F_padding) return false;
+
+            uint_t hashIndex((index+off)%_F_capacity);
+
+            if (_F_set[hashIndex])
+            {
+                _F_set[hashIndex] = elem;
+                _F_size++;
+            }
+            else if (_F_set[hashIndex] == elem)
+            {
+                if (replace) _F_set[hashIndex] = elem;
+            }
+            else
+            {
+                return browse(off+1);
+            }
+            return true;
+        };
+
+        return browse(0);
+    }
+
+    template < typename E >
+    void HashSet<E>::setPadding(uint_t padding)
+    {
+        if (_F_padding < padding)
+        {
+            _F_padding = padding;
+        }
+    }
+
+    template < typename E >
+    void HashSet<E>::grow(uint_t addCapacity)
+    {
+        uint_t newCapacity(_F_capacity+addCapacity);
+        Bucket* buckets = new Bucket[newCapacity];
+
+        _F_padding = 0;
+
+        for (uint_t i(0); i < _F_capacity; i++)
+        {
+            if (!_F_set[i])
+            {
+                hash_t hashIndex(_F_set[i].hashCode()%newCapacity);
+
+                uint_t (*assign)(uint_t) = [&,hashIndex,this] (uint_t off) -> uint_t {
+                    if (buckets[(hashIndex+off)%newCapacity])
+                    {
+                        buckets[(hashIndex+off)%newCapacity] = _F_set[i];
+                        return off;
+                    }
+                    else
+                    {
+                        return assign(off+1);
+                    }
+                };
+
+                setPadding(assign(0));
+            }
+        }
+
+        delete[] _F_set;
+        _F_capacity = newCapacity;
+        _F_set = buckets;
+    }
+
+    template < typename E >
+    bool HashSet<E>::addAll(const Collection<E> &c)
+    {
+        bool status(true);
+        for (auto e : c)
+        {
+            status = add(e) && status;
+        }
+        return status;
+    }
+
+    template < typename E >
+    void HashSet<E>::clear()
+    {
+        for (uint_t i(0); i < _F_capacity; i++)
+        {
+            _F_set[i].clear();
+        }
+
+        _F_size = 0;
+    }
+
+    template < typename E >
+    bool HashSet<E>::contains(value_t elem) const
+    {
+        hash_t hash_code(traits_type::hash_code(elem));
+        uint_t index(hash_code%_F_capacity);
+
+        bool (*browse)(uint_t) = [&,index,this](uint_t off) {
+            if (off > _F_padding)
+            {
+                return false;
+            }
+            if (_F_set[(index+off)%_F_capacity] == elem)
+            {
+                return true;
+            }
+            else
+            {
+                return browse(off+1);
+            }
+        };
+
+        return browse(0u);
+    }
+
+    template < typename E >
+    bool HashSet<E>::containsAll(const Collection<E> &c) const
+    {
+        for (auto e : c)
+        {
+            if (!contains(e))
+                return false;
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool HashSet<E>::isEmpty() const
+    {
+        return _F_size == 0;
+    }
+
+    template < typename E >
+    bool HashSet<E>::remove(value_t elem)
+    {
+        hash_t hash_code(traits_type::hash_code(elem));
+        uint_t hashIndex(hash_code%_F_capacity);
+
+        for (uint_t off(0); off <= _F_padding; off++)
+        {
+            uint_t index((hashIndex+off)%_F_capacity);
+
+            if (_F_set[index] == elem)
+            {
+                _F_set[index].clear();
+                _F_size--;
+            }
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool HashSet<E>::removeAll(const Collection<E> &c)
+    {
+        for (auto e : c)
+        {
+            remove(e);
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool HashSet<E>::removeIf(Predicate<const_ref_t> &filter)
+    {
+        for (uint_t i(0); i < _F_capacity; i++)
+        {
+            if (_F_set[i] && filter(_F_set[i].element))
+            {
+                _F_set[i].clear();
+                _F_size--;
+            }
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool HashSet<E>::retainAll(const Collection<E> &c)
+    {
+        // TODO: HashSet<E>::retainAll
+        return false;
+    }
+
+    template < typename E >
+    size_t HashSet<E>::size() const
+    {
+        return _F_size;
+    }
+
+    template < typename E >
+    UniquePointer<E[]> HashSet<E>::toArray() const
+    {
+        ptr_t elements = traits_type::alloc(size());
+        if (elements)
+        {
+            for (uint_t i(0), j(0); i < _F_capacity && j < _F_size; i++)
+            {
+                if (_F_set[i])
+                {
+                    elements[j] = _F_set[i].element;
+                    j++;
+                }
+            }
+        }
+
+        return UniquePointer<E[]>(elements);
+    }
+
+    template < typename E >
+    ChainedList<E>::ChainedList(): _F_first(nullptr), _F_size(0u)
+    {
+        /* ... */
+    }
+
+    template < typename E >
+    ChainedList<E>::ChainedList(const Collection<E> &collection): _F_first(nullptr), _F_size(0u)
+    {
+        Chain ** current(_F_first);
+        Chain * prev(nullptr);
+        for (const_t elem : collection)
+        {
+            *current = new Chain(elem, prev);
+            prev     = *current;
+            *current = &(*current)->next;
+            _F_size++;
+        }
+    }
+
+    template < typename E >
+    ChainedList<E>::~ChainedList()
+    {
+        Chain* current, *next = _F_first;
+        while (next)
+        {
+            current = next;
+            next = next->next;
+            delete current;
+        }
+    }
+
+    template < typename E >
+    bool ChainedList<E>::add(value_t elem)
+    {
+        if (_F_first == nullptr)
+        {
+            _F_first = new Chain(elem);
+            _F_size++;
+        }
+        else
+        {
+            Chain* chain = _F_first;
+            while (chain->next != nullptr)
+            {
+                chain = chain->next;
+            }
+
+            chain->next = new Chain(elem, chain);
+            _F_size++;
+        }
+
+        return true;
+    }
+
+    template < typename E >
+    bool ChainedList<E>::addAll(const Collection<E> &c)
+    {
+        return false;
+    }
+
+    template < typename E >
+    void ChainedList<E>::clear()
+    {
+        delete _F_first;
+        _F_size = 0u;
+    }
+
+    template < typename E >
+    bool ChainedList<E>::contains(value_t elem)
+    {
+        Chain* chain = _F_first;
+        while (chain)
+        {
+            if (chain->elem == elem)
+                return true;
+            else
+                chain = chain->next;
+        }
+
+        return false;
+    }
+
+    template < typename E >
+    bool ChainedList<E>::containsAll(const Collection<E> &c)
+    {
+        for (auto e : c)
+        {
+            if (contains(e))
+                return true;
+        }
+
+        return false;
+    }
+
+    template < typename E >
+    bool ChainedList<E>::isEmpty() const
+    {
+        return _F_size == 0u;
+    }
+
+    template < typename E >
+    bool ChainedList<E>::remove(value_t elem)
+    {
+        return removeIf([=](const_ref_t value) { value == elem; });
+    }
+
+    template < typename E >
+    bool ChainedList<E>::removeAll(const Collection<E> &c)
+    {
+        bool status(true);
+
+        for (auto e : c)
+        {
+            status = remove(e) && status;
+        }
+
+        return status;
+    }
+
+    template < typename E >
+    bool ChainedList<E>::removeIf(Predicate<const_ref_t> &filter)
+    {
+        return false;
+    }
+
+    template < typename E >
+    bool ChainedList<E>::retainAll(const Collection<E> &c)
+    {
+        return false;
+    }
+
+    template < typename E >
+    size_t ChainedList<E>::size() const
+    {
+        return _F_size;
+    }
+
+    template < typename E >
+    UniquePointer<E[]> ChainedList<E>::toArray() const
+    {
+        return nullptr;
+    }
+
+    template < typename K, typename V >
+    HashMap<K,V>::HashMap(): _F_nodes()
+    {
+        /* ... */
+    }
+
+    template < typename K, typename V >
+    HashMap<K,V>::HashMap(const HashMap<K,V>& map): _F_nodes(map._F_nodes)
+    {
+        /* ... */
+    }
+
+    template < typename K, typename V >
+    Set<K> HashMap<K, V>::keySet() const
+    {
+        HashSet<K> keys;
+
+        for (const HashNode node : _F_nodes)
+        {
+            keys.add(static_cast<key_const_t>(node.key));
+        }
+
+        return keys;
+    }
+
+    template < typename K, typename V >
+    List<V> HashMap<K,V>::values() const
+    {
+        ArrayList<K> values;
+
+        for (const HashNode node : _F_nodes)
+        {
+            values.add(static_cast<value_const_t>(node.value));
+        }
+
+        return values;
+    }
+
+    template < typename K, typename V >
+    bool HashMap<K,V>::addAll(const Map<K, V> &map)
+    {
+        bool status(true);
+        for (auto key : map.keySet())
+        {
+            status = this->set(key, *map.get(key)) && status;
+        }
+
+        return status;
+    }
+
+    template < typename K, typename V >
+    void HashMap<K,V>::clear()
+    {
+        _F_nodes.clear();
+    }
+
+    template < typename K, typename V >
+    bool HashMap<K,V>::contains(key_t elem)
+    {
+        HashNode node;
+        node.key = elem;
+        return _F_nodes.contains(node);
+    }
+
+    template < typename K, typename V >
+    bool HashMap<K, V>::containsAll(const Collection<K> &c)
+    {
+        for (auto key : c)
+        {
+            if (!contains(key))
+                return false;
+        }
+        return true;
+    }
+
+    template < typename K, typename V >
+    bool HashMap<K, V>::isEmpty() const
+    {
+        return _F_nodes.isEmpty();
+    }
+
+    template < typename K, typename V >
+    bool HashMap<K, V>::remove(key_t elem)
+    {
+        HashNode node;
+        node.key = elem;
+        return _F_nodes.remove(node);
+    }
+
+    template < typename K, typename V >
+    bool HashMap<K, V>::removeAll(const Set<K> &c)
+    {
+        bool status(true);
+        for (auto key : c.keySet())
+        {
+            status = remove(key) && status;
+        }
+
+        return status;
+    }
+
+    template < typename K, typename V >
+    bool HashMap<K, V>::retainAll(const Set<K> &c)
+    {
+        // TODO: HashMap<K,V>::retainAll
+        return false;
+    }
+
+    template < typename K, typename V >
+    bool HashMap<K, V>::set(key_t key, value_t value)
+    {
+        return _F_nodes.setElement((HashNode){key, value});
+    }
+
+    template < typename K, typename V >
+    typename HashMap<K,V>::value_ptr_t HashMap<K, V>::get(key_t key) const
+    {
+        if (size()>0)
+        {
+            hash_t keyHash(key_traits::hash_code(key));
+            uint_t index(keyHash%_F_nodes._F_capacity);
+            for (uint_t offset(0); offset < _F_nodes._F_padding; offset++)
+            {
+                if (_F_nodes._F_set[index + offset].hashCode() == keyHash)
+                {
+                    return &(_F_nodes._F_set[index + offset].element->value);
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    template < typename K, typename V >
+    size_t HashMap<K, V>::size() const
+    {
+        return _F_nodes.size();
     }
 }
 
