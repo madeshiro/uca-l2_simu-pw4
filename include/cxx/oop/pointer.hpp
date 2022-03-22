@@ -9,7 +9,7 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Deleter = Delete<T> >
     class Pointer : public Object
     {
-    protected:
+    public:
         typedef _Deleter deleter;
         typedef typename deleter::value_t   value_t;
         typedef typename deleter::ref_t     ref_t;
@@ -21,7 +21,7 @@ namespace UCA_L2INFO_PW4
         typedef typename deleter::const_ref_t const_ref_t;
 
         typedef Pointer<T, _Deleter> pointer_t;
-
+    protected:
         ptr_t _F_ptr;
         Pointer(ptr_t ptr);
         virtual ~Pointer() = 0;
@@ -49,6 +49,7 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Deleter = Delete<T> >
     class UniquePointer : public Pointer<T, _Deleter>
     {
+    public:
         typedef typename Pointer<T, _Deleter>::value_t   value_t;
         typedef typename Pointer<T, _Deleter>::ref_t     ref_t;
         typedef typename Pointer<T, _Deleter>::rvalue_t  rvalue_t;
@@ -60,7 +61,7 @@ namespace UCA_L2INFO_PW4
 
         typedef typename Pointer<T, _Deleter>::deleter deleter;
         typedef UniquePointer<T, _Deleter>             pointer_t;
-    public:
+
         UniquePointer(ptr_t ptr = nullptr);
         UniquePointer(pointer_t& ptr);
         virtual ~UniquePointer() override;
@@ -79,7 +80,7 @@ namespace UCA_L2INFO_PW4
     {
         template < typename _T, typename Deleter_ >
         friend class WeakPointer;
-    protected:
+    public:
         typedef typename Pointer<T, _Deleter>::value_t   value_t;
         typedef typename Pointer<T, _Deleter>::ref_t     ref_t;
         typedef typename Pointer<T, _Deleter>::rvalue_t  rvalue_t;
@@ -91,7 +92,7 @@ namespace UCA_L2INFO_PW4
 
         typedef typename Pointer<T, _Deleter>::deleter deleter;
         typedef SharedPointer<T, _Deleter>             pointer_t;
-
+    protected:
         uint_t *_F_useCount;
     public:
         SharedPointer(ptr_t ptr = nullptr);
@@ -110,7 +111,7 @@ namespace UCA_L2INFO_PW4
     template < typename T, typename _Deleter = Delete<T> >
     class WeakPointer : public Pointer<T, _Deleter>
     {
-    protected:
+    public:
         typedef typename Pointer<T, _Deleter>::value_t   value_t;
         typedef typename Pointer<T, _Deleter>::ref_t     ref_t;
         typedef typename Pointer<T, _Deleter>::rvalue_t  rvalue_t;
@@ -122,7 +123,7 @@ namespace UCA_L2INFO_PW4
 
         typedef typename Pointer<T, _Deleter>::deleter deleter;
         typedef WeakPointer<T, _Deleter>             pointer_t;
-
+    protected:
         uint_t* _F_useCount;
     public:
         WeakPointer(ptr_t ptr = nullptr);
