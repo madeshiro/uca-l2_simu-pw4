@@ -385,7 +385,7 @@ namespace UCA_L2INFO_PW4
             };
 
             virtual bool operator ==(const_ref_t elem) {
-                return element ? hashCode() == traits_type::hash_code(elem) : false;
+                return element && hashCode() == traits_type::hash_code(elem);
             }
 
             virtual hash_t hashCode() {
@@ -568,6 +568,8 @@ namespace UCA_L2INFO_PW4
         virtual bool isEmpty() const = 0;
 
         virtual bool remove(key_t elem) = 0;
+        virtual bool removeIf(Predicate<key_const_t>& predicateOnKey) = 0;
+        virtual bool removeForValue(Predicate<value_const_t>& predicateOnValue) = 0;
         virtual bool removeAll(const Set<K>& c) = 0;
         
         virtual bool retainAll(const Set<K>& c) = 0;
@@ -641,6 +643,8 @@ namespace UCA_L2INFO_PW4
         virtual bool isEmpty() const override;
 
         virtual bool remove(key_t elem) override;
+        virtual bool removeIf(Predicate<key_const_t>& predicateOnKey) override;
+        virtual bool removeForValue(Predicate<value_const_t>& predicateOnValue) override;
         virtual bool removeAll(const Set<K>& c) override;
 
         virtual bool retainAll(const Set<K>& c) override;
@@ -1462,11 +1466,7 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool SortedSet<E>::removeAll(const Collection<E> &c)
     {
-        for (auto e : c)
-        {
-            remove(e);
-        }
-
+        // TODO: optimised
         return true;
     }
 
@@ -1480,8 +1480,9 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool SortedSet<E>::retainAll(const Collection<E> &c)
     {
-        // TODO: SortedSet<E>::retainAll
-        return false;
+        return removeIf([&](const_ref_t elem) -> bool {
+            return !c.contains(elem);
+        });
     }
 
     template < typename E >
@@ -1513,7 +1514,7 @@ namespace UCA_L2INFO_PW4
     {
         for (auto e : collection)
         {
-            add(e);
+            this->add(e);
         }
     }
 
@@ -1713,8 +1714,9 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool HashSet<E>::retainAll(const Collection<E> &c)
     {
-        // TODO: HashSet<E>::retainAll
-        return false;
+        return removeIf([&](const_ref_t elem) -> bool {
+            return !c.contains(elem);
+        });
     }
 
     template < typename E >
@@ -1871,7 +1873,9 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool ChainedList<E>::retainAll(const Collection<E> &c)
     {
-        return false;
+        return removeIf([&](const_ref_t elem) -> bool {
+            return !c.contains(elem);
+        });
     }
 
     template < typename E >
@@ -1988,10 +1992,22 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename K, typename V >
+    bool HashMap<K, V>::removeIf(Predicate<key_const_t> &predicateOnKey)
+    {
+    }
+
+    template < typename K, typename V >
+    bool HashMap<K, V>::removeForValue(Predicate<value_const_t> &predicateOnValue)
+    {
+
+    }
+
+    template < typename K, typename V >
     bool HashMap<K, V>::retainAll(const Set<K> &c)
     {
-        // TODO: HashMap<K,V>::retainAll
-        return false;
+        return removeIf([&](key_const_t elem) -> bool {
+            return !c.contains(elem);
+        });
     }
 
     template < typename K, typename V >

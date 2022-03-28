@@ -26,6 +26,23 @@ typedef long long           llong_t;
 #ifndef __cplusplus
 #define true    1
 #define false   0
+#else
+#define foreach(type, elem, obj) { \
+        Iterator<type>& __iter = obj.iterator(); \
+        if (__iter.hasNext())\
+        {\
+            for (auto elem ;__iter.hasNext(); elem=__iter.next()) { \
+                \
+            } \
+        }
+
+#define cforeach(elem, obj) { \
+        Iterator<type>& __iter = obj.iterator(); \
+        if (__iter.hasNext())\
+        { \
+            for (auto elem ;__iter.hasNext(); elem=__iter.next()) {\
+            } \
+        }
 #endif
 
 #define __in
