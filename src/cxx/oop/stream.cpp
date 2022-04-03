@@ -38,4 +38,20 @@ namespace UCA_L2INFO_PW4
     {
         this->prefix = p;
     }
+
+    String Logger::getPrefix() const
+    {
+        return prefix;
+    }
+
+    void Logger::print(String str)
+    {
+        stream->write(str.getCharSequence(), str.length());
+    }
+
+    void Logger::println(String str)
+    {
+        stream->write(str.getCharSequence(), str.length());
+        stream->write("\n", 1);
+    }
 }
