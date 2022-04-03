@@ -47,7 +47,7 @@ namespace UCA_L2INFO_PW4
     {
         if (appsArgs.isValid())
         {
-            Socket::sock_start_service();
+            // Socket::sock_start_service();
 
             if (appsArgs.optionEnable("gui"))
             {
@@ -69,7 +69,7 @@ namespace UCA_L2INFO_PW4
 
     Application::~Application() noexcept
     {
-        Socket::sock_stop_service();
+        // Socket::sock_stop_service();
 
         delete out;
         delete err;

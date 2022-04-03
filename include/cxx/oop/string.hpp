@@ -299,7 +299,7 @@ namespace UCA_L2INFO_PW4
         static string_t ToString(const Object&);
         static string_t ToString(const string_t &str);
 
-        static string_t toHexString(unsigned long);
+        static string_t toHexString(ullong_t);
     };
 
     using String    = __String__<char>;
@@ -1485,7 +1485,7 @@ __String__<_CharT, _Traits, _Alloc>::ToString(const string_t& obj)
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
-    __String__<_CharT, _Traits, _Alloc>::toHexString(unsigned long ul)
+    __String__<_CharT, _Traits, _Alloc>::toHexString(ullong_t ul)
     {
         int lowchar[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
         string_t hex;

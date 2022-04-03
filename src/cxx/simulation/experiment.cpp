@@ -1,12 +1,14 @@
 #include "cxx/simulation/experiment.h"
 #include "mt19937ar.h"
+#include "cxx/oop/file.h"
 
 namespace UCA_L2INFO_PW4
 {
     Experiment::Experiment(uint_t replication, uint_t month_duration, uint_t male, uint_t female):
         _F_replication(replication), _F_duration(month_duration),
         _F_initMale(male), _F_initFemale(female),
-        mt_keys(nullptr), mt_key_length(0u)
+        mt_keys(nullptr), mt_key_length(0u),
+        _F_directory(String::toHexString(uuid()))
     {
         _F_simulations = new Simulation[_F_replication];
     }

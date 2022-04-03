@@ -1,6 +1,7 @@
 #ifndef CPP_EXPERIMENT_H
 #define CPP_EXPERIMENT_H
 #include "simulation.h"
+#include "cxx/oop/file.h"
 
 namespace UCA_L2INFO_PW4
 {
@@ -13,6 +14,7 @@ namespace UCA_L2INFO_PW4
 
         uint_t _P_current;
         Simulation* _F_simulations;
+        File _F_directory;
     events:
         event(int, int, Simulation&) on_replication;
         event(int, int, Simulation&) on_simulation_end;
