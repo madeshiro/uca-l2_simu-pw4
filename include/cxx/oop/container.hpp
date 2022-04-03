@@ -624,32 +624,6 @@ namespace UCA_L2INFO_PW4
         virtual ConstIterator<E, traits_type> const_iterator() const override;
     };
 
-    template<typename E>
-    class Queue : public ChainedList<E>
-    {
-
-        // TODO: Queue
-    public:
-        Queue();
-
-        Queue(const Collection<E> &collection);
-
-        typedef typename ChainedList<E>::traits_type traits_type;
-
-        typedef typename ChainedList<E>::value_t value_t;
-        typedef typename ChainedList<E>::ref_t ref_t;
-        typedef typename ChainedList<E>::ptr_t ptr_t;
-        typedef typename ChainedList<E>::rvalue_t rvalue_t;
-
-        typedef typename ChainedList<E>::const_t const_t;
-        typedef typename ChainedList<E>::const_ref_t const_ref_t;
-        typedef typename ChainedList<E>::const_ptr_t const_ptr_t;
-
-        virtual void push(value_t elem);
-
-        virtual UniquePointer<E> pop();
-    };
-
     template<typename K, typename V>
     class Map
     {
