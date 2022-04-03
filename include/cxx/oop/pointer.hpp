@@ -215,7 +215,7 @@ namespace UCA_L2INFO_PW4
     template<typename T, typename _Deleter>
     hash_t Pointer<T, _Deleter>::hashCode() const
     {
-        return _F_ptr;
+        return (hash_t) _F_ptr;
     }
 
     template<typename T, typename _Deleter>

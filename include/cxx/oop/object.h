@@ -21,11 +21,9 @@ namespace UCA_L2INFO_PW4
         Object()            = default;
         virtual ~Object()   = default;
 
-        virtual bool equals(const Object &&obj) const;
         virtual bool equals(const Object & obj) const;
         virtual bool equals(const Object * obj) const;
 
-        virtual bool operator ==(const Object &&obj) const;
         virtual bool operator ==(const Object & obj) const;
         virtual bool operator ==(const Object * obj) const;
 
@@ -81,7 +79,9 @@ namespace UCA_L2INFO_PW4
         Function(const Function<R(Args...)>& function): _F_function(function._F_function) {/*...*/}
 
         template < class F >
-        Function(F&& f): _F_function(std::forward<F>(f)) {/* ... */}
+        Function(F&& f) {
+            Function(std::forward<F>(f)).swap(*this);
+        }
 
         virtual ~Function() = default;
 
@@ -92,7 +92,7 @@ namespace UCA_L2INFO_PW4
             this->_F_function = tmp;
         }
 
-        R operator()(Args... args)
+        R operator()(Args... args) const
         {
             return _F_function(args...);
         }

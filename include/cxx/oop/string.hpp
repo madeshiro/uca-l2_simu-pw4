@@ -56,7 +56,7 @@ namespace UCA_L2INFO_PW4
         bool __grow(uint_t capacity);
         void __set(str_t charseq, uint_t len, uint_t capacity);
 
-        __String__(const_str_t str, uint_t len, uint_t capacity):
+        __String__(str_t str, uint_t len, uint_t capacity):
             _F_charseq(str), _F_length(len), _F_capacity(capacity) {/*...*/}
     public:
         __String__();
@@ -79,6 +79,8 @@ namespace UCA_L2INFO_PW4
         string_t& append(char_t c);
         string_t& append(const_str_t str);
         string_t& append(const string_t& str);
+
+        uint_t capacity() const;
 
         char_t charAt(uint_t index) const override;
 
@@ -106,7 +108,7 @@ namespace UCA_L2INFO_PW4
         SortedSet<uint_t> findAll(const_str_t str) const;
         SortedSet<uint_t> findAll(const string_t& str) const;
 
-        Iterator<char_t, traits_type> iterator() override;
+        Iterator<char_t, traits_type> iterator() const override;
         ConstIterator<char_t, traits_type> const_iterator() const override;
 
         uint_t length() const override;
@@ -173,6 +175,8 @@ namespace UCA_L2INFO_PW4
         string_t & operator +=(char_t c);
         string_t & operator +=(const_str_t str);
         string_t & operator +=(const string_t & str);
+
+        bool operator ==(const string_t& str) const;
 
         char_t operator[](uint_t index) const;
 
@@ -362,6 +366,12 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
+    uint_t __String__<_CharT, _Traits, _Alloc>::capacity() const
+    {
+        return _F_capacity;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::char_t
     __String__<_CharT, _Traits, _Alloc>::charAt(uint_t index) const
     {
@@ -372,25 +382,25 @@ namespace UCA_L2INFO_PW4
     int __String__<_CharT, _Traits, _Alloc>::compareTo(const __String__<_CharT, _Traits, _Alloc>&str) const
     {
         string_t __this = toLowerCase();
-                 str    = str.toLowerCase();
+        string_t __str  = str.toLowerCase();
 
-        uint_t minLen = str.length() < __this.length() ? str.length() : __this.length();
-        if (__this.equals(str))
+        uint_t minLen = __str.length() < __this.length() ? __str.length() : __this.length();
+        if (__this.equals(__str))
             return 0;
 
         for (uint_t i = 0; i <minLen; i++)
         {
-            if (__this[i] < str[i])
+            if (__this[i] < __str[i])
             {
                 return -1;
             }
-            else if (__this[i] > str[i])
+            else if (__this[i] > __str[i])
             {
                 return 1;
             }
         }
 
-        return __this.length() < str.length() ? -1 : 1;
+        return __this.length() < __str.length() ? -1 : 1;
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
@@ -469,23 +479,13 @@ namespace UCA_L2INFO_PW4
     template<typename _CharT, typename _Traits, typename _Alloc>
     bool __String__<_CharT, _Traits, _Alloc>::equals(const Object &object) const
     {
-        string_t str(object.toString());
-        if (str.length() == length())
-        {
-            for (uint_t i = 0; i < length(); i++)
-            {
-                if (str[i] != _F_charseq[i])
-                    return false;
-            }
-            return true;
-        }
-        else return false;
+        return hashCode() == object.hashCode();
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     int __String__<_CharT, _Traits, _Alloc>::find(char_t c) const
     {
-        for (int i = 0; i < length(); i++)
+        for (uint_t i = 0; i < length(); i++)
         {
             if (_F_charseq[i] == c)
                 return i;
@@ -504,14 +504,14 @@ namespace UCA_L2INFO_PW4
     {
         if (str.length() <= length())
         {
-            for (int i = 0; i < length(); i++)
+            for (uint_t i = 0; i < length(); i++)
             {
                 if (_F_charseq[i] == str[0])
                 {
                     if (str.length() > length()-i)
                         break;
 
-                    int j;
+                    uint_t j;
                     for (j = 1; j < str.length(); j++)
                     {
                         if (_F_charseq[i+j] != str[j])
@@ -556,14 +556,14 @@ namespace UCA_L2INFO_PW4
 
         if (str.length() <= length())
         {
-            for (int i = 0; i < length(); i++)
+            for (uint_t i = 0; i < length(); i++)
             {
                 if (_F_charseq[i] == str[0])
                 {
                     if (str.length() > length()-i)
                         break;
 
-                    int j;
+                    uint_t j;
                     for (j = 1; j < str.length(); j++)
                     {
                         if (_F_charseq[i+j] != str[j])
@@ -585,7 +585,7 @@ namespace UCA_L2INFO_PW4
     template<typename _CharT, typename _Traits, typename _Alloc>
     Iterator<typename __String__<_CharT, _Traits, _Alloc>::char_t,
              typename __String__<_CharT, _Traits, _Alloc>::traits_type>
-    __String__<_CharT, _Traits, _Alloc>::iterator()
+    __String__<_CharT, _Traits, _Alloc>::iterator() const
     {
         return Iterator<char_t, traits_type>(_F_charseq, _F_charseq+_F_length);
     }
@@ -872,7 +872,7 @@ namespace UCA_L2INFO_PW4
             str_t newStr   = allocator::alloc(newCap);
             newStr[newLen] = (char_t) 0;
 
-            for (uint_t i = 0, j = 0, k = 0; i < _F_length; i++)
+            for (uint_t i = 0, j = 0; i < _F_length; i++)
             {
                 if ((uint_t) position != i)
                 {
@@ -1047,12 +1047,13 @@ namespace UCA_L2INFO_PW4
             {
                 case '-':
                     negative = true;
+                    [[fallthrough]];
                 case '+':
                     offset++;
                     break;
             }
 
-            for (int i = 0, pow = length()-offset; i < length(); i++)
+            for (uint_t i = 0, pow = length()-offset; i < length(); i++)
             {
                 char_t c(_F_charseq[i]);
 
@@ -1075,6 +1076,7 @@ namespace UCA_L2INFO_PW4
             {
                 case '-':
                     negative = true;
+                    [[fallthrough]];
                 case '+':
                     offset++;
                     break;
@@ -1104,6 +1106,7 @@ namespace UCA_L2INFO_PW4
         {
             case '-':
                 negative = true;
+                [[fallthrough]];
             case '+':
                 offset++;
                 break;
@@ -1137,6 +1140,7 @@ namespace UCA_L2INFO_PW4
                         {
                             case '-':
                                 negativeExp = true;
+                                [[fallthrough]];
                             case '+':
                                 i++;
                                 break;
@@ -1262,6 +1266,12 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
+    bool __String__<_CharT, _Traits, _Alloc>::operator ==(const string_t& str) const
+    {
+        return equals(str);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::char_t
     __String__<_CharT, _Traits, _Alloc>::operator[](uint_t index) const
     {
@@ -1350,18 +1360,16 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t
     __String__<_CharT, _Traits, _Alloc>::toString(const Object& obj)
     {
-        if (sizeof(char_t) == sizeof(char)) return (string_t) obj.toString();
-        else
-        {
-            String objStr(obj.toString());
-            str_t str = allocator::alloc(objStr.length()+1);
-            str[objStr.length()] = (char_t) 0;
 
-            for (uint_t i = 0; i < objStr.length(); i++)
-                str[i] = (char_t) objStr[i];
+        String objStr(obj.toString());
+        str_t str = allocator::alloc(objStr.length() + 1);
+        str[objStr.length()] = (char_t) 0;
 
-            return string_t(str,objStr.length(), objStr._F_capacity);
-        }
+        for (uint_t i = 0; i < objStr.length(); i++)
+            str[i] = (char_t) objStr[i];
+
+        return string_t(str, objStr.length(), objStr.capacity());
+
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
@@ -1396,6 +1404,7 @@ namespace UCA_L2INFO_PW4
 
          hex.prepend((char_t)'x');
          hex.prepend((char_t)'0');
+         return hex;
     }
 }
 

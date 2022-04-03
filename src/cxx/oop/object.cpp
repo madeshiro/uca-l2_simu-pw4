@@ -7,11 +7,6 @@ namespace UCA_L2INFO_PW4
     template class __String__<char>;
     template class __String__<wchar_t>;
 
-    bool Object::equals(const Object &&obj) const
-    {
-        return hashCode() == obj.hashCode();
-    }
-
     bool Object::equals(const Object &obj) const
     {
         return hashCode() == obj.hashCode();
@@ -20,11 +15,6 @@ namespace UCA_L2INFO_PW4
     bool Object::equals(const Object *obj) const
     {
         return obj == this;
-    }
-
-    bool Object::operator==(const Object &&obj) const
-    {
-        return equals(obj);
     }
 
     bool Object::operator==(const Object &obj) const

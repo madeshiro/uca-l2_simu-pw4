@@ -6,51 +6,56 @@
 
 namespace UCA_L2INFO_PW4
 {
-    template < typename T, typename _Traits = Traits<T> >
+    template<typename T, typename _Traits = Traits<T> >
     struct Iterator
     {
     public:
         typedef _Traits traits_type;
 
-        typedef typename traits_type::value_t   value_t;
-        typedef typename traits_type::ref_t     ref_t;
-        typedef typename traits_type::ptr_t     ptr_t;
-        typedef typename traits_type::rvalue_t  rvalue_t;
+        typedef typename traits_type::value_t value_t;
+        typedef typename traits_type::ref_t ref_t;
+        typedef typename traits_type::ptr_t ptr_t;
+        typedef typename traits_type::rvalue_t rvalue_t;
 
         ptr_t _F_begin, _F_end;
 
         Iterator(ptr_t begin, ptr_t end);
-        virtual ~Iterator() = delete;
+
+        virtual ~Iterator()
+        {
+        };
     };
 
-    template < typename T, typename _Traits = Traits<T> >
+    template<typename T, typename _Traits = Traits<T> >
     struct ConstIterator
     {
     public:
         typedef _Traits traits_type;
 
-        typedef typename traits_type::const_t       const_t;
-        typedef typename traits_type::const_ref_t   const_ref_t;
-        typedef typename traits_type::const_ptr_t   const_ptr_t;
+        typedef typename traits_type::const_t const_t;
+        typedef typename traits_type::const_ref_t const_ref_t;
+        typedef typename traits_type::const_ptr_t const_ptr_t;
 
         const_ptr_t _F_begin, _F_end;
 
         ConstIterator(const_ptr_t begin, const_ptr_t end);
-        virtual ~ConstIterator() = delete;
+        virtual ~ConstIterator()
+        {
+        }
     };
 
-    template < typename T, typename _Traits = Traits<T> >
+    template<typename T, typename _Traits = Traits<T> >
     struct Iterable : public Object
     {
         typedef _Traits traits_type;
-        typedef typename traits_type::ptr_t         ptr_t;
-        typedef typename traits_type::const_ptr_t   const_ptr_t;
+        typedef typename traits_type::ptr_t ptr_t;
+        typedef typename traits_type::const_ptr_t const_ptr_t;
 
-        virtual Iterator<T, traits_type> iterator() = 0;
+        virtual Iterator<T, traits_type> iterator() const = 0;
         virtual ConstIterator<T, traits_type> const_iterator() const = 0;
 
-        ptr_t begin();
-        ptr_t end();
+        ptr_t begin() const;
+        ptr_t end() const;
 
         ptr_t rbegin();
         ptr_t rend();
@@ -63,37 +68,41 @@ namespace UCA_L2INFO_PW4
     };
 
     template<typename E>
-    class Collection : public Iterable< E, Traits<E> >
+    class Collection : public Iterable<E, Traits<E> >
     {
     public:
-        typedef Traits<E>                traits_type;
-        typedef Alloc<E[], traits_type>  allocator;
+        typedef Traits<E> traits_type;
+        typedef Alloc<E[], traits_type> allocator;
         typedef Delete<E[], traits_type> deleter;
 
-        typedef typename traits_type::value_t   value_t;
-        typedef typename traits_type::ref_t     ref_t;
-        typedef typename traits_type::ptr_t     ptr_t;
-        typedef typename traits_type::rvalue_t  rvalue_t;
+        typedef typename traits_type::value_t value_t;
+        typedef typename traits_type::ref_t ref_t;
+        typedef typename traits_type::ptr_t ptr_t;
+        typedef typename traits_type::rvalue_t rvalue_t;
 
-        typedef typename traits_type::const_t       const_t;
-        typedef typename traits_type::const_ref_t   const_ref_t;
-        typedef typename traits_type::const_ptr_t   const_ptr_t;
+        typedef typename traits_type::const_t const_t;
+        typedef typename traits_type::const_ref_t const_ref_t;
+        typedef typename traits_type::const_ptr_t const_ptr_t;
 
         virtual bool add(value_t elem) = 0;
-        virtual bool addAll(const Collection<E>& c) = 0;
+
+        virtual bool addAll(const Collection<E> &c) = 0;
 
         virtual void clear() = 0;
 
         virtual bool contains(value_t elem) const = 0;
-        virtual bool containsAll(const Collection<E>& c) const = 0;
+
+        virtual bool containsAll(const Collection<E> &c) const = 0;
 
         virtual bool isEmpty() const = 0;
 
         virtual bool remove(value_t elem) = 0;
-        virtual bool removeAll(const Collection<E>& c) = 0;
-        virtual bool removeIf(Predicate<const_ref_t>& filter) = 0;
 
-        virtual bool retainAll(const Collection<E>& c) = 0;
+        virtual bool removeAll(const Collection<E> &c) = 0;
+
+        virtual bool removeIf(Predicate<const_ref_t> &filter) = 0;
+
+        virtual bool retainAll(const Collection<E> &c) = 0;
 
         virtual size_t size() const = 0;
 
@@ -101,8 +110,11 @@ namespace UCA_L2INFO_PW4
 
         /* OPERATORS */
 
-        virtual bool operator +=(value_t elem) { return add(elem); }
-        virtual bool operator -=(const_t elem) { return remove(elem); }
+        virtual bool operator+=(value_t elem)
+        { return add(elem); }
+
+        virtual bool operator-=(const_t elem)
+        { return remove(elem); }
     };
 
     template<typename E>
@@ -111,27 +123,31 @@ namespace UCA_L2INFO_PW4
     public:
         typedef typename Collection<E>::traits_type traits_type;
         typedef typename Collection<E>::allocator allocator;
-        typedef typename Collection<E>::deleter   deleter;
+        typedef typename Collection<E>::deleter deleter;
 
-        typedef typename Collection<E>::value_t   value_t;
-        typedef typename Collection<E>::ref_t     ref_t;
-        typedef typename Collection<E>::ptr_t     ptr_t;
-        typedef typename Collection<E>::rvalue_t  rvalue_t;
+        typedef typename Collection<E>::value_t value_t;
+        typedef typename Collection<E>::ref_t ref_t;
+        typedef typename Collection<E>::ptr_t ptr_t;
+        typedef typename Collection<E>::rvalue_t rvalue_t;
 
-        typedef typename Collection<E>::const_t       const_t;
-        typedef typename Collection<E>::const_ref_t   const_ref_t;
-        typedef typename Collection<E>::const_ptr_t   const_ptr_t;
+        typedef typename Collection<E>::const_t const_t;
+        typedef typename Collection<E>::const_ref_t const_ref_t;
+        typedef typename Collection<E>::const_ptr_t const_ptr_t;
 
         List() = default;
+
         virtual ~List() = 0;
 
         virtual bool remove(uint_t index) = 0;
+
         virtual UniquePointer<E> set(value_t elem, uint_t index) = 0;
+
         virtual ref_t get(uint_t index) = 0;
 
         virtual int indexOf(const_ref_t elem) const = 0;
 
-        virtual ref_t operator[](uint_t index) { return get(index); }
+        virtual ref_t operator[](uint_t index)
+        { return get(index); }
     };
 
     template<typename E>
@@ -139,34 +155,38 @@ namespace UCA_L2INFO_PW4
     {
     public:
         typedef typename List<E>::traits_type traits_type;
-        typedef typename List<E>::allocator   allocator;
-        typedef typename List<E>::deleter     deleter;
+        typedef typename List<E>::allocator allocator;
+        typedef typename List<E>::deleter deleter;
 
-        typedef typename List<E>::value_t   value_t;
-        typedef typename List<E>::ref_t     ref_t;
-        typedef typename List<E>::ptr_t     ptr_t;
-        typedef typename List<E>::rvalue_t  rvalue_t;
+        typedef typename List<E>::value_t value_t;
+        typedef typename List<E>::ref_t ref_t;
+        typedef typename List<E>::ptr_t ptr_t;
+        typedef typename List<E>::rvalue_t rvalue_t;
 
-        typedef typename List<E>::const_t       const_t;
-        typedef typename List<E>::const_ref_t   const_ref_t;
-        typedef typename List<E>::const_ptr_t   const_ptr_t;
+        typedef typename List<E>::const_t const_t;
+        typedef typename List<E>::const_ref_t const_ref_t;
+        typedef typename List<E>::const_ptr_t const_ptr_t;
 
     protected:
-        ptr_t  _F_array;
+        ptr_t _F_array;
         size_t _F_size;
 
         AbstractList(uint_t initCapacity = 0);
+
         AbstractList(ptr_t array, size_t size = 0);
 
         virtual bool grow(size_t currentCapacity, size_t addCapacity = 1u);
+
     public:
-        AbstractList(const AbstractList<E>& obj);
+        AbstractList(const AbstractList<E> &obj);
+
         virtual ~AbstractList() override;
 
         virtual void clear() override;
 
         virtual bool contains(value_t elem) const override;
-        virtual bool containsAll(const Collection<E>& c) const override;
+
+        virtual bool containsAll(const Collection<E> &c) const override;
 
         virtual ref_t get(uint_t index) override;
 
@@ -174,7 +194,7 @@ namespace UCA_L2INFO_PW4
 
         virtual bool isEmpty() const override;
 
-        virtual bool retainAll(const Collection<E>& c) override;
+        virtual bool retainAll(const Collection<E> &c) override;
 
         virtual UniquePointer<E> set(value_t elem, uint_t index) override;
 
@@ -182,79 +202,93 @@ namespace UCA_L2INFO_PW4
 
         virtual UniquePointer<E[]> toArray() const override;
 
-        virtual Iterator<E, traits_type> iterator();
-        virtual ConstIterator<E, traits_type> const_iterator() const;
+        virtual Iterator<E, traits_type> iterator() const override;
+
+        virtual ConstIterator<E, traits_type> const_iterator() const override;
     };
 
     template<typename E>
-    class ArrayList : public List<E>
+    class ArrayList : public AbstractList<E>
     {
     public:
         typedef typename AbstractList<E>::traits_type traits_type;
-        typedef typename AbstractList<E>::allocator   allocator;
-        typedef typename AbstractList<E>::deleter     deleter;
+        typedef typename AbstractList<E>::allocator allocator;
+        typedef typename AbstractList<E>::deleter deleter;
 
-        typedef typename AbstractList<E>::value_t   value_t;
-        typedef typename AbstractList<E>::ref_t     ref_t;
-        typedef typename AbstractList<E>::ptr_t     ptr_t;
-        typedef typename AbstractList<E>::rvalue_t  rvalue_t;
+        typedef typename AbstractList<E>::value_t value_t;
+        typedef typename AbstractList<E>::ref_t ref_t;
+        typedef typename AbstractList<E>::ptr_t ptr_t;
+        typedef typename AbstractList<E>::rvalue_t rvalue_t;
 
-        typedef typename AbstractList<E>::const_t       const_t;
-        typedef typename AbstractList<E>::const_ref_t   const_ref_t;
-        typedef typename AbstractList<E>::const_ptr_t   const_ptr_t;
+        typedef typename AbstractList<E>::const_t const_t;
+        typedef typename AbstractList<E>::const_ref_t const_ref_t;
+        typedef typename AbstractList<E>::const_ptr_t const_ptr_t;
 
         ArrayList();
-        ArrayList(const ArrayList<E>& obj);
+
+        ArrayList(const ArrayList<E> &obj);
 
         virtual bool add(value_t elem) override;
-        virtual bool addAll(const Collection<E>& c) override;
+
+        virtual bool addAll(const Collection<E> &c) override;
 
         virtual bool remove(value_t elem) override;
+
         virtual bool remove(uint_t index) override;
-        virtual bool removeAll(const Collection<E>& c);
-        virtual bool removeIf(Predicate<const_ref_t>& filter);
+
+        virtual bool removeAll(const Collection<E> &c);
+
+        virtual bool removeIf(Predicate<const_ref_t> &filter);
     };
 
-    template < typename E >
+    template<typename E>
     class Vector : public AbstractList<E>
     {
     public:
         typedef typename AbstractList<E>::traits_type traits_type;
-        typedef typename AbstractList<E>::allocator   allocator;
-        typedef typename AbstractList<E>::deleter     deleter;
+        typedef typename AbstractList<E>::allocator allocator;
+        typedef typename AbstractList<E>::deleter deleter;
 
-        typedef typename AbstractList<E>::value_t   value_t;
-        typedef typename AbstractList<E>::ref_t     ref_t;
-        typedef typename AbstractList<E>::ptr_t     ptr_t;
-        typedef typename AbstractList<E>::rvalue_t  rvalue_t;
+        typedef typename AbstractList<E>::value_t value_t;
+        typedef typename AbstractList<E>::ref_t ref_t;
+        typedef typename AbstractList<E>::ptr_t ptr_t;
+        typedef typename AbstractList<E>::rvalue_t rvalue_t;
 
-        typedef typename AbstractList<E>::const_t       const_t;
-        typedef typename AbstractList<E>::const_ref_t   const_ref_t;
-        typedef typename AbstractList<E>::const_ptr_t   const_ptr_t;
+        typedef typename AbstractList<E>::const_t const_t;
+        typedef typename AbstractList<E>::const_ref_t const_ref_t;
+        typedef typename AbstractList<E>::const_ptr_t const_ptr_t;
 
     protected:
         uint_t _F_capacity;
         uint_t _F_capacityIncrement;
 
         bool growVector();
+
     public:
         Vector(uint_t capacityIncrement = 32);
-        Vector(const Vector<E>& obj);
+
+        Vector(const Vector<E> &obj);
 
         virtual bool add(value_t elem) override;
-        virtual bool addAll(const Collection<E>& c) override;
+
+        virtual bool addAll(const Collection<E> &c) override;
 
         virtual uint_t capacity() const final;
 
         virtual void clear() override;
+
         virtual void clearUnused();
 
         virtual bool remove(value_t elem) override;
+
         virtual bool remove(uint_t index) override;
-        virtual bool removeAll(const Collection<E>& c) override;
-        virtual bool removeIf(Predicate<const_ref_t>& filter) override;
+
+        virtual bool removeAll(const Collection<E> &c) override;
+
+        virtual bool removeIf(Predicate<const_ref_t> &filter) override;
 
         virtual void setCapacityIncrement(uint_t increment) final;
+
         virtual uint_t getCapacityIncrement() const final;
     };
 
@@ -264,26 +298,32 @@ namespace UCA_L2INFO_PW4
     public:
         typedef typename Collection<E>::traits_type traits_type;
 
-        typedef typename Collection<E>::value_t   value_t;
-        typedef typename Collection<E>::ref_t     ref_t;
-        typedef typename Collection<E>::ptr_t     ptr_t;
-        typedef typename Collection<E>::rvalue_t  rvalue_t;
+        typedef typename Collection<E>::value_t value_t;
+        typedef typename Collection<E>::ref_t ref_t;
+        typedef typename Collection<E>::ptr_t ptr_t;
+        typedef typename Collection<E>::rvalue_t rvalue_t;
 
-        typedef typename Collection<E>::const_t       const_t;
-        typedef typename Collection<E>::const_ref_t   const_ref_t;
-        typedef typename Collection<E>::const_ptr_t   const_ptr_t;
+        typedef typename Collection<E>::const_t const_t;
+        typedef typename Collection<E>::const_ref_t const_ref_t;
+        typedef typename Collection<E>::const_ptr_t const_ptr_t;
 
     protected:
         bool _F_needUpdate;
         UniquePointer<E[]> _F_toArray;
 
-        Set(): _F_needUpdate(false), _F_toArray(nullptr) {}
+        Set() : _F_needUpdate(false), _F_toArray(nullptr)
+        {}
 
         // TODO: Recheck the update thing about Iterator
-        virtual void needUpdate(bool status = true) final {_F_needUpdate=status;}
-        virtual bool doNeedUpdate() const final {return _F_needUpdate;}
+        virtual void needUpdate(bool status = true) final
+        { _F_needUpdate = status; }
+
+        virtual bool doNeedUpdate() const final
+        { return _F_needUpdate; }
+
     public:
-        virtual Iterator<E> iterator() override;
+        virtual Iterator<E> iterator() const override;
+
         virtual ConstIterator<E> const_iterator() const override;
     };
 
@@ -296,119 +336,137 @@ namespace UCA_L2INFO_PW4
     public:
         typedef Traits<E> traits_type;
 
-        typedef typename traits_type::value_t   value_t;
-        typedef typename traits_type::ref_t     ref_t;
-        typedef typename traits_type::ptr_t     ptr_t;
-        typedef typename traits_type::rvalue_t  rvalue_t;
+        typedef typename traits_type::value_t value_t;
+        typedef typename traits_type::ref_t ref_t;
+        typedef typename traits_type::ptr_t ptr_t;
+        typedef typename traits_type::rvalue_t rvalue_t;
 
-        typedef typename traits_type::const_t       const_t;
-        typedef typename traits_type::const_ref_t   const_ref_t;
-        typedef typename traits_type::const_ptr_t   const_ptr_t;
+        typedef typename traits_type::const_t const_t;
+        typedef typename traits_type::const_ref_t const_ref_t;
+        typedef typename traits_type::const_ptr_t const_ptr_t;
 
         struct Node
         {
             Node *left, *right;
             E element;
 
-            Node(): left(nullptr), right(nullptr) {/*...*/}
+            Node() : left(nullptr), right(nullptr)
+            {/*...*/}
+
             virtual ~Node()
             {
                 if (left) delete left;
                 if (right) delete right;
             }
         };
+
     private:
         Node *_F_tree;
         uint_t _F_size;
-        SortMethod<const E&, const E&> _F_sortMethod;
+        SortMethod<const E &, const E &> _F_sortMethod;
 
     protected:
-        void recursive_assign(Node* current, const Node * const node);
+        void recursive_assign(Node *current, const Node *const node);
+
     public:
-        SortedSet(SortMethod<const E&, const E&> sortMethod = [](const E& e1, const E& e2) -> int
-                {
-                    return Comparable<E>::CompareTo(e1, e2);
-                }
+        SortedSet(SortMethod<const E &, const E &> sortMethod = [](const E &e1, const E &e2) -> int {
+            return Comparable<E>::CompareTo(e1, e2);
+        }
         );
+
         SortedSet(const SortedSet<E> &cpy);
+
         virtual ~SortedSet() override;
 
         virtual bool add(value_t elem);
-        virtual bool addAll(const Collection<E>& c);
+
+        virtual bool addAll(const Collection<E> &c);
 
         virtual void clear();
 
         virtual bool contains(value_t elem) const;
-        virtual bool containsAll(const Collection<E>& c) const;
+
+        virtual bool containsAll(const Collection<E> &c) const;
 
         virtual bool isEmpty() const;
 
         virtual bool remove(value_t elem);
-        virtual bool removeAll(const Collection<E>& c);
-        virtual bool removeIf(Predicate<const_ref_t>& filter);
 
-        virtual bool retainAll(const Collection<E>& c);
+        virtual bool removeAll(const Collection<E> &c);
+
+        virtual bool removeIf(Predicate<const_ref_t> &filter);
+
+        virtual bool retainAll(const Collection<E> &c);
 
         virtual size_t size() const;
 
         virtual UniquePointer<E[]> toArray() const;
     };
 
-    template <typename E>
+    template<typename E>
     class HashSet : public Set<E>
     {
         template<typename K, typename V>
-        friend class HashMap;
+        friend
+        class HashMap;
+
     public:
         typedef Traits<E> traits_type;
 
-        typedef typename traits_type::value_t   value_t;
-        typedef typename traits_type::ref_t     ref_t;
-        typedef typename traits_type::ptr_t     ptr_t;
-        typedef typename traits_type::rvalue_t  rvalue_t;
+        typedef typename traits_type::value_t value_t;
+        typedef typename traits_type::ref_t ref_t;
+        typedef typename traits_type::ptr_t ptr_t;
+        typedef typename traits_type::rvalue_t rvalue_t;
 
-        typedef typename traits_type::const_t       const_t;
-        typedef typename traits_type::const_ref_t   const_ref_t;
-        typedef typename traits_type::const_ptr_t   const_ptr_t;
+        typedef typename traits_type::const_t const_t;
+        typedef typename traits_type::const_ref_t const_ref_t;
+        typedef typename traits_type::const_ptr_t const_ptr_t;
 
     private:
         struct Bucket
         {
             value_t *element;
 
-            Bucket(): element(nullptr) {/* ... */}
-            virtual ~Bucket() {
+            Bucket() : element(nullptr)
+            {/* ... */}
+
+            virtual ~Bucket()
+            {
                 if (element)
                 {
                     delete element;
                 }
             };
 
-            virtual bool operator ==(const_ref_t elem) {
+            virtual bool operator==(const_ref_t elem)
+            {
                 return element && hashCode() == traits_type::hash_code(elem);
             }
 
-            virtual hash_t hashCode() {
+            virtual hash_t hashCode()
+            {
                 return traits_type::hash_code(*element);
             }
 
-            virtual Bucket& operator =(value_t v) {
+            virtual Bucket &operator=(value_t v)
+            {
                 if (element == nullptr)
                 {
                     element = new value_t(v);
-                }
-                else
+                } else
                 {
                     *element = v;
                 }
                 return *this;
             }
 
-            virtual operator bool() const {
+            virtual operator bool() const
+            {
                 return element == nullptr;
             }
 
-            virtual void clear() {
+            virtual void clear()
+            {
                 delete element;
                 element = nullptr;
             }
@@ -416,7 +474,7 @@ namespace UCA_L2INFO_PW4
 
         uint_t _F_size;
         uint_t _F_capacity;
-        uint_t _F_padding=0;
+        uint_t _F_padding = 0;
 
         float _F_loadFactor;
 
@@ -435,31 +493,44 @@ namespace UCA_L2INFO_PW4
         virtual void setPadding(uint_t padding);
 
         virtual void grow(uint_t addCapacity);
+
     public:
         HashSet(uint_t initialCapacity);
+
         HashSet(uint_t initialCapacity = 16u, float loadFactor = 0.75);
-        HashSet(const Collection<E>& collection);
+
+        HashSet(const Collection<E> &collection);
+
         virtual ~HashSet() override;
 
-        virtual bool add(value_t elem) override {return setElement(elem, false);}
-        virtual bool addAll(const Collection<E>& c) override;
+        virtual bool add(value_t elem) override
+        { return setElement(elem, false); }
+
+        virtual bool addAll(const Collection<E> &c) override;
 
         virtual void clear() override;
 
         virtual bool contains(value_t elem) const override;
-        virtual bool containsAll(const Collection<E>& c) const override;
+
+        virtual bool containsAll(const Collection<E> &c) const override;
 
         virtual bool isEmpty() const override;
 
         virtual bool remove(value_t elem) override;
-        virtual bool removeAll(const Collection<E>& c) override;
-        virtual bool removeIf(Predicate<const_ref_t>& filter) override;
 
-        virtual bool retainAll(const Collection<E>& c) override;
+        virtual bool removeAll(const Collection<E> &c) override;
+
+        virtual bool removeIf(Predicate<const_ref_t> &filter) override;
+
+        virtual bool retainAll(const Collection<E> &c) override;
 
         virtual size_t size() const override;
 
         virtual UniquePointer<E[]> toArray() const override;
+
+        virtual Iterator<E, traits_type> iterator() const override;
+
+        virtual ConstIterator<E, traits_type> const_iterator() const override;
     };
 
     template<typename E>
@@ -468,67 +539,110 @@ namespace UCA_L2INFO_PW4
     public:
         typedef typename Collection<E>::traits_type traits_type;
 
-        typedef typename Collection<E>::value_t   value_t;
-        typedef typename Collection<E>::ref_t     ref_t;
-        typedef typename Collection<E>::ptr_t     ptr_t;
-        typedef typename Collection<E>::rvalue_t  rvalue_t;
+        typedef typename Collection<E>::value_t value_t;
+        typedef typename Collection<E>::ref_t ref_t;
+        typedef typename Collection<E>::ptr_t ptr_t;
+        typedef typename Collection<E>::rvalue_t rvalue_t;
 
-        typedef typename Collection<E>::const_t       const_t;
-        typedef typename Collection<E>::const_ref_t   const_ref_t;
-        typedef typename Collection<E>::const_ptr_t   const_ptr_t;
+        typedef typename Collection<E>::const_t const_t;
+        typedef typename Collection<E>::const_ref_t const_ref_t;
+        typedef typename Collection<E>::const_ptr_t const_ptr_t;
 
         struct Chain
         {
-            Chain* prev, *next;
+            Chain *prev, *next;
             E elem;
 
             Chain() = default;
-            Chain(E elem, Chain* prev = nullptr): prev(prev), next(nullptr), elem(elem) {
+
+            Chain(E elem, Chain *prev = nullptr) : prev(prev), next(nullptr), elem(elem)
+            {
                 if (prev)
                 {
                     prev->next = this;
                 }
             }
 
-            void unchain() {
+            void unchain()
+            {
                 prev = nullptr;
                 next = nullptr;
             }
 
-            virtual ~Chain() {
+            virtual ~Chain()
+            {
                 if (next)
                 {
                     delete next;
                 }
             }
         };
+
     protected:
-        Chain* _F_first;
+        Chain *_F_first;
         uint_t _F_size;
     public:
         ChainedList();
-        ChainedList(const Collection<E>& collection);
+
+        ChainedList(const Collection<E> &collection);
+
         virtual ~ChainedList() override;
 
         virtual bool add(value_t elem) override;
-        virtual bool addAll(const Collection<E>& c) override;
+
+        virtual bool addAll(const Collection<E> &c) override;
 
         virtual void clear() override;
 
-        virtual bool contains(value_t elem) override;
-        virtual bool containsAll(const Collection<E>& c) override;
+        virtual bool contains(value_t elem) const override;
+
+        virtual bool containsAll(const Collection<E> &c) const override;
 
         virtual bool isEmpty() const override;
 
         virtual bool remove(value_t elem) override;
-        virtual bool removeAll(const Collection<E>& c) override;
-        virtual bool removeIf(Predicate<const_ref_t>& filter) override;
 
-        virtual bool retainAll(const Collection<E>& c) override;
+        virtual bool removeAll(const Collection<E> &c) override;
+
+        virtual bool removeIf(Predicate<const_ref_t> &filter) override;
+
+        virtual bool retainAll(const Collection<E> &c) override;
 
         virtual size_t size() const override;
 
         virtual UniquePointer<E[]> toArray() const override;
+
+        // TODO: iterator for ChainedList
+
+        virtual Iterator<E, traits_type> iterator() const override;
+
+        virtual ConstIterator<E, traits_type> const_iterator() const override;
+    };
+
+    template<typename E>
+    class Queue : public ChainedList<E>
+    {
+
+        // TODO: Queue
+    public:
+        Queue();
+
+        Queue(const Collection<E> &collection);
+
+        typedef typename ChainedList<E>::traits_type traits_type;
+
+        typedef typename ChainedList<E>::value_t value_t;
+        typedef typename ChainedList<E>::ref_t ref_t;
+        typedef typename ChainedList<E>::ptr_t ptr_t;
+        typedef typename ChainedList<E>::rvalue_t rvalue_t;
+
+        typedef typename ChainedList<E>::const_t const_t;
+        typedef typename ChainedList<E>::const_ref_t const_ref_t;
+        typedef typename ChainedList<E>::const_ptr_t const_ptr_t;
+
+        virtual void push(value_t elem);
+
+        virtual UniquePointer<E> pop();
     };
 
     template<typename K, typename V>
@@ -536,54 +650,62 @@ namespace UCA_L2INFO_PW4
     {
     public:
         typedef Traits<K> key_traits;
-        typedef typename key_traits::value_t   key_t;
-        typedef typename key_traits::ref_t     key_ref_t;
-        typedef typename key_traits::ptr_t     key_ptr_t;
-        typedef typename key_traits::rvalue_t  key_rvalue_t;
+        typedef typename key_traits::value_t key_t;
+        typedef typename key_traits::ref_t key_ref_t;
+        typedef typename key_traits::ptr_t key_ptr_t;
+        typedef typename key_traits::rvalue_t key_rvalue_t;
 
-        typedef typename key_traits::const_t       key_const_t;
-        typedef typename key_traits::const_ref_t   key_const_ref_t;
-        typedef typename key_traits::const_ptr_t   key_const_ptr_t;
+        typedef typename key_traits::const_t key_const_t;
+        typedef typename key_traits::const_ref_t key_const_ref_t;
+        typedef typename key_traits::const_ptr_t key_const_ptr_t;
 
         typedef Traits<V> value_traits;
-        typedef typename value_traits::value_t   value_t;
-        typedef typename value_traits::ref_t     value_ref_t;
-        typedef typename value_traits::ptr_t     value_ptr_t;
-        typedef typename value_traits::rvalue_t  value_rvalue_t;
+        typedef typename value_traits::value_t value_t;
+        typedef typename value_traits::ref_t value_ref_t;
+        typedef typename value_traits::ptr_t value_ptr_t;
+        typedef typename value_traits::rvalue_t value_rvalue_t;
 
-        typedef typename value_traits::const_t       value_const_t;
-        typedef typename value_traits::const_ref_t   value_const_ref_t;
-        typedef typename value_traits::const_ptr_t   value_const_ptr_t;
+        typedef typename value_traits::const_t value_const_t;
+        typedef typename value_traits::const_ref_t value_const_ref_t;
+        typedef typename value_traits::const_ptr_t value_const_ptr_t;
 
-        virtual Set<K>  keySet() const = 0;
-        virtual List<V> values() const = 0;
-        
-        virtual bool addAll(const Map<K,V>& map) = 0;
+        virtual HashSet<K> keySet() const = 0;
+
+        virtual ArrayList<V> values() const = 0;
+
+        virtual bool addAll(const Map<K, V> &map) = 0;
 
         virtual void clear() = 0;
 
-        virtual bool contains(key_t elem) = 0;
-        virtual bool containsAll(const Collection<K>& c) = 0;
-        
+        virtual bool contains(key_t elem) const = 0;
+
+        virtual bool containsAll(const Collection<K> &c) const = 0;
+
         virtual bool isEmpty() const = 0;
 
         virtual bool remove(key_t elem) = 0;
-        virtual bool removeIf(Predicate<key_const_t>& predicateOnKey) = 0;
-        virtual bool removeForValue(Predicate<value_const_t>& predicateOnValue) = 0;
-        virtual bool removeAll(const Set<K>& c) = 0;
-        
-        virtual bool retainAll(const Set<K>& c) = 0;
+
+        virtual bool removeIf(Predicate<key_const_t> &predicateOnKey) = 0;
+
+        virtual bool removeForValue(Predicate<value_const_t> &predicateOnValue) = 0;
+
+        virtual bool removeAll(const Set<K> &c) = 0;
+
+        virtual bool retainAll(const Set<K> &c) = 0;
 
         virtual bool set(key_t key, value_t value) = 0;
+
         virtual value_ptr_t get(key_t key) const = 0;
-        
+
         virtual size_t size() const = 0;
 
-        inline virtual value_ptr_t operator[](key_const_t key) const {
+        inline virtual value_ptr_t operator[](key_const_t key) const
+        {
             return this->get(key);
         };
 
-        inline virtual operator bool() const {
+        inline virtual operator bool() const
+        {
             return !this->isEmpty();
         }
     };
@@ -592,25 +714,25 @@ namespace UCA_L2INFO_PW4
     class HashMap : public Map<K, V>
     {
     public:
-        typedef typename Map<K, V>::key_traits    key_traits;
-        typedef typename Map<K, V>::value_t       key_t;
-        typedef typename Map<K, V>::ref_t         key_ref_t;
-        typedef typename Map<K, V>::ptr_t         key_ptr_t;
-        typedef typename Map<K, V>::rvalue_t      key_rvalue_t;
+        typedef Traits<K> key_traits;
+        typedef typename key_traits::value_t key_t;
+        typedef typename key_traits::ref_t key_ref_t;
+        typedef typename key_traits::ptr_t key_ptr_t;
+        typedef typename key_traits::rvalue_t key_rvalue_t;
 
-        typedef typename Map<K, V>::const_t       key_const_t;
-        typedef typename Map<K, V>::const_ref_t   key_const_ref_t;
-        typedef typename Map<K, V>::const_ptr_t   key_const_ptr_t;
+        typedef typename key_traits::const_t key_const_t;
+        typedef typename key_traits::const_ref_t key_const_ref_t;
+        typedef typename key_traits::const_ptr_t key_const_ptr_t;
 
-        typedef typename Map<K, V>::value_traits  value_traits;
-        typedef typename Map<K, V>::value_t       value_t;
-        typedef typename Map<K, V>::ref_t         value_ref_t;
-        typedef typename Map<K, V>::ptr_t         value_ptr_t;
-        typedef typename Map<K, V>::rvalue_t      value_rvalue_t;
+        typedef Traits<V> value_traits;
+        typedef typename value_traits::value_t value_t;
+        typedef typename value_traits::ref_t value_ref_t;
+        typedef typename value_traits::ptr_t value_ptr_t;
+        typedef typename value_traits::rvalue_t value_rvalue_t;
 
-        typedef typename Map<K, V>::const_t       value_const_t;
-        typedef typename Map<K, V>::const_ref_t   value_const_ref_t;
-        typedef typename Map<K, V>::const_ptr_t   value_const_ptr_t;
+        typedef typename value_traits::const_t value_const_t;
+        typedef typename value_traits::const_ref_t value_const_ref_t;
+        typedef typename value_traits::const_ptr_t value_const_ptr_t;
 
         struct HashNode : public Object
         {
@@ -627,136 +749,143 @@ namespace UCA_L2INFO_PW4
         HashSet<HashNode> _F_nodes;
     public:
         HashMap();
-        HashMap(const HashMap<K, V>& map);
+
+        HashMap(const HashMap<K, V> &map);
+
         virtual ~HashMap() = default;
 
-        virtual Set<K>  keySet() const override;
-        virtual List<V> values() const override;
+        virtual HashSet<K> keySet() const override;
 
-        virtual bool addAll(const Map<K,V>& map) override;
+        virtual ArrayList<V> values() const override;
+
+        virtual bool addAll(const Map<K, V> &map) override;
 
         virtual void clear() override;
 
-        virtual bool contains(key_t elem) override;
-        virtual bool containsAll(const Collection<K>& c) override;
+        virtual bool contains(key_t elem) const override;
+
+        virtual bool containsAll(const Collection<K> &c) const override;
 
         virtual bool isEmpty() const override;
 
         virtual bool remove(key_t elem) override;
-        virtual bool removeIf(Predicate<key_const_t>& predicateOnKey) override;
-        virtual bool removeForValue(Predicate<value_const_t>& predicateOnValue) override;
-        virtual bool removeAll(const Set<K>& c) override;
 
-        virtual bool retainAll(const Set<K>& c) override;
+        virtual bool removeIf(Predicate<key_const_t> &predicateOnKey) override;
+
+        virtual bool removeForValue(Predicate<value_const_t> &predicateOnValue) override;
+
+        virtual bool removeAll(const Set<K> &c) override;
+
+        virtual bool retainAll(const Set<K> &c) override;
 
         virtual bool set(key_t key, value_t value) override;
+
         virtual value_ptr_t get(key_t key) const override;
 
         virtual size_t size() const override;
     };
 
-    template < typename T, typename _Traits >
+    template<typename T, typename _Traits>
     Iterator<T, _Traits>::Iterator(ptr_t begin, ptr_t end)
     {
         _F_begin = begin;
-        _F_end   = end;
+        _F_end = end;
     }
 
-    template < typename T, typename _Traits >
+    template<typename T, typename _Traits>
     ConstIterator<T, _Traits>::ConstIterator(const_ptr_t begin, const_ptr_t end)
     {
         _F_begin = begin;
         _F_end = end;
     }
 
-    template < typename T, typename _Traits >
-    typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::begin()
+    template<typename T, typename _Traits>
+    typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::begin() const
     {
         return iterator()._F_begin;
     }
 
-    template < typename T, typename _Traits >
-    typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::end()
+    template<typename T, typename _Traits>
+    typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::end() const
     {
         return iterator()._F_end;
     }
 
-    template < typename T, typename _Traits >
+    template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::cbegin() const
     {
         return const_iterator()._F_begin;
     }
 
-    template < typename T, typename _Traits >
+    template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::cend() const
     {
         return const_iterator()._F_end;
     }
 
-    template < typename T, typename _Traits >
+    template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::rbegin()
     {
-        return iterator()._F_end-1;
+        return iterator()._F_end - 1;
     }
 
-    template < typename T, typename _Traits >
+    template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::rend()
     {
         return iterator()._F_begin - 1;
     }
 
-    template < typename T, typename _Traits >
+    template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crbegin() const
     {
-        return const_iterator()._F_end-1;
+        return const_iterator()._F_end - 1;
     }
 
-    template < typename T, typename _Traits >
+    template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crend() const
     {
-        return const_iterator()._F_begin-1;
+        return const_iterator()._F_begin - 1;
     }
 
-    template < typename E >
+    template<typename E>
     AbstractList<E>::AbstractList(uint_t initCapacity):
-        _F_array(initCapacity ? allocator::alloc(initCapacity) : nullptr),
-        _F_size(0u)
+            _F_array(initCapacity ? allocator::alloc(initCapacity) : nullptr),
+            _F_size(0u)
     {
         /* ... */
     }
 
-    template < typename E >
+    template<typename E>
     AbstractList<E>::AbstractList(ptr_t array, size_t size):
-        _F_array(array), _F_size(size)
+            _F_array(array), _F_size(size)
     {
         /* ... */
     }
 
-    template < typename E >
+    template<typename E>
     bool AbstractList<E>::grow(size_t currentCapacity, size_t addCapacity)
     {
-        ptr_t newArray(allocator::alloc(currentCapacity+addCapacity));
+        ptr_t newArray(allocator::alloc(currentCapacity + addCapacity));
         if (newArray)
         {
             return _F_size == traits_type::fill(_F_array, newArray, _F_size);
-        }
-        else return false;
+        } else return false;
     }
 
-    template < typename E >
+    template<typename E>
     AbstractList<E>::AbstractList(const AbstractList<E> &obj):
-        AbstractList<E>(traits_type::copy(obj._F_array, obj._F_size), obj._F_size)
+            AbstractList<E>(traits_type::copy(obj._F_array, obj._F_size), obj._F_size)
     {
         /* ... */
     }
 
-    template < typename E >
+    template<typename E>
     AbstractList<E>::~AbstractList()
     {
         AbstractList<E>::clear();
     }
 
-    template < typename E >
+    template<typename E>
     void AbstractList<E>::clear()
     {
         if (_F_array)
@@ -767,11 +896,10 @@ namespace UCA_L2INFO_PW4
         _F_size = 0u;
     }
 
-    template < typename E >
+    template<typename E>
     bool AbstractList<E>::contains(value_t elem) const
     {
-        for (value_t e : (*this))
-        {
+        cforeach(value_t, e, (*this))
             if (e == elem)
                 return true;
         }
@@ -782,7 +910,7 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool AbstractList<E>::containsAll(const Collection<E> &c) const
     {
-        for (value_t elem : c)
+        for (auto elem : c)
         {
             if (contains(elem) == false)
                 return false;
@@ -820,7 +948,7 @@ namespace UCA_L2INFO_PW4
         ptr_t newArray = allocator::alloc(c.size()), __p = newArray;
         if (newArray)
         {
-            for (const_t elem : c)
+            for (const_ref_t elem : c)
             {
                 int _indexOf(indexOf(elem));
                 if (_indexOf >= 0)
@@ -834,6 +962,7 @@ namespace UCA_L2INFO_PW4
 
             _F_array = newArray;
             _F_size  = (__p - newArray)/sizeof(value_t);
+            return true;
         }
         else return false;
     }
@@ -866,7 +995,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    Iterator<E, typename AbstractList<E>::traits_type> AbstractList<E>::iterator()
+    Iterator<E, typename AbstractList<E>::traits_type> AbstractList<E>::iterator() const
     {
         return Iterator<E, traits_type>(_F_array, (&_F_array[_F_size]) - 1);
     }
@@ -896,6 +1025,7 @@ namespace UCA_L2INFO_PW4
         {
             this->_F_array[this->_F_size] = elem;
             this->_F_size++;
+            return true;
         }
         else
         {
@@ -925,11 +1055,14 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool ArrayList<E>::remove(value_t elem)
     {
-        Predicate<const_ref_t> predicate = [elem](const_ref_t e) -> bool {
-            return elem == e;
-        };
+        //Predicate<const_ref_t> predicate;
+        //predicate = Predicate<const_ref_t>([elem](const_ref_t e) -> bool {
+        //    return elem == e;
+        //});
 
-        return removeIf(predicate);
+        //return removeIf(predicate);
+        // TODO fixed that part
+        return false;
     }
 
     template < typename E >
@@ -962,9 +1095,9 @@ namespace UCA_L2INFO_PW4
         UniquePointer<int[]> elemIndexes(new int[c.size()]);
         uint_t f(0);
 
-        for (value_t elem : c)
+        for (auto elem : c)
         {
-            int index(this->indexOf(c));
+            int index(this->indexOf(elem));
             if (index != -1)
             {
                 elemIndexes[f] = index;
@@ -1115,7 +1248,7 @@ namespace UCA_L2INFO_PW4
             }
         }
 
-        for (const_t elem : c)
+        for (const_ref_t elem : c)
         {
             this->_F_array[this->_F_size] = elem;
             this->_F_size++;
@@ -1272,12 +1405,12 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    Iterator<E> Set<E>::iterator()
+    Iterator<E> Set<E>::iterator() const
     {
-        if (needUpdate())
-        {
-            _F_toArray = this->toArray();
-        }
+        // if (doNeedUpdate())
+        // {
+        //     _F_toArray = Collection<E>::toArray();
+        // }
 
         return Iterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
     }
@@ -1285,10 +1418,11 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     ConstIterator<E> Set<E>::const_iterator() const
     {
-        if (needUpdate())
-        {
-            _F_toArray = this->toArray();
-        }
+
+        // if (doNeedUpdate())
+        // {
+        //     _F_toArray = Collection<E>::toArray();
+        // }
 
         return ConstIterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
     }
@@ -1326,8 +1460,8 @@ namespace UCA_L2INFO_PW4
         _F_size(cpy.size()),
         _F_sortMethod(cpy._F_sortMethod)
     {
-        void (*browse)(Node*, const Node* const) = [&] (Node* dest, const Node* const src)
-        {
+        Function<void(Node*, const Node* const)> browse (
+                [&] (Node* dest, const Node* const src) {
             if (src->left)
             {
                 dest->left    = new Node();
@@ -1341,7 +1475,7 @@ namespace UCA_L2INFO_PW4
                 dest->element = src->element;
                 browse(dest->right, src->right);
             }
-        };
+        });
         
         _F_tree->element = cpy._F_tree->element;
         browse(_F_tree, cpy._F_tree);
@@ -1356,37 +1490,35 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool SortedSet<E>::add(value_t elem)
     {
-        Node* (*browse)(Node*) = [&, this](Node* node)
+        Node* emplacement = nullptr, *browse = _F_tree;
+
+        int sort;
+        while (browse != nullptr)
         {
-            int sort(this->_F_sortMethod(elem, node->element));
+            sort = _F_sortMethod(elem, browse->element);
             if (sort < 0)
             {
-                if (node->left)
-                {
-                    return browse(node->left);
-                }
+                if (browse->left) browse = browse->left;
                 else
                 {
-                    node->left = new Node();
-                    return node->left;
+                    browse->left = new Node();
+                    emplacement = browse->left;
+                    break;
                 }
             }
             else if (sort > 0)
             {
-                if (node->right)
-                {
-                    return browse(node->right);
-                }
+                if (browse->right) browse = browse->right;
                 else
                 {
-                    node->right = new Node();
-                    return node->right;
+                    browse->right = new Node();
+                    emplacement = browse->right;
+                    break;
                 }
             }
-            else return nullptr;
-        };
+            else break;
+        }
 
-        Node* emplacement = (this->_F_size == 0 ? _F_tree : browse(_F_tree));
         if (emplacement)
         {
             emplacement->element = elem;
@@ -1418,25 +1550,19 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool SortedSet<E>::contains(value_t elem) const
     {
-        bool (*browse)(const Node* const) = [&,this] (const Node* const node)
+        Node* browse = _F_tree;
+        while (browse != nullptr)
         {
-            if (!node) return false;
-
-            int comparison(this->_F_sortMethod(elem, node->element));
-            switch (comparison)
+            int comparison = _F_sortMethod(elem, browse->element);
+            if (comparison < 0)
             {
-                case -1:
-                    return browse(node->left);
-                case 0:
-                    return true;
-                case 1:
-                    return browse(node->right);
-                default:
-                    return false;
-            }
-        };
-        
-        return browse(_F_tree);
+                browse = browse->left;
+            } else if (comparison > 0)
+            {
+                browse = browse->right;
+            } else return true;
+        }
+        return false;
     }
 
     template < typename E >
@@ -1460,7 +1586,8 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool SortedSet<E>::remove(value_t elem)
     {
-        return removeIf([=](const_ref_t e) -> bool {return elem == e;});
+        Predicate<const_ref_t> predicate([=](const_ref_t e) -> bool {return elem == e;});
+        return removeIf(predicate);
     }
 
     template < typename E >
@@ -1480,9 +1607,10 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool SortedSet<E>::retainAll(const Collection<E> &c)
     {
-        return removeIf([&](const_ref_t elem) -> bool {
+        Predicate<const_ref_t> predicate([&](const_ref_t elem) -> bool {
             return !c.contains(elem);
         });
+        return removeIf(predicate);
     }
 
     template < typename E >
@@ -1495,7 +1623,7 @@ namespace UCA_L2INFO_PW4
     UniquePointer<E[]> SortedSet<E>::toArray() const
     {
         // TODO: SortedSet<E>::toArray
-        return nullptr;
+        return UniquePointer<E[]>();
     }
 
     template < typename E >
@@ -1745,6 +1873,18 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
+    Iterator<E, typename HashSet<E>::traits_type> HashSet<E>::iterator() const
+    {
+        // TODO iterator (hashset)
+    }
+
+    template < typename E >
+    ConstIterator<E, typename HashSet<E>::traits_type> HashSet<E>::const_iterator() const
+    {
+        // TODO const_iterator (hashset)
+    }
+
+    template < typename E >
     ChainedList<E>::ChainedList(): _F_first(nullptr), _F_size(0u)
     {
         /* ... */
@@ -1755,7 +1895,7 @@ namespace UCA_L2INFO_PW4
     {
         Chain ** current(_F_first);
         Chain * prev(nullptr);
-        for (const_t elem : collection)
+        for (const_ref_t elem : collection)
         {
             *current = new Chain(elem, prev);
             prev     = *current;
@@ -1813,7 +1953,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool ChainedList<E>::contains(value_t elem)
+    bool ChainedList<E>::contains(value_t elem) const
     {
         Chain* chain = _F_first;
         while (chain)
@@ -1828,7 +1968,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool ChainedList<E>::containsAll(const Collection<E> &c)
+    bool ChainedList<E>::containsAll(const Collection<E> &c) const
     {
         for (auto e : c)
         {
@@ -1903,7 +2043,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename K, typename V >
-    Set<K> HashMap<K, V>::keySet() const
+    HashSet<K> HashMap<K, V>::keySet() const
     {
         HashSet<K> keys;
 
@@ -1916,7 +2056,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename K, typename V >
-    List<V> HashMap<K,V>::values() const
+    ArrayList<V> HashMap<K,V>::values() const
     {
         ArrayList<K> values;
 
@@ -1947,7 +2087,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename K, typename V >
-    bool HashMap<K,V>::contains(key_t elem)
+    bool HashMap<K,V>::contains(key_t elem) const
     {
         HashNode node;
         node.key = elem;
@@ -1955,7 +2095,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename K, typename V >
-    bool HashMap<K, V>::containsAll(const Collection<K> &c)
+    bool HashMap<K, V>::containsAll(const Collection<K> &c) const
     {
         for (auto key : c)
         {
@@ -1994,12 +2134,13 @@ namespace UCA_L2INFO_PW4
     template < typename K, typename V >
     bool HashMap<K, V>::removeIf(Predicate<key_const_t> &predicateOnKey)
     {
+        return false;
     }
 
     template < typename K, typename V >
     bool HashMap<K, V>::removeForValue(Predicate<value_const_t> &predicateOnValue)
     {
-
+        return false;
     }
 
     template < typename K, typename V >

@@ -12,7 +12,7 @@ typedef long double         ldouble_t;
 
 typedef unsigned char       bool_t;
 typedef unsigned long long  hash_t;
-typedef unsigned long       size_t;
+typedef __SIZE_TYPE__       size_t;
 
 #ifdef __SIZEOF_INT128__
 typedef __uint128_t         ullong_t;
@@ -36,17 +36,13 @@ typedef long long           llong_t;
             } \
         }
 
-#define cforeach(elem, obj) { \
-        Iterator<type>& __iter = obj.iterator(); \
-        if (__iter.hasNext())\
-        { \
-            for (auto elem ;__iter.hasNext(); elem=__iter.next()) {\
-            } \
-        }
+#define cforeach(type, elem, obj)  \
+        ConstIterator<type> __iter = obj.const_iterator(); \
+        for (const type* __begin = __iter._F_begin; __begin < __iter._F_end; __begin++) \
+        { const auto elem = *__begin;
+
 #endif
 
-#define __in
-#define __out
 #ifndef __nullable
 #define __nullable
 #endif // __nullable
