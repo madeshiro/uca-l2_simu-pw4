@@ -4,6 +4,7 @@
 
 namespace UCA_L2INFO_PW4
 {
+    /* TODO Socket (version 1.0 release)
     class Socket;
     class SockOutputStream : public OutputStream
     {
@@ -42,7 +43,7 @@ namespace UCA_L2INFO_PW4
         void close();
     };
 
-
+    */
 }
 
 

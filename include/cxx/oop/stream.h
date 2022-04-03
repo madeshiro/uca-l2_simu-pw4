@@ -10,7 +10,7 @@ namespace UCA_L2INFO_PW4
     public:
         virtual int write(const char* buf, size_t size) = 0;
 
-        virtual void flush() = 0;
+        virtual int flush() = 0;
         virtual void close() = 0;
         virtual int  seek(ulong_t pos, ulong_t whence) = 0;
     };
