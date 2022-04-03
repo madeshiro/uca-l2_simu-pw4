@@ -1,7 +1,8 @@
 # Validation of Monte Carlo's Simulation #
-> IT Project - Simulation - Practical Work #4
+> IT Project - Simulation - Practical Work #4 <br/>
+>**vers. 1.0 pre-release (no gui implemented)**
 * * *
-*by Rin Baudelet | L2 Info*
+*by Rin Baudelet | L2 Info* <br/>
 
 ## Program's guideline
 The project is separate in multiple folders:
@@ -18,8 +19,13 @@ Compile the program using the makefile as usual
 
 
 ## Launch the program
-> projectsi_pw4 [CMD] [OPTION...]
+(default launch: witness run for the report)
+> ./projectsi_pw4
 
+(available under version 1.0 release (Gui))
+> ./projectsi_pw4 [CMD] [OPTION...]
+
+ 
 ### Program's command
 - `<default> [OPTIONS...]`
   - default options :
