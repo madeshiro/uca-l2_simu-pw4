@@ -36,7 +36,7 @@ TARGET = $(OUT_DIR_TARGET)$(DEST_TARGET)
 LFLAGS = -fPIC
 
 CSTD	 = -std=c11
-CXXSTD   = -std=c++11
+CXXSTD   = -std=c++17
 
 INCPATH  = -Iinclude/
 DEFINES  := $(DEFINES)
@@ -49,9 +49,10 @@ INCLUDES = mt19937ar.h \
 			defines.h \
 			utils.h \
 			cxx/application.h \
+			cxx/ui.h \
 			cxx/simulation/entities.h \
 			cxx/simulation/simulation.h \
-			cxx/simulation/cdfpdf.h \
+			cxx/simulation/experiment.h \
 			cxx/simulation/statisticaltools.h \
 			cxx/oop/container.hpp \
 			cxx/oop/container.hpp \
@@ -72,9 +73,10 @@ SOURCES = main.cpp \
 			mt19937ar.c \
 			utils.c \
 			cxx/application.cpp \
+			cxx/ui.cpp \
 			cxx/simulation/simulation.cpp \
+			cxx/simulation/experiment.cpp \
 			cxx/simulation/entities.cpp \
-			cxx/simulation/cdfpdf.cpp \
 			cxx/simulation/statisticaltools.cpp \
 			cxx/oop/exception.cpp \
 			cxx/oop/object.cpp \
@@ -100,11 +102,12 @@ OBJECTS  = main.cpp.o \
 			stream.cpp.o \
 			codec.cpp.o \
 			packet.cpp.o \
-			cdfpdf.cpp.o \
 			entities.cpp.o \
 			simulation.cpp.o \
+			experiment.cpp.o \
 			statisticaltools.cpp.o \
-			application.cpp.o
+			application.cpp.o \
+			ui.cpp.o
 
 #### INSTRUCTIONS ####
 
@@ -122,13 +125,15 @@ main.cpp.o: main.cpp $(INCLUDES)
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 application.cpp.o: cxx/application.cpp cxx/application.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+ui.cpp.o: cxx/ui.cpp cxx/ui.h cxx/application.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > Simulation's Files
-cdfpdf.cpp.o: cxx/simulation/cdfpdf.cpp cxx/simulation/cdfpdf.h defines.h
-	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 entities.cpp.o: cxx/simulation/entities.cpp cxx/simulation/entities.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 simulation.cpp.o: cxx/simulation/simulation.cpp cxx/simulation/simulation.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+experiment.cpp.o: cxx/simulation/experiment.cpp cxx/simulation/experiment.h cxx/simulation/simulation.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 statisticaltools.cpp.o: cxx/simulation/statisticaltools.cpp cxx/simulation/statisticaltools.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@

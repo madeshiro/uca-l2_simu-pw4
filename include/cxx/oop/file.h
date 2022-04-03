@@ -20,7 +20,7 @@ namespace UCA_L2INFO_PW4
 
         String getName() const;
 
-        hash_t hashCode() override;
+        hash_t hashCode() const override;
     };
 
     class FileInputStream : public InputStream
@@ -36,7 +36,7 @@ namespace UCA_L2INFO_PW4
         virtual ~FileInputStream();
 
         virtual char  read() override;
-        virtual char* read(char* __out buf, size_t size) override;
+        virtual char* read(char* buf, size_t size) override;
 
         virtual void close() override;
         virtual int  seek(ulong_t pos, ulong_t whence) override;

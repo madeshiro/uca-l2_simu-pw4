@@ -86,9 +86,10 @@ void* memcopy(void* ptr, size_t nmemb, size_t __sizeof)
         ushort_t*   bit16;
         uint_t*     bit32;
         ulong_t*    bit64;
-    } __ptr;
+    } __ptr, __cpy;
 
     __ptr.bit8 = ptr;
+    __cpy.bit8 = cpy;
 
     if (cpy)
     {
@@ -108,4 +109,6 @@ void* memcopy(void* ptr, size_t nmemb, size_t __sizeof)
                 break;
         }
     }
+
+    return ptr;
 }

@@ -113,7 +113,7 @@ namespace UCA_L2INFO_PW4
         virtual bool operator+=(value_t elem)
         { return add(elem); }
 
-        virtual bool operator-=(const_t elem)
+        virtual bool operator-=(value_t elem)
         { return remove(elem); }
     };
 
@@ -143,10 +143,14 @@ namespace UCA_L2INFO_PW4
         virtual UniquePointer<E> set(value_t elem, uint_t index) = 0;
 
         virtual ref_t get(uint_t index) = 0;
+        virtual value_t get(uint_t index) const = 0;
 
         virtual int indexOf(const_ref_t elem) const = 0;
 
         virtual ref_t operator[](uint_t index)
+        { return get(index); }
+
+        virtual value_t operator[](uint_t index) const
         { return get(index); }
     };
 
@@ -189,6 +193,8 @@ namespace UCA_L2INFO_PW4
         virtual bool containsAll(const Collection<E> &c) const override;
 
         virtual ref_t get(uint_t index) override;
+
+        virtual value_t get(uint_t index) const override;
 
         virtual int indexOf(const_ref_t elem) const override;
 
@@ -323,7 +329,6 @@ namespace UCA_L2INFO_PW4
 
     public:
         virtual Iterator<E> iterator() const override;
-
         virtual ConstIterator<E> const_iterator() const override;
     };
 
@@ -438,7 +443,7 @@ namespace UCA_L2INFO_PW4
                 }
             };
 
-            virtual bool operator==(const_ref_t elem)
+            virtual bool operator==(value_t elem)
             {
                 return element && hashCode() == traits_type::hash_code(elem);
             }
@@ -739,6 +744,9 @@ namespace UCA_L2INFO_PW4
             K key;
             V value;
 
+            HashNode() = default;
+            HashNode(K key, V value): key(key), value(value) {/* ... */}
+
             virtual hash_t hashCode() const override
             {
                 return key_traits::hash_code(key);
@@ -899,7 +907,8 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     bool AbstractList<E>::contains(value_t elem) const
     {
-        cforeach(value_t, e, (*this))
+        for (auto e : (*this))
+        {
             if (e == elem)
                 return true;
         }
@@ -921,6 +930,12 @@ namespace UCA_L2INFO_PW4
 
     template < typename E >
     typename AbstractList<E>::ref_t AbstractList<E>::get(uint_t index)
+    {
+        return _F_array[index];
+    }
+
+    template < typename E >
+    typename AbstractList<E>::value_t AbstractList<E>::get(uint_t index) const
     {
         return _F_array[index];
     }
@@ -1328,7 +1343,7 @@ namespace UCA_L2INFO_PW4
             {
                 if (i != index)
                 {
-                    if (i != j) this->_F_size[j] = this->_F_size[i];
+                    if (i != j) this->_F_array[j] = this->_F_array[i];
                     j++;
                 }
             }
@@ -1407,24 +1422,15 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     Iterator<E> Set<E>::iterator() const
     {
-        // if (doNeedUpdate())
-        // {
-        //     _F_toArray = Collection<E>::toArray();
-        // }
-
-        return Iterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
+        return Iterator<E>(nullptr, nullptr);
     }
 
     template < typename E >
     ConstIterator<E> Set<E>::const_iterator() const
     {
 
-        // if (doNeedUpdate())
-        // {
-        //     _F_toArray = Collection<E>::toArray();
-        // }
-
-        return ConstIterator<E>(_F_toArray.pointer(), (&_F_toArray.pointer()[this->size()])-1);
+        // Todo const_iterator for set
+        return ConstIterator<E>(nullptr, nullptr);
     }
 
     template < typename E >
@@ -1476,7 +1482,7 @@ namespace UCA_L2INFO_PW4
                 browse(dest->right, src->right);
             }
         });
-        
+
         _F_tree->element = cpy._F_tree->element;
         browse(_F_tree, cpy._F_tree);
     }
@@ -1632,7 +1638,7 @@ namespace UCA_L2INFO_PW4
 
     template < typename E >
     HashSet<E>::HashSet(uint_t initialCapacity, float loadFactor):
-        _F_set(new Bucket[initialCapacity]), _F_capacity(initialCapacity), _F_size(0u), _F_loadFactor(loadFactor)
+        _F_set(new Bucket[initialCapacity]),  _F_size(0u), _F_capacity(initialCapacity), _F_loadFactor(loadFactor)
     {
         /* ... */
     }
@@ -1661,28 +1667,29 @@ namespace UCA_L2INFO_PW4
         hash_t elemHash(traits_type::hash_code(elem));
         uint_t index = elemHash%_F_capacity;
 
-        bool (*browse)(int) = [&, this](int off) -> bool {
-            if (off > _F_padding) return false;
+        bool _contains(contains(elem));
+        if (_contains && !replace) return true;
 
+        for (uint_t off(0); off < _F_size; off++)
+        {
             uint_t hashIndex((index+off)%_F_capacity);
 
-            if (_F_set[hashIndex])
+            if (_contains)
             {
+                if (!_F_set[hashIndex] && _F_set[hashIndex] == elem)
+                {
+                    _F_set[hashIndex] = elem;
+                }
+            }
+            else if (_F_set[hashIndex])
+            {
+                setPadding(off);
                 _F_set[hashIndex] = elem;
-                _F_size++;
+                break;
             }
-            else if (_F_set[hashIndex] == elem)
-            {
-                if (replace) _F_set[hashIndex] = elem;
-            }
-            else
-            {
-                return browse(off+1);
-            }
-            return true;
-        };
+        }
 
-        return browse(0);
+        return false;
     }
 
     template < typename E >
@@ -1708,19 +1715,20 @@ namespace UCA_L2INFO_PW4
             {
                 hash_t hashIndex(_F_set[i].hashCode()%newCapacity);
 
-                uint_t (*assign)(uint_t) = [&,hashIndex,this] (uint_t off) -> uint_t {
-                    if (buckets[(hashIndex+off)%newCapacity])
+                auto assign = [&,hashIndex,this] () -> uint_t {
+                    for (uint_t off(0); ;off++)
                     {
-                        buckets[(hashIndex+off)%newCapacity] = _F_set[i];
-                        return off;
-                    }
-                    else
-                    {
-                        return assign(off+1);
+                        if (buckets[(hashIndex + off) % newCapacity])
+                        {
+                            buckets[(hashIndex + off) % newCapacity] = _F_set[i];
+                            return off;
+                        }
+
+                        return 0; // suppress warning
                     }
                 };
 
-                setPadding(assign(0));
+                setPadding(assign());
             }
         }
 
@@ -1757,22 +1765,13 @@ namespace UCA_L2INFO_PW4
         hash_t hash_code(traits_type::hash_code(elem));
         uint_t index(hash_code%_F_capacity);
 
-        bool (*browse)(uint_t) = [&,index,this](uint_t off) {
-            if (off > _F_padding)
-            {
-                return false;
-            }
-            if (_F_set[(index+off)%_F_capacity] == elem)
-            {
+        for (uint_t off = 0; off <= _F_padding; off++)
+        {
+            if (_F_set[(index+off)%(_F_capacity)] == elem)
                 return true;
-            }
-            else
-            {
-                return browse(off+1);
-            }
-        };
+        }
 
-        return browse(0u);
+        return false;
     }
 
     template < typename E >
@@ -1829,7 +1828,7 @@ namespace UCA_L2INFO_PW4
     {
         for (uint_t i(0); i < _F_capacity; i++)
         {
-            if (_F_set[i] && filter(_F_set[i].element))
+            if (_F_set[i] && filter((const_ref_t) *(_F_set[i].element)))
             {
                 _F_set[i].clear();
                 _F_size--;
@@ -1842,9 +1841,8 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool HashSet<E>::retainAll(const Collection<E> &c)
     {
-        return removeIf([&](const_ref_t elem) -> bool {
-            return !c.contains(elem);
-        });
+        // Todo: retainall HashSet
+        return false;
     }
 
     template < typename E >
@@ -1856,14 +1854,14 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     UniquePointer<E[]> HashSet<E>::toArray() const
     {
-        ptr_t elements = traits_type::alloc(size());
+        ptr_t elements = Alloc<E>::alloc(size());
         if (elements)
         {
             for (uint_t i(0), j(0); i < _F_capacity && j < _F_size; i++)
             {
                 if (_F_set[i])
                 {
-                    elements[j] = _F_set[i].element;
+                    elements[j] = *(_F_set[i].element);
                     j++;
                 }
             }
@@ -1875,13 +1873,15 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     Iterator<E, typename HashSet<E>::traits_type> HashSet<E>::iterator() const
     {
-        // TODO iterator (hashset)
+        ptr_t ptr = toArray().release();
+        return Iterator<E, traits_type>(ptr, &ptr[_F_size]);
     }
 
     template < typename E >
     ConstIterator<E, typename HashSet<E>::traits_type> HashSet<E>::const_iterator() const
     {
-        // TODO const_iterator (hashset)
+        ptr_t ptr = toArray().release();
+        return ConstIterator<E, traits_type>((const_ptr_t) ptr, (const_ptr_t) &(ptr[_F_size]));
     }
 
     template < typename E >
@@ -2058,7 +2058,7 @@ namespace UCA_L2INFO_PW4
     template < typename K, typename V >
     ArrayList<V> HashMap<K,V>::values() const
     {
-        ArrayList<K> values;
+        ArrayList<V> values;
 
         for (const HashNode node : _F_nodes)
         {
@@ -2123,7 +2123,7 @@ namespace UCA_L2INFO_PW4
     bool HashMap<K, V>::removeAll(const Set<K> &c)
     {
         bool status(true);
-        for (auto key : c.keySet())
+        for (auto key : c)
         {
             status = remove(key) && status;
         }
@@ -2146,15 +2146,17 @@ namespace UCA_L2INFO_PW4
     template < typename K, typename V >
     bool HashMap<K, V>::retainAll(const Set<K> &c)
     {
-        return removeIf([&](key_const_t elem) -> bool {
-            return !c.contains(elem);
-        });
+        return false;  // Todo HashMap::retainAll
+        // return removeIf([&](key_const_t elem) -> bool {
+        //     return !c.contains(elem);
+        // });
     }
 
     template < typename K, typename V >
     bool HashMap<K, V>::set(key_t key, value_t value)
     {
-        return _F_nodes.setElement((HashNode){key, value});
+        HashNode node(key, value);
+        return _F_nodes.setElement(node);
     }
 
     template < typename K, typename V >

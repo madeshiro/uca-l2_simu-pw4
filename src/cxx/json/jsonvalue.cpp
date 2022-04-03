@@ -1,11 +1,12 @@
 #include "cxx/json/jsonvalue.h"
+#include "cxx/oop/object"
 
 namespace UCA_L2INFO_PW4
 {
     using namespace json;
 
-    String JsonObject::stringify(bool doIndentation)
+    String JsonObject::stringify(bool doIndentation [[gnu::unused]])
     {
-        StringBuilder builder;
+        return String();
     }
 }

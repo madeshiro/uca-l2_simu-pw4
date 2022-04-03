@@ -27,6 +27,29 @@ namespace UCA_L2INFO_PW4
         static size_t sizeOf();
     };
 
+    template < typename T, typename _Traits  >
+    struct Alloc<T[], _Traits>
+    {
+        typedef _Traits traits_type;
+
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+
+        typedef typename traits_type::size_t        size_t;
+
+        static ptr_t alloc();
+        static ptr_t alloc(size_t nmemb);
+        static ptr_t calloc(size_t nmemb);
+
+        static size_t sizeOf();
+    };
+
     template < typename T, typename _Traits = Traits<T> >
     struct Delete
     {
@@ -74,7 +97,7 @@ namespace UCA_L2INFO_PW4
     template<typename T, typename _Traits>
     typename Alloc<T, _Traits>::ptr_t Alloc<T, _Traits>::alloc(size_t nmemb)
     {
-        return new value_t[nmemb];
+        return (ptr_t) ::malloc(sizeof(T)*nmemb);
     }
 
     template<typename T, typename _Traits>
@@ -85,6 +108,30 @@ namespace UCA_L2INFO_PW4
 
     template<typename T, typename _Traits>
     typename Alloc<T, _Traits>::size_t Alloc<T, _Traits>::sizeOf()
+    {
+        return sizeof(value_t);
+    }
+
+    template<typename T, typename _Traits>
+    typename Alloc<T[], _Traits>::ptr_t Alloc<T[], _Traits>::alloc()
+    {
+        return (ptr_t) ::malloc(sizeof(T));
+    }
+
+    template<typename T, typename _Traits>
+    typename Alloc<T[], _Traits>::ptr_t Alloc<T[], _Traits>::alloc(size_t nmemb)
+    {
+        return (ptr_t) ::malloc(sizeof(T)*nmemb);
+    }
+
+    template<typename T, typename _Traits>
+    typename Alloc<T[], _Traits>::ptr_t Alloc<T[], _Traits>::calloc(size_t nmemb)
+    {
+        return (ptr_t) ::calloc(nmemb, sizeof(value_t));
+    }
+
+    template<typename T, typename _Traits>
+    typename Alloc<T[], _Traits>::size_t Alloc<T[], _Traits>::sizeOf()
     {
         return sizeof(value_t);
     }

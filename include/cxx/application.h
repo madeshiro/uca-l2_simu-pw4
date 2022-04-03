@@ -4,35 +4,26 @@
 #include "cxx/oop/container.hpp"
 #include "cxx/oop/exception.h"
 #include "cxx/oop/stream.h"
-#include <string>
+#include "mt19937ar.h"
+#include "cxx/simulation/experiment.h"
 
 namespace UCA_L2INFO_PW4
 {
-    class AppsArgs
+    class AppsArgs final
     {
+        friend class Application;
+        friend class UserInterface;
+
         int argc;
-        char * argv[];
+        char ** argv;
+
+        HashMap<String, bool> options;
+        HashMap<String, String> arguments;
     public:
         struct ArgsNode
         {
             String label;
             ArrayList<String> args;
-
-            template <typename T>
-            T arg(int index) throw(IndexOutOfBoundException)
-            {/*...*/}
-
-            template<>
-            String arg(int index) throw(IndexOutOfBoundException)
-            {
-                return args[index];
-            }
-
-            template<>
-            uint_t arg(int index) throw(IndexOutOfBoundException)
-            {
-
-            }
         };
 
         AppsArgs(int argc, char* argv[]);
@@ -41,29 +32,66 @@ namespace UCA_L2INFO_PW4
         bool isValid() const;
 
         bool optionEnable(const String option) const;
+        bool hasParameters(const String param) const;
+
+        template <typename T>
+        T getArgument(const String param) const;
+    };
+
+    class UserInterface
+    {
+    public:
+        virtual ~UserInterface() = default;
+
+        virtual void requestInit() = 0;
+        virtual void connectExperiment(Experiment& exp) = 0;
+        virtual bool isGraphical() = 0;
     };
 
     class Application final
     {
         AppsArgs appsArgs;
-        static constexpr unsigned long mtKeys[1][4] = {
-                {0x123, 0x234, 0x345, 0x456}
-        };
+        Experiment *experiment;
     public:
+        static Application* app;
+
         const Logger      * const out;
         const Logger      * const err;
         const InputStream * const in;
 
+        UserInterface * interface;
 
-        Application(int argc, char* argv[]);
+        Application(int argc, char* argv[], bool _main = true);
         virtual ~Application() noexcept final;
 
-        double* draw(ulong_t amount) noexcept;
-
-        bool isMaster() const;
-        bool isSlave() const;
         bool isGuiEnable() const;
+        void setGuiEnable(bool enable);
+
+        const char* version() const;
+        AppsArgs& args();
+        int exec();
+
+        bool openGui();
+        UserInterface* ui();
     };
+
+    template<>
+    int AppsArgs::getArgument(const String param) const
+    {
+        return arguments.get(param)->toInteger();
+    }
+
+    template<>
+    uint_t AppsArgs::getArgument(const String param) const
+    {
+        return (uint_t) arguments.get(param)->toInteger();
+    }
+
+    template<>
+    String AppsArgs::getArgument(const String param) const
+    {
+        return *arguments.get(param);
+    }
 }
 
 #endif //CPP_APPLICATION_H

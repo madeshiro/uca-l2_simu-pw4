@@ -9,13 +9,15 @@ namespace UCA_L2INFO_PW4
     {
         class Json : public Object
         {
-            JsonContainer root;
+            //JsonContainer root;
         };
 
         class JsonStringifyable : public Object
         {
         public:
-            virtual Json toJson() const = 0;
+            virtual Json toJson() const {
+                return Json(); // Todo: make pure when Json implemented !
+            };
         };
     }
 }

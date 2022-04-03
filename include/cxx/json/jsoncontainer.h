@@ -7,14 +7,14 @@ namespace UCA_L2INFO_PW4
 {
     namespace json
     {
-        class JsonMap : public HashMap<String, JsonValue>, JsonObject
+        class JsonMap : public HashMap<String, JsonObject*>, JsonObject
         {
         public:
 
-            virtual String toString();
+            virtual String toString() const override;
         };
 
-        class JsonArray : public ArrayList<JsonValue>, JsonObject
+        class JsonArray : public ArrayList<JsonObject*>, JsonObject
         {
 
         };

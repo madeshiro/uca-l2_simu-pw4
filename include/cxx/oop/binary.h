@@ -9,12 +9,15 @@ namespace UCA_L2INFO_PW4
 {
     class BinaryStream
     {
-
+    public:
+        BinaryStream() = default;
     };
 
     class Binaries
     {
     public:
+        Binaries() = default;
+
         virtual BinaryStream exportBinary() const = 0;
         virtual Binaries&  loadBinary(BinaryStream stream) = 0;
     };

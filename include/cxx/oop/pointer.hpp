@@ -104,7 +104,7 @@ namespace UCA_L2INFO_PW4
         virtual uint_t use_count() const final;
 
         virtual SharedPointer<T, _Deleter>& operator =(ptr_t ptr) override;
-        virtual SharedPointer<T, _Deleter>& operator =(const UniquePointer<T, _Deleter>& ptr);
+        virtual SharedPointer<T, _Deleter>& operator =(UniquePointer<T, _Deleter> ptr);
         virtual SharedPointer<T, _Deleter>& operator =(const SharedPointer<T, _Deleter>& ptr);
     };
 
@@ -301,7 +301,7 @@ namespace UCA_L2INFO_PW4
         if (*_F_useCount == 0)
         {
             delete _F_useCount;
-            deleter::free(_F_useCount);
+            deleter::free(Pointer<T, _Deleter>::_F_ptr);
         }
     }
 
@@ -313,7 +313,7 @@ namespace UCA_L2INFO_PW4
             (*_F_useCount)--;
             if (*_F_useCount == 0)
             {
-                deleter::free(this->_F_ptr);
+                deleter::free(Pointer<T, _Deleter>::_F_ptr);
                 delete _F_useCount;
             }
         }
@@ -374,7 +374,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename T, typename _Deleter>
-    SharedPointer<T, _Deleter>& SharedPointer<T, _Deleter>::operator=(const UniquePointer<T, _Deleter> &ptr)
+    SharedPointer<T, _Deleter>& SharedPointer<T, _Deleter>::operator=(UniquePointer<T, _Deleter> ptr)
     {
         reset(ptr.release());
         return *this;

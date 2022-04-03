@@ -19,7 +19,7 @@ namespace UCA_L2INFO_PW4
     {
     public:
         virtual char  read() = 0;
-        virtual char* read(char* __out buf, size_t size) = 0;
+        virtual char* read(char* buf, size_t size) = 0;
 
         virtual void close() = 0;
         virtual int  seek(ulong_t pos, ulong_t whence) = 0;

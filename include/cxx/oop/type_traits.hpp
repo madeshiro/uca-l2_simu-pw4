@@ -20,7 +20,7 @@ namespace UCA_L2INFO_PW4
 
         typedef ulong_t     size_t;
 
-        static hash_t hash_code(const_t obj);
+        static hash_t hash_code(const_ref_t obj);
         static ptr_t  copy(const_ptr_t ptr, size_t __size);
         static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
     };
@@ -125,15 +125,15 @@ namespace UCA_L2INFO_PW4
     };
 
     template < typename T >
-    hash_t Traits<T>::hash_code(const_t obj)
+    hash_t Traits<T>::hash_code(const_ref_t obj)
     {
-        if (dynamic_cast<Object*>(&obj))
+        if (dynamic_cast<const Object*>(&obj))
         {
-            return ((Object*)&obj)->hashCode();
+            return dynamic_cast<const Object*>(&obj)->hashCode();
         }
         else
         {
-            return static_cast<hash_t>(obj);
+            return 0;
         }
     }
 

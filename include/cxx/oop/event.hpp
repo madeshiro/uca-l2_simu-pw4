@@ -11,7 +11,9 @@
 #include "pointer.hpp"
 #include "container.hpp"
 
-#define event(args...) const Event<args>
+#define event(args...) Event<args>
+#define events public
+#define delegates
 
 namespace UCA_L2INFO_PW4
 {
@@ -53,11 +55,11 @@ namespace UCA_L2INFO_PW4
             Critical = 0x5
         };
     private:
-        SharedPointer<HashSet< Delegate<Args...>& > > _F_dlgts;
+        SharedPointer< HashSet<Delegate<Args...>*>[] > _F_dlgts;
     public:
         Event();
         Event(const Event&);
-        virtual ~Event() override;
+        virtual ~Event() override = default;
 
         void connect(Delegate<Args...>* && dlgt);
         void disconnect(const Delegate<Args...>& dlgt);
@@ -113,7 +115,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename ...Args >
-    Event<Args...>::Event(): _F_dlgts(new Delegate<Args...>[5])
+    Event<Args...>::Event(): _F_dlgts(new HashSet<Delegate<Args...>*>[5])
     {
         /* ... */
     }
@@ -122,12 +124,6 @@ namespace UCA_L2INFO_PW4
     Event<Args...>::Event(const Event<Args...>& obj): _F_dlgts(obj._F_dlgts)
     {
         /* ... */
-    }
-
-    template < typename ...Args >
-    Event<Args...>::~Event<Args...>()
-    {
-        delete[] _F_dlgts;
     }
 
     template < typename ...Args >
@@ -145,11 +141,11 @@ namespace UCA_L2INFO_PW4
     template < typename ...Args >
     void Event<Args...>::emit(Args ...args)
     {
-        for (Priority p = Critical; p >= Lowest; --p)
+        for (int p = Critical; p >= Lowest; p--)
         {
-            for (Delegate<Args...> &dlgt : _F_dlgts[p])
+            for (Delegate<Args...> *dlgt : _F_dlgts[p])
             {
-                if (!dlgt.call(args...))
+                if (!dlgt->call(args...))
                 {
                     return;
                 }

@@ -30,6 +30,16 @@ namespace UCA_L2INFO_PW4
     {
 
     };
+
+    class InvalidFormatException : public Exception
+    {
+
+    };
+
+    class NumberFormatException : public InvalidFormatException
+    {
+
+    };
 }
 
 #endif //CPP_EXCEPTION_H

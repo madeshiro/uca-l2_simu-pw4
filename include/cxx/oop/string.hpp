@@ -29,6 +29,109 @@ namespace UCA_L2INFO_PW4
         virtual str_t  subSequence(uint_t offset, uint_t len) const = 0;
     };
 
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    struct Traits< __String__<_CharT, _Traits, _Alloc> >
+    {
+        typedef __String__<_CharT, _Traits, _Alloc>   value_t;
+        typedef __String__<_CharT, _Traits, _Alloc>&  ref_t;
+        typedef __String__<_CharT, _Traits, _Alloc>&& rvalue_t;
+        typedef __String__<_CharT, _Traits, _Alloc>*  ptr_t;
+
+        typedef const __String__<_CharT, _Traits, _Alloc>     const_t;
+        typedef const __String__<_CharT, _Traits, _Alloc>*    const_ptr_t;
+        typedef const __String__<_CharT, _Traits, _Alloc>&    const_ref_t;
+
+        typedef ulong_t     size_t;
+
+        static hash_t hash_code(const_ref_t obj);
+        static ptr_t  copy(const_ptr_t ptr, size_t __size);
+        static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
+    };
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    struct Alloc< __String__<_CharT, _Traits, _Alloc> >
+    {
+        typedef Traits< __String__<_CharT, _Traits, _Alloc> > traits_type;
+
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+
+        typedef typename traits_type::size_t        size_t;
+
+        static ptr_t alloc();
+        static ptr_t alloc(size_t nmemb);
+        static ptr_t calloc(size_t nmemb);
+
+        static size_t sizeOf();
+    };
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    struct Alloc< __String__<_CharT, _Traits, _Alloc>[] >
+    {
+        typedef Traits< __String__<_CharT, _Traits, _Alloc> > traits_type;
+
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+
+        typedef typename traits_type::size_t        size_t;
+
+        static ptr_t alloc(size_t nmemb);
+        static ptr_t calloc(size_t nmemb);
+
+        static size_t sizeOf();
+    };
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    struct Delete< __String__<_CharT, _Traits, _Alloc> >
+    {
+        typedef Traits< __String__<_CharT, _Traits, _Alloc> > traits_type;
+
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+
+        typedef typename traits_type::size_t        size_t;
+
+        static void free(ptr_t ptr);
+    };
+
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    struct Delete< __String__<_CharT, _Traits, _Alloc>[] >
+    {
+        typedef Traits< __String__<_CharT, _Traits, _Alloc>[] > traits_type;
+
+        typedef typename traits_type::value_t   value_t;
+        typedef typename traits_type::ref_t     ref_t;
+        typedef typename traits_type::ptr_t     ptr_t;
+        typedef typename traits_type::rvalue_t  rvalue_t;
+
+        typedef typename traits_type::const_t       const_t;
+        typedef typename traits_type::const_ref_t   const_ref_t;
+        typedef typename traits_type::const_ptr_t   const_ptr_t;
+
+        typedef typename traits_type::size_t        size_t;
+
+        static void free(ptr_t ptr);
+    };
+
     template < typename _CharT, typename _Traits, typename _Alloc>
     class __String__ : public CharSequence<_CharT, _Traits, _Alloc>,
                               Comparable< __String__<_CharT, _Traits, _Alloc> >
@@ -176,7 +279,7 @@ namespace UCA_L2INFO_PW4
         string_t & operator +=(const_str_t str);
         string_t & operator +=(const string_t & str);
 
-        bool operator ==(const string_t& str) const;
+        bool operator ==(const string_t& str) const override;
 
         char_t operator[](uint_t index) const;
 
@@ -187,13 +290,14 @@ namespace UCA_L2INFO_PW4
 
         /* STATIC METHODS */
 
-        static string_t toString(char_t);
-        static string_t toString(int);
-        static string_t toString(long);
-        static string_t toString(float);
-        static string_t toString(double);
-        static string_t toString(const_str_t);
-        static string_t toString(const Object&);
+        static string_t ToString(char_t);
+        static string_t ToString(int);
+        static string_t ToString(long);
+        static string_t ToString(float);
+        static string_t ToString(double);
+        static string_t ToString(const_str_t);
+        static string_t ToString(const Object&);
+        static string_t ToString(const string_t &str);
 
         static string_t toHexString(unsigned long);
     };
@@ -299,7 +403,7 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t
     __String__<_CharT, _Traits, _Alloc>::concat(T... args) const
     {
-        string_t str(*this), elems[sizeof...(T)] = {toString(args)...};
+        string_t str(*this), elems[sizeof...(T)] = {ToString(args)...};
 
         for (string_t elem : elems)
         {
@@ -314,7 +418,7 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t
     __String__<_CharT, _Traits, _Alloc>::add(T arg) const
     {
-        return string_t(*this).append(string_t::toString(arg));
+        return string_t(*this).append(string_t::ToString(arg));
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
@@ -322,11 +426,11 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t
     __String__<_CharT, _Traits, _Alloc>::format(T ...args) const
     {
-        string_t str(*this), elems[sizeof...(T)] = {toString(args)...};
+        string_t str(*this), elems[sizeof...(T)] = {ToString(args)...};
 
         for (uint_t i = 0; i < sizeof...(T); i++)
         {
-            str = replace(string_t("{") + toString((i+1)) + string_t("}"), elems[i]);
+            str = replace(string_t("{") + ToString((int)i) + string_t("}"), elems[i]);
         }
 
         return str;
@@ -1298,14 +1402,14 @@ namespace UCA_L2INFO_PW4
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
-    __String__<_CharT, _Traits, _Alloc>::toString(char_t c)
+    __String__<_CharT, _Traits, _Alloc>::ToString(char_t c)
     {
         return string_t(c);
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
-    __String__<_CharT, _Traits, _Alloc>::toString(int i)
+    __String__<_CharT, _Traits, _Alloc>::ToString(int i)
     {
         string_t str(allocator::calloc(12u), 0, 12);
 
@@ -1321,7 +1425,7 @@ namespace UCA_L2INFO_PW4
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
-    __String__<_CharT, _Traits, _Alloc>::toString(long l)
+    __String__<_CharT, _Traits, _Alloc>::ToString(long l)
     {
         string_t str(allocator::calloc(21u), 0, 21);
 
@@ -1337,28 +1441,28 @@ namespace UCA_L2INFO_PW4
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
-    __String__<_CharT, _Traits, _Alloc>::toString(float f)
+    __String__<_CharT, _Traits, _Alloc>::ToString(float f)
     {
-        return toString((double) f);
+        return ToString((double) f);
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
-    __String__<_CharT, _Traits, _Alloc>::toString(double d)
+    __String__<_CharT, _Traits, _Alloc>::ToString(double d)
     {
         return string_t(); // TODO implement toString(double)
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
-    __String__<_CharT, _Traits, _Alloc>::toString(const_str_t str)
+    __String__<_CharT, _Traits, _Alloc>::ToString(const_str_t str)
     {
         return string_t(str);
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
-    __String__<_CharT, _Traits, _Alloc>::toString(const Object& obj)
+    __String__<_CharT, _Traits, _Alloc>::ToString(const Object& obj)
     {
 
         String objStr(obj.toString());
@@ -1371,6 +1475,13 @@ namespace UCA_L2INFO_PW4
         return string_t(str, objStr.length(), objStr.capacity());
 
     }
+
+template<typename _CharT, typename _Traits, typename _Alloc>
+typename __String__<_CharT, _Traits, _Alloc>::string_t
+__String__<_CharT, _Traits, _Alloc>::ToString(const string_t& obj)
+{
+    return string_t (obj);
+}
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
@@ -1405,6 +1516,136 @@ namespace UCA_L2INFO_PW4
          hex.prepend((char_t)'x');
          hex.prepend((char_t)'0');
          return hex;
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    hash_t Traits< __String__<_CharT, _Traits, _Alloc> >::hash_code(const_ref_t obj)
+    {
+        return obj.hashCode();
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Traits< __String__<_CharT, _Traits, _Alloc> >::ptr_t
+    Traits< __String__<_CharT, _Traits, _Alloc> >::copy(const_ptr_t ptr, size_t __size)
+    {
+        ptr_t cpy = (ptr_t) malloc(sizeof(String)*__size);
+        for (size_t i(0); i < __size; i++)
+        {
+            cpy[i] = ptr[i];
+        }
+        return cpy;
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Traits< __String__<_CharT, _Traits, _Alloc> >::size_t
+    Traits< __String__<_CharT, _Traits, _Alloc> >::fill(const_ptr_t src, ptr_t dest, size_t size)
+    {
+        size_t i(0);
+        for (; i < size; i++)
+        {
+            dest[i] = src[i];
+        }
+        return i;
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    struct Traits< __String__<_CharT, _Traits, _Alloc>[] >
+    {
+        typedef __String__<_CharT, _Traits, _Alloc>   value_t;
+        typedef __String__<_CharT, _Traits, _Alloc>&  ref_t;
+        typedef __String__<_CharT, _Traits, _Alloc>&& rvalue_t;
+        typedef __String__<_CharT, _Traits, _Alloc>*  ptr_t;
+
+        typedef const __String__<_CharT, _Traits, _Alloc>     const_t;
+        typedef const __String__<_CharT, _Traits, _Alloc>*    const_ptr_t;
+        typedef const __String__<_CharT, _Traits, _Alloc>&    const_ref_t;
+
+        typedef ulong_t     size_t;
+
+        static ptr_t  copy(const_ptr_t ptr, size_t __size);
+        static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
+    };
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Traits< __String__<_CharT, _Traits, _Alloc>[] >::ptr_t
+    Traits< __String__<_CharT, _Traits, _Alloc>[] >::copy(const_ptr_t ptr, size_t __size)
+    {
+        ptr_t cpy = (ptr_t) malloc(sizeof(String)*__size);
+        for (size_t i(0); i < __size; i++)
+        {
+            cpy[i] = ptr[i];
+        }
+        return cpy;
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Traits< __String__<_CharT, _Traits, _Alloc>[] >::size_t
+    Traits< __String__<_CharT, _Traits, _Alloc>[] >::fill(const_ptr_t src, ptr_t dest, size_t size)
+    {
+        size_t i(0);
+        for (; i < size; i++)
+        {
+            dest[i] = src[i];
+        }
+        return i;
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Alloc< __String__<_CharT, _Traits, _Alloc> >::ptr_t Alloc< __String__<_CharT, _Traits, _Alloc> >::alloc()
+    {
+        return (ptr_t) ::malloc(sizeof(__String__<_CharT, _Traits, _Alloc>));
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Alloc< __String__<_CharT, _Traits, _Alloc> >::ptr_t
+    Alloc< __String__<_CharT, _Traits, _Alloc> >::alloc(size_t nmemb)
+    {
+        return new value_t[nmemb];
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Alloc< __String__<_CharT, _Traits, _Alloc> >::ptr_t
+    Alloc< __String__<_CharT, _Traits, _Alloc> >::calloc(size_t nmemb)
+    {
+        return (ptr_t) ::calloc(nmemb, sizeof(value_t));
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Alloc< __String__<_CharT, _Traits, _Alloc> >::size_t Alloc< __String__<_CharT, _Traits, _Alloc> >::sizeOf()
+    {
+        return sizeof(value_t);
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Alloc< __String__<_CharT, _Traits, _Alloc>[] >::ptr_t
+    Alloc< __String__<_CharT, _Traits, _Alloc>[] >::alloc(size_t nmemb)
+    {
+        return new value_t[nmemb];
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Alloc< __String__<_CharT, _Traits, _Alloc>[] >::ptr_t
+    Alloc< __String__<_CharT, _Traits, _Alloc>[] >::calloc(size_t nmemb)
+    {
+        return (ptr_t) ::calloc(nmemb, sizeof(value_t));
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    typename Alloc< __String__<_CharT, _Traits, _Alloc>[] >::size_t Alloc< __String__<_CharT, _Traits, _Alloc>[] >::sizeOf()
+    {
+        return sizeof(value_t);
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    void Delete< __String__<_CharT, _Traits, _Alloc> >::free(ptr_t ptr)
+    {
+        delete ptr;
+    }
+
+    template <typename _CharT, typename _Traits, typename _Alloc>
+    void Delete< __String__<_CharT, _Traits, _Alloc>[] >::free(ptr_t ptr)
+    {
+        delete[] ptr;
     }
 }
 

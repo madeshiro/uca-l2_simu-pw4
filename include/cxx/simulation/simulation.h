@@ -1,27 +1,27 @@
 #ifndef CPP_SIMULATION_H
 #define CPP_SIMULATION_H
 #include "cxx/oop/object"
+#include "cxx/oop/binary.h"
+#include "entities.h"
 
 namespace UCA_L2INFO_PW4
 {
-    class Simulation final
+    class Experiment;
+    class Simulation final : public Binaries
     {
     public:
-        event(const Simulation&) on_start;
-        event()                  on_quit;
-        event(bool)              on_pause;
-        event(const Simulation&) on_replication;
+        // event(const Simulation*) on_replication;
+        // event(const Simulation*) on_progress;
     private:
-
-    protected:
-        bool caching(List<int/*change*/>);
+        Experiment* parent;
     public:
+        Simulation(Experiment* parent = nullptr);
         virtual ~Simulation();
 
-        void start();
+        virtual BinaryStream exportBinary() const override;
+        virtual Simulation&  loadBinary(BinaryStream stream) override;
 
-        void pause();
-        void requestQuit(bool wait = false);
+        void run();
     };
 }
 
