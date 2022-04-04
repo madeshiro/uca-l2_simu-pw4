@@ -114,6 +114,10 @@ namespace UCA_L2INFO_PW4
 
             if (args().optionEnable("performExperiment"))
             {
+                out->format("Rin Baudelet -- N2 INFO -- projectsi_pw4\n"
+                            "Start program on version {0}\n"
+                            "Ready to perform experiment...\n", version());
+
                 if (args().optionEnable("initFromFile"))
                 {
                     /* TODO: init from file -- version 1.0 release */

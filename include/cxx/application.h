@@ -46,6 +46,7 @@ namespace UCA_L2INFO_PW4
         virtual void requestInit() = 0;
         virtual void connectExperiment(Experiment& exp) = 0;
         virtual bool isGraphical() = 0;
+        virtual bool displayProgression(int, int, Simulation&) = 0;
     };
 
     class Application final
@@ -55,9 +56,9 @@ namespace UCA_L2INFO_PW4
     public:
         static Application* app;
 
-        const Logger      * const out;
-        const Logger      * const err;
-        const InputStream * const in;
+        Logger      * const out;
+        Logger      * const err;
+        InputStream * const in;
 
         UserInterface * interface;
 

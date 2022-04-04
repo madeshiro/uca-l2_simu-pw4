@@ -61,7 +61,7 @@ namespace UCA_L2INFO_PW4
         Event(const Event&);
         virtual ~Event() override = default;
 
-        void connect(Delegate<Args...>* && dlgt);
+        void connect(Delegate<Args...>* dlgt);
         void disconnect(const Delegate<Args...>& dlgt);
 
         virtual void emit(Args... args);
@@ -83,10 +83,12 @@ namespace UCA_L2INFO_PW4
     public:
         GlobalDelegate(function fn, int priority = Event<Args...>::Priority::Normal);
         GlobalDelegate(const GlobalDelegate<Args...> &obj);
-        virtual ~GlobalDelegate() override = delete;
+        virtual ~GlobalDelegate() override {
+            /* empty */
+        };
 
         virtual bool call(Args... args) override;
-        virtual hash_t hashCode() override;
+        virtual hash_t hashCode() const override;
     };
 
     template < class Class, typename... Args >
@@ -99,13 +101,15 @@ namespace UCA_L2INFO_PW4
     public:
         ClassDelegate(Class& obj, Function fn, int priority = Event<Args...>::Priority::Normal);
         ClassDelegate(const ClassDelegate<Class, Args...> & obj);
-        virtual ~ClassDelegate() override = delete;
+        virtual ~ClassDelegate() override {
+            /* empty */
+        }
 
         Class& getClassInstance();
         Class* getParent();
 
         virtual bool call(Args... args) override;
-        virtual hash_t hashCode() override;
+        virtual hash_t hashCode() const override;
     };
 
     template < typename ...Args >
@@ -127,7 +131,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename ...Args >
-    void Event<Args...>::connect(Delegate<Args...> *&&dlgt)
+    void Event<Args...>::connect(Delegate<Args...> *dlgt)
     {
         _F_dlgts[dlgt->priority()].add(dlgt);
     }
@@ -189,7 +193,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename ...Args >
-    hash_t GlobalDelegate<Args...>::hashCode()
+    hash_t GlobalDelegate<Args...>::hashCode() const
     {
         return (hash_t) _F_fn;
     }
@@ -225,9 +229,9 @@ namespace UCA_L2INFO_PW4
     }
 
     template < class Class, typename ...Args >
-    hash_t ClassDelegate<Class, Args...>::hashCode()
+    hash_t ClassDelegate<Class, Args...>::hashCode() const
     {
-        return (((hash_t) _F_fn) << 32) | (hash_t) _F_obj;
+        return ((hash_t) reinterpret_cast<void*>(_F_fn) << 32) | (hash_t) &_F_obj;
     }
 }
 

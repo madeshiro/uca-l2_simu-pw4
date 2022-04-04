@@ -41,7 +41,7 @@ CXXSTD   = -std=c++17
 INCPATH  = -Iinclude/
 DEFINES  := $(DEFINES)
 CFLAGS	 := $(CSTD) -Wall -Wextra -pipe $(CFLAGS) $(INCPATH) $(DEFINES)
-CXXFLAGS := $(CXXSTD) -Wall -Wextra -pipe $(CXXFLAGS) $(INCPATH) $(DEFINES)
+CXXFLAGS := $(CXXSTD) -Wall -Wextra -Wno-pmf-conversions -pipe $(CXXFLAGS) $(INCPATH) $(DEFINES)
 
 #### FILES ####
 
