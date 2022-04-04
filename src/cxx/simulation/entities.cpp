@@ -228,9 +228,9 @@ namespace UCA_L2INFO_PW4
         pdfReproduction = entityManager.pdfReproduction;
         pdfMaturity = entityManager.pdfMaturity;
 
-        cdfReproduction = new CumulativeDF(*entityManager.cdfReproduction);
-        cdfLitter       = new CumulativeDF(*entityManager.cdfLitter);
-        cdfMaturity     = new CumulativeDF(*entityManager.cdfMaturity);
+        cdfReproduction = new CumulativeDF(pdfReproduction);
+        cdfLitter       = new CumulativeDF(pdfLitter);
+        cdfMaturity     = new CumulativeDF(pdfMaturity);
 
         parent = entityManager.parent;
         return *this;
