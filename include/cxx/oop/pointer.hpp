@@ -147,6 +147,10 @@ namespace UCA_L2INFO_PW4
     {/* ... */}
 
     template<typename T, typename _Deleter>
+    Pointer<T, _Deleter>::~Pointer()
+    {/*abstract*/}
+
+    template<typename T, typename _Deleter>
     typename Pointer<T, _Deleter>::ptr_t Pointer<T, _Deleter>::pointer() const
     {
         return _F_ptr;

@@ -84,6 +84,7 @@ SOURCES = main.cpp \
 			cxx/oop/binary.cpp \
 			cxx/oop/sock.cpp \
 			cxx/oop/file.cpp \
+			cxx/oop/type_traits.cpp \
 			cxx/serv/packet.cpp \
 			cxx/json/json.cpp \
 			cxx/json/jsonvalue.cpp
@@ -98,6 +99,7 @@ OBJECTS  = main.cpp.o \
 			exception.cpp.o \
 			file.cpp.o \
 			object.cpp.o \
+			type_traits.cpp.o \
 			sock.cpp.o \
 			stream.cpp.o \
 			codec.cpp.o \
@@ -150,6 +152,8 @@ file.cpp.o: cxx/oop/file.cpp cxx/oop/file.h cxx/oop/stream.h cxx/oop/object.h de
 sock.cpp.o: cxx/oop/sock.cpp cxx/oop/sock.h cxx/oop/stream.h cxx/oop/object.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 binary.cpp.o: cxx/oop/binary.cpp cxx/oop/binary.h defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+type_traits.cpp.o: cxx/oop/type_traits.cpp cxx/oop/type_traits.hpp defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 
 #### > serv

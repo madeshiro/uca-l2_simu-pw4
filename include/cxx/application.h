@@ -75,24 +75,6 @@ namespace UCA_L2INFO_PW4
         bool openGui();
         UserInterface* ui();
     };
-
-    template<>
-    int AppsArgs::getArgument(const String param) const
-    {
-        return arguments.get(param)->toInteger();
-    }
-
-    template<>
-    uint_t AppsArgs::getArgument(const String param) const
-    {
-        return (uint_t) arguments.get(param)->toInteger();
-    }
-
-    template<>
-    String AppsArgs::getArgument(const String param) const
-    {
-        return *arguments.get(param);
-    }
 }
 
 #endif //CPP_APPLICATION_H

@@ -135,7 +135,6 @@ namespace UCA_L2INFO_PW4
         typedef typename Collection<E>::const_ptr_t const_ptr_t;
 
         List() = default;
-
         virtual ~List() = 0;
 
         virtual bool remove(uint_t index) = 0;
@@ -828,6 +827,10 @@ namespace UCA_L2INFO_PW4
     {
         return const_iterator()._F_begin - 1;
     }
+
+    template<typename E>
+    List<E>::~List<E>()
+    {/*abstract*/}
 
     template<typename E>
     AbstractList<E>::AbstractList(uint_t initCapacity):

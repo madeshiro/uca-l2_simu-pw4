@@ -1078,7 +1078,7 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::str_t
     __String__<_CharT, _Traits, _Alloc>::subSequence(uint_t offset, uint_t len) const
     {
-        if (offset >= length()) return traits_type::copy("");
+        if (offset >= length()) return traits_type::copy((const_str_t) "");
         if (offset+len > length()) len = length()-offset;
 
         str_t sub = allocator::alloc(1+len);

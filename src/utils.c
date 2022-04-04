@@ -80,35 +80,18 @@ void open_webpage(const char* url)
 
 void* memcopy(void* ptr, size_t nmemb, size_t __sizeof)
 {
-    void* cpy = malloc(__sizeof);
-    union {
-        void*       bit8;
-        ushort_t*   bit16;
-        uint_t*     bit32;
-        ulong_t*    bit64;
-    } __ptr, __cpy;
-
-    __ptr.bit8 = ptr;
-    __cpy.bit8 = cpy;
-
+    void *cpy = malloc(__sizeof*nmemb);
     if (cpy)
     {
-        switch (__sizeof)
+        for (uint_t i = 0; i < nmemb*__sizeof; i++)
         {
-            default: case 1u:
-
-                break;
-            case 2u:
-
-                break;
-            case 4u:
-
-                break;
-            case 8u:
-
-                break;
+            // movb
+            ((char*) cpy)[i] = ((char*) ptr)[i];
         }
+        return cpy;
     }
-
-    return ptr;
+    else
+    {
+        return NULL;
+    }
 }

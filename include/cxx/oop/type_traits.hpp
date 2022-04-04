@@ -2,6 +2,7 @@
 #define CPP_TYPE_TRAITS_HPP
 #include "defines.h"
 #include "object.h"
+#include "utils.h"
 #include <stdlib.h>
 
 namespace UCA_L2INFO_PW4
@@ -21,7 +22,8 @@ namespace UCA_L2INFO_PW4
         typedef ulong_t     size_t;
 
         static hash_t hash_code(const_ref_t obj);
-        static ptr_t  copy(const_ptr_t ptr, size_t __size);
+        static ptr_t  copy(const_ptr_t ptr);
+        static ptr_t  copy(const_ptr_t ptr, size_t nmemb);
         static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
     };
     
@@ -39,7 +41,7 @@ namespace UCA_L2INFO_PW4
 
         typedef ulong_t     size_t;
 
-        static ptr_t  copy(const_ptr_t ptr, size_t __sizeof);
+        static ptr_t  copy(const_ptr_t ptr, size_t nmemb);
         static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
     };
 
@@ -58,7 +60,8 @@ namespace UCA_L2INFO_PW4
         typedef ulong_t     size_t;
 
         static hash_t hash_code(const_t obj);
-        static ptr_t  copy(const_ptr_t ptr, size_t __sizeof);
+        static ptr_t  copy(const_ptr_t ptr);
+        static ptr_t  copy(const_ptr_t ptr, size_t nmemb);
         static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
     };
 
@@ -77,7 +80,8 @@ namespace UCA_L2INFO_PW4
         typedef ulong_t     size_t;
 
         static hash_t hash_code(const_t obj);
-        static ptr_t  copy(const_ptr_t ptr, size_t __sizeof);
+        static ptr_t  copy(const_ptr_t ptr);
+        static ptr_t  copy(const_ptr_t ptr, size_t nmemb);
         static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
     };
     
@@ -97,7 +101,7 @@ namespace UCA_L2INFO_PW4
 
         static hash_t hash_code(const_t obj);
         static ptr_t  copy(const_ptr_t str);
-        static ptr_t  copy(const_ptr_t str, size_t __sizeof);
+        static ptr_t  copy(const_ptr_t str, size_t nmemb);
         static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
         static size_t len(const_ptr_t str);
     };
@@ -138,32 +142,90 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename T >
-    typename Traits<T>::ptr_t Traits<T>::copy(const_ptr_t ptr, size_t __size)
+    typename Traits<T>::ptr_t Traits<T>::copy(const_ptr_t ptr)
     {
-        ptr_t cpy = (ptr_t) malloc(sizeof(T)*__size);
-        if (cpy)
+        return (ptr_t) memcopy((void*)ptr, 1u, sizeof(T));
+    }
+    
+    template < typename T >
+    typename Traits<T>::ptr_t Traits<T>::copy(const_ptr_t ptr, size_t nmemb)
+    {
+        return (ptr_t) memcopy((void*)ptr, nmemb, sizeof(T));
+    }
+    
+    template < typename T >
+    typename Traits<T>::size_t Traits<T>::fill(const_ptr_t src, ptr_t dest, size_t size)
+    {
+        size_t i(0);
+        for (; i < size; i++)
         {
-
+            dest[i] = src[i];
         }
+        return i;
     }
 
+    template < typename T >
+    typename Traits<T[]>::ptr_t Traits<T[]>::copy(const_ptr_t ptr, size_t nmemb)
+    {
+        return (ptr_t) memcopy((void*)ptr, nmemb, sizeof(T));
+    }
+    
     template < typename T >
     hash_t Traits<T&>::hash_code(const_t obj)
     {
         return Traits<T>::hash_code(obj);
     }
 
-    Traits<char>::size_t Traits<char>::len(Traits<char>::const_ptr_t str)
+    template < typename T >
+    typename Traits<T&>::size_t Traits<T&>::fill(const_ptr_t src, ptr_t dest, size_t size)
     {
-        size_t len = 0;
-        while(str[len] != '\0') len++;
-        return len;
+        size_t i(0);
+        for (; i < size; i++)
+        {
+            dest[i] = src[i];
+        }
+        return i;
     }
 
     template < typename T >
+    typename Traits<T&>::ptr_t Traits<T&>::copy(const_ptr_t ptr)
+    {
+        return (ptr_t) memcopy((void*)ptr, 1u, sizeof(T));
+    }
+    
+    template < typename T >
+    typename Traits<T&>::ptr_t Traits<T&>::copy(const_ptr_t ptr, size_t nmemb)
+    {
+        return (ptr_t) memcopy((void*)ptr, nmemb, sizeof(T));
+    }
+    
+    template < typename T >
     hash_t Traits<T*>::hash_code(const_t obj)
     {
-        return (hash_t) obj;
+        return (hash_t) reinterpret_cast<const void*>(obj);
+    }
+    
+    template < typename T >
+    typename Traits<T*>::ptr_t Traits<T*>::copy(const_ptr_t ptr)
+    {
+        return (ptr_t) memcopy((void*)ptr, 1u, sizeof(T*));
+    }
+    
+    template < typename T >
+    typename Traits<T*>::ptr_t Traits<T*>::copy(const_ptr_t ptr, size_t nmemb)
+    {
+        return (ptr_t) memcopy((void*)ptr, nmemb, sizeof(T*));
+    }
+    
+    template < typename T >
+    typename Traits<T*>::size_t Traits<T*>::fill(const_ptr_t src, ptr_t dest, size_t size)
+    {
+        size_t i(0);
+        for (; i < size; i++)
+        {
+            dest[i] = src[i];
+        }
+        return i;
     }
 }
 

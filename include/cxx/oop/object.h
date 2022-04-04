@@ -124,6 +124,11 @@ namespace UCA_L2INFO_PW4
 
     template <class... Args>
     using SortMethod = Function<int(Args...)>;
+
+#ifndef OOP_IMPL_TEMPLATE_STRING
+    //extern template class __String__<char>;
+    //extern template class __String__<wchar_t>;
+#endif
 }
 
 #endif // CPP_OBJECT_H
