@@ -119,7 +119,8 @@ namespace UCA_L2INFO_PW4
     ProbabilityDF::ProbabilityDF(String name): _F_name(name), _F_pdf()
     { /* ... */ }
 
-    ProbabilityDF::ProbabilityDF(const ProbabilityDF &obj): _F_pdf(obj._F_pdf)
+    ProbabilityDF::ProbabilityDF(const ProbabilityDF &obj): PgfPlotsData(obj),
+        _F_name(obj._F_name), _F_pdf(obj._F_pdf)
     { /* ... */ }
 
     void ProbabilityDF::addGroup(String group, double probability)
@@ -163,6 +164,13 @@ namespace UCA_L2INFO_PW4
         return _F_pdf.size();
     }
 
+    ProbabilityDF& ProbabilityDF::operator=(const ProbabilityDF& pdf)
+    {
+        _F_name = pdf._F_name;
+        _F_pdf  = pdf._F_pdf;
+        return *this;
+    }
+
     CumulativeDF::CDFNode::CDFNode(String _name, double _cumul): name(_name), cumul(_cumul)
     { /* ... */ }
 
@@ -170,7 +178,8 @@ namespace UCA_L2INFO_PW4
         _F_cdf(new CDFNode[df.size()])
     { /* ... */ }
 
-    CumulativeDF::CumulativeDF(const CumulativeDF &obj): _F_probabilityDF(obj.getPDF()),
+    CumulativeDF::CumulativeDF(const CumulativeDF &obj): PgfPlotsData(obj),
+        _F_probabilityDF(obj._F_probabilityDF),
         _F_cdf(new CDFNode[obj.getPDF().size()])
     {
         for (uint_t i(0); i < _F_probabilityDF.size(); i++)
@@ -197,6 +206,11 @@ namespace UCA_L2INFO_PW4
                 return (int) i;
         }
         return (int) _F_probabilityDF.size()-1;
+    }
+
+    int CumulativeDF::drawFromId()
+    {
+        return getGroupName(draw()).toInteger();
     }
 
     int CumulativeDF::getGroupID(String name)

@@ -46,7 +46,7 @@ namespace UCA_L2INFO_PW4
         template <typename ...T>
         void format(const char* format, T... args)
         {
-            print(String(format).template format(args...));
+            print(String(format).format(args...));
         }
 
         Logger info() const;

@@ -14,6 +14,8 @@ extern "C" {
 
     void* memcopy(void* ptr, size_t nmembn, size_t __sizeof);
 
+    char* doublestr(double d);
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus

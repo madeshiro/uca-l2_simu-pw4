@@ -41,12 +41,12 @@ namespace UCA_L2INFO_PW4
     {
         for (uint_t month(0); month < parent->getMonthDuration(); month++)
         {
-            for (Rabbit &rabbit: *manager.maleRabbits)
+            for (Rabbit *rabbit: *manager.maleRabbits)
             {
                 manager.doSurvive(rabbit);
             }
 
-            for (Rabbit &rabbit: *manager.femaleRabbits)
+            for (Rabbit *rabbit: *manager.femaleRabbits)
             {
                 if (manager.doSurvive(rabbit))
                 {

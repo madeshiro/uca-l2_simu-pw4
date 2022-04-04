@@ -28,7 +28,7 @@ namespace UCA_L2INFO_PW4
 
     bool AppsArgs::optionEnable(const String option) const
     {
-        return options.contains(option) && options.get(option);
+        return options.contains(option) && *options.get(option);
     }
 
     bool AppsArgs::hasParameters(const String param) const
@@ -61,10 +61,14 @@ namespace UCA_L2INFO_PW4
 
     Application::Application(int argc, char **argv, bool _main):
         appsArgs(argc, argv),
+        experiment(nullptr),
         out(new Logger(new FileOutputStream(stdout, "stdout"))),
         err(new Logger(new FileOutputStream(stderr, "stderr"))),
         in(new FileInputStream(stdin, "stdin"))
     {
+        if (_main)
+            Application::app = this;
+
         if (appsArgs.isValid())
         {
             // Socket::sock_start_service();
@@ -82,9 +86,6 @@ namespace UCA_L2INFO_PW4
         {
             out->severe().println("Invalid arguments ! try `projectsi_pw4 --help` for help");
         }
-
-        if (_main)
-            Application::app = this;
     }
 
     Application::~Application() noexcept

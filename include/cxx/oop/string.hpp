@@ -207,9 +207,9 @@ namespace UCA_L2INFO_PW4
         int find(const_str_t str) const;
         int find(const string_t& str) const;
 
-        SortedSet<uint_t> findAll(char_t c) const;
-        SortedSet<uint_t> findAll(const_str_t str) const;
-        SortedSet<uint_t> findAll(const string_t& str) const;
+        ArrayList<uint_t> findAll(char_t c) const;
+        ArrayList<uint_t> findAll(const_str_t str) const;
+        ArrayList<uint_t> findAll(const string_t& str) const;
 
         Iterator<char_t, traits_type> iterator() const override;
         ConstIterator<char_t, traits_type> const_iterator() const override;
@@ -342,7 +342,7 @@ namespace UCA_L2INFO_PW4
     template < typename _CharT, typename _Traits, typename _Alloc >
     __String__<_CharT, _Traits, _Alloc>::__String__(const string_t &str):
             _F_charseq(traits_type::copy(str._F_charseq, str._F_length)),
-            _F_length(str._F_length), _F_capacity(str._F_capacity)
+            _F_length(str._F_length), _F_capacity(str._F_length+1)
     {
         /* Nothing to do here */
     }
@@ -374,12 +374,11 @@ namespace UCA_L2INFO_PW4
             uint_t i;
             for (i = 0; i < _F_length; i++)
                 cpy[i] = _F_charseq[i];
-            cpy[i] = (char_t) 0;
+            cpy[i] = (char_t) '\0';
 
             _F_capacity += capacity;
-            deleter::free(_F_charseq);
+            if (_F_charseq) deleter::free(_F_charseq);
             _F_charseq = cpy;
-
             return true;
         }
         else return false;
@@ -430,7 +429,10 @@ namespace UCA_L2INFO_PW4
 
         for (uint_t i = 0; i < sizeof...(T); i++)
         {
-            str = replace(string_t("{") + ToString((int)i) + string_t("}"), elems[i]);
+            string_t _f('{');
+            _f.append(ToString((int)i));
+            _f.append('}');
+            str = str.replace(_f, elems[i]);
         }
 
         return str;
@@ -466,6 +468,9 @@ namespace UCA_L2INFO_PW4
         {
             _F_charseq[j] = str[i];
         }
+
+        _F_length+=str.length();
+        _F_charseq[_F_length] = (char_t) '\0';
         return *this;
     }
 
@@ -632,9 +637,9 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
-    SortedSet<uint_t> __String__<_CharT, _Traits, _Alloc>::findAll(char_t c) const
+    ArrayList<uint_t> __String__<_CharT, _Traits, _Alloc>::findAll(char_t c) const
     {
-        SortedSet<uint_t> finds;
+        ArrayList<uint_t> finds;
 
         for (uint_t i = 0; i < length(); i++)
         {
@@ -648,15 +653,15 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
-    SortedSet<uint_t> __String__<_CharT, _Traits, _Alloc>::findAll(const_str_t str) const
+    ArrayList<uint_t> __String__<_CharT, _Traits, _Alloc>::findAll(const_str_t str) const
     {
         return findAll(string_t(str));
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
-    SortedSet<uint_t> __String__<_CharT, _Traits, _Alloc>::findAll(const string_t &str) const
+    ArrayList<uint_t> __String__<_CharT, _Traits, _Alloc>::findAll(const string_t &str) const
     {
-        SortedSet<uint_t> finds;
+        ArrayList<uint_t> finds;
 
         if (str.length() <= length())
         {
@@ -727,7 +732,7 @@ namespace UCA_L2INFO_PW4
     __String__<_CharT, _Traits, _Alloc>::prepend(const string_t& str)
     {
         uint_t oldLength = _F_length;
-        if (_F_capacity >= length()+str.length())
+        if (_F_capacity <= length()+str.length())
         {
             if (!__grow(1+(_F_capacity - (length()+str.length()))))
             {
@@ -735,14 +740,18 @@ namespace UCA_L2INFO_PW4
             }
         }
 
-        for (uint_t i = _F_length, j=oldLength-1; j >= 0; i--, j--)
+        for (int i = _F_length, j=oldLength-1; j >= 0; i--, j--)
         {
             _F_charseq[i] = _F_charseq[j];
         }
-        for (uint_t i = 0; i < str.length(); i++)
+        for (int i = 0; i < (int) str.length(); i++)
         {
             _F_charseq[i] = str[i];
         }
+
+        _F_length+=str.length();
+        _F_charseq[_F_length] = (char_t) '\0';
+
         return *this;
     }
 
@@ -750,7 +759,7 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t&
     __String__<_CharT, _Traits, _Alloc>::remove(char_t c)
     {
-        SortedSet<uint_t> finds = findAll(c);
+        ArrayList<uint_t> finds = findAll(c);
 
         if (finds.size() > 0)
         {
@@ -785,7 +794,7 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t&
     __String__<_CharT, _Traits, _Alloc>::remove(const string_t& str)
     {
-        SortedSet<uint_t> finds = findAll(str);
+        ArrayList<uint_t> finds = findAll(str);
 
         if (finds.size() > 0)
         {
@@ -881,7 +890,7 @@ namespace UCA_L2INFO_PW4
     __String__<_CharT, _Traits, _Alloc>::replace(char_t __old, char_t __new) const
     {
         string_t str(*this);
-        SortedSet<uint_t> finds = findAll(__old);
+        ArrayList<uint_t> finds = findAll(__old);
 
         for (uint_t i : finds)
         {
@@ -902,7 +911,7 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t
     __String__<_CharT, _Traits, _Alloc>::replace(const string_t& __old, const string_t& __new) const
     {
-        SortedSet<uint_t> finds = findAll(__old);
+        ArrayList<uint_t> finds = findAll(__old);
 
         if (finds.size() > 0)
         {
@@ -912,11 +921,11 @@ namespace UCA_L2INFO_PW4
 
             if (newLen == 0) { return string_t(); }
             str_t newStr   = allocator::alloc(newCap);
-            newStr[newLen] = (char_t) 0;
+            newStr[newLen] = (char_t) '\0';
 
             for (uint_t i = 0, j = 0; i < _F_length; i++)
             {
-                if (finds.contains(i))
+                if (!finds.contains(i))
                 {
                     newStr[j] = _F_charseq[i];
                     j++;
@@ -928,13 +937,11 @@ namespace UCA_L2INFO_PW4
                         newStr[j] = c;
                         j++;
                     }
-                    i += __old.length();
+                    i += __old.length()-1;
                 }
             }
 
-            string_t str;
-            str.__set(newStr, newLen, newCap);
-            return str;
+            return string_t(newStr, newLen, newCap);
         }
 
         return *this;
@@ -1005,7 +1012,7 @@ namespace UCA_L2INFO_PW4
     ArrayList<typename __String__<_CharT, _Traits, _Alloc>::string_t>
     __String__<_CharT, _Traits, _Alloc>::split(char_t separator) const
     {
-        SortedSet<uint_t> finds = findAll(separator);
+        ArrayList<uint_t> finds = findAll(separator);
         ArrayList<string_t> splits;
         if (finds.size() > 0)
         {
@@ -1030,7 +1037,7 @@ namespace UCA_L2INFO_PW4
     __String__<_CharT, _Traits, _Alloc>::split(const_str_t separator) const
     {
         uint_t separatorLen = traits_type::len(separator);
-        SortedSet<uint_t> finds = findAll(separator);
+        ArrayList<uint_t> finds = findAll(separator);
         ArrayList<string_t> splits;
         if (finds.size() > 0)
         {
@@ -1054,7 +1061,7 @@ namespace UCA_L2INFO_PW4
     ArrayList<typename __String__<_CharT, _Traits, _Alloc>::string_t>
     __String__<_CharT, _Traits, _Alloc>::split(const string_t& separator) const
     {
-        SortedSet<uint_t> finds = findAll(separator);
+        ArrayList<uint_t> finds = findAll(separator);
         ArrayList<string_t> splits;
         if (finds.size() > 0)
         {
@@ -1186,7 +1193,7 @@ namespace UCA_L2INFO_PW4
                     break;
             }
 
-            for (int i = 0, pow = length()-offset; i < length(); i++)
+            for (uint_t i = 0, pow = length()-offset; i < length(); i++)
             {
                 char_t c(_F_charseq[i]);
 
@@ -1396,7 +1403,7 @@ namespace UCA_L2INFO_PW4
     template<typename _CharT, typename _Traits, typename _Alloc>
     String __String__<_CharT, _Traits, _Alloc>::toString() const
     {
-        // TODO return toUTF8() instead
+        // TODO (v1.0 R) return toUTF8() instead
         return String((const char*) _F_charseq);
     }
 
@@ -1411,23 +1418,15 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t
     __String__<_CharT, _Traits, _Alloc>::ToString(int i)
     {
-        string_t str(allocator::calloc(12u), 0, 12);
-
-        do
-        {
-            str.prepend((char_t) '0' + i%10);
-            i /= 10;
-        } while (i != 0);
-
-        if (i < 0) str.prepend('-');
-        return str;
+        return ToString((long)i);
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
     __String__<_CharT, _Traits, _Alloc>::ToString(long l)
     {
-        string_t str(allocator::calloc(21u), 0, 21);
+        string_t str;
+        bool neg(l<0);
 
         do
         {
@@ -1435,7 +1434,11 @@ namespace UCA_L2INFO_PW4
             l /= 10;
         } while (l != 0);
 
-            if (l < 0) str.prepend('-');
+        if (neg)
+        {
+            str.prepend('-');
+        }
+
         return str;
     }
 
@@ -1450,7 +1453,15 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t
     __String__<_CharT, _Traits, _Alloc>::ToString(double d)
     {
-        return string_t(); // TODO implement toString(double)
+        char* dstr = doublestr(d);
+        string_t str;
+
+        for (int i(0); dstr[i] != '\0'; i++)
+        {
+            str += (char_t) dstr[i];
+        }
+
+        return str; // Todo (v1.0 R) my own implementation of ToString(double)
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>

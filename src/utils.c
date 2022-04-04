@@ -95,3 +95,10 @@ void* memcopy(void* ptr, size_t nmemb, size_t __sizeof)
         return NULL;
     }
 }
+
+char* doublestr(double d)
+{
+    char* str = calloc(32, sizeof(char));
+    sprintf(str, "%lf", d);
+    return str;
+}

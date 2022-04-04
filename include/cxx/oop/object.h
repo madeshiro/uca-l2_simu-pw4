@@ -80,7 +80,7 @@ namespace UCA_L2INFO_PW4
 
         template < class F >
         Function(F&& f) {
-            Function(std::forward<F>(f)).swap(*this);
+            _F_function = std::forward<F>(f);
         }
 
         virtual ~Function() = default;

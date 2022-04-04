@@ -137,7 +137,7 @@ namespace UCA_L2INFO_PW4
         List() = default;
         virtual ~List() = 0;
 
-        virtual bool remove(uint_t index) = 0;
+        virtual bool drop(uint_t index) = 0;
 
         virtual UniquePointer<E> set(value_t elem, uint_t index) = 0;
 
@@ -239,7 +239,7 @@ namespace UCA_L2INFO_PW4
 
         virtual bool remove(value_t elem) override;
 
-        virtual bool remove(uint_t index) override;
+        virtual bool drop(uint_t index) override;
 
         virtual bool removeAll(const Collection<E> &c);
 
@@ -286,7 +286,7 @@ namespace UCA_L2INFO_PW4
 
         virtual bool remove(value_t elem) override;
 
-        virtual bool remove(uint_t index) override;
+        virtual bool drop(uint_t index) override;
 
         virtual bool removeAll(const Collection<E> &c) override;
 
@@ -376,10 +376,8 @@ namespace UCA_L2INFO_PW4
         void recursive_assign(Node *current, const Node *const node);
 
     public:
-        SortedSet(SortMethod<const E &, const E &> sortMethod = [](const E &e1, const E &e2) -> int {
-            return Comparable<E>::CompareTo(e1, e2);
-        }
-        );
+        SortedSet();
+        SortedSet(SortMethod<const E &, const E &> sortMethod);
 
         SortedSet(const SortedSet<E> &cpy);
 
@@ -543,6 +541,21 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     class ChainedList : public Collection<E>
     {
+    protected:
+        bool needUpdate(int a) const
+        {
+            static bool _F_needUpdate = true;
+            if (a == 0)
+            {
+                _F_needUpdate = false;
+            }
+            else if (a > 0)
+            {
+                _F_needUpdate = true;
+            }
+
+            return _F_needUpdate;
+        }
     public:
         typedef typename Collection<E>::traits_type traits_type;
 
@@ -618,8 +631,6 @@ namespace UCA_L2INFO_PW4
         virtual size_t size() const override;
 
         virtual UniquePointer<E[]> toArray() const override;
-
-        // TODO: iterator for ChainedList
 
         virtual Iterator<E, traits_type> iterator() const override;
 
@@ -767,6 +778,12 @@ namespace UCA_L2INFO_PW4
         virtual value_ptr_t get(key_t key) const override;
 
         virtual size_t size() const override;
+
+        HashMap<K, V>& operator =(const HashMap<K,V>& map)
+        {
+            _F_nodes = map._F_nodes;
+            return *this;
+        }
     };
 
     template<typename T, typename _Traits>
@@ -777,10 +794,9 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename T, typename _Traits>
-    ConstIterator<T, _Traits>::ConstIterator(const_ptr_t begin, const_ptr_t end)
+    ConstIterator<T, _Traits>::ConstIterator(const_ptr_t begin, const_ptr_t end):
+        _F_begin(begin), _F_end(end)
     {
-        _F_begin = begin;
-        _F_end = end;
     }
 
     template<typename T, typename _Traits>
@@ -856,7 +872,10 @@ namespace UCA_L2INFO_PW4
         ptr_t newArray(allocator::alloc(currentCapacity + addCapacity));
         if (newArray)
         {
-            return _F_size == traits_type::fill(_F_array, newArray, _F_size);
+            traits_type::fill(_F_array, newArray, _F_size);
+            delete _F_array;
+            _F_array = newArray;
+            return true;
         } else return false;
     }
 
@@ -887,10 +906,12 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     bool AbstractList<E>::contains(value_t elem) const
     {
-        for (auto e : (*this))
+        for (uint_t i(0); i < _F_size; i++)
         {
-            if (e == elem)
+            if (_F_array[i] == elem)
+            {
                 return true;
+            }
         }
 
         return false;
@@ -1051,14 +1072,39 @@ namespace UCA_L2INFO_PW4
     bool ArrayList<E>::remove(value_t elem)
     {
         uint_t *removedIndex = new uint_t[this->size()], removedCnt(0);
-        for ()
+        for (uint_t i(0); i < this->size(); i++)
+        {
+            if (AbstractList<E>::_F_array[i] == elem)
+            {
+                removedIndex[removedCnt] = i;
+                removedCnt++;
+            }
+        }
+
+        if (removedCnt > 0)
+        {
+            ptr_t newArray = allocator::alloc(this->size()-removedCnt);
+            for (uint_t i(0), j(0), k(0); i < this->size(); i++)
+            {
+                if (k > removedCnt || removedIndex[k] != i)
+                {
+                    newArray[j] = AbstractList<E>::_F_array[i];
+                    j++;
+                }
+                else k++;
+            }
+
+            delete[] this->_F_array;
+            this->_F_array = newArray;
+            this->_F_size  -= removedCnt;
+        }
 
         delete[] removedIndex;
         return true;
     }
 
     template < typename E >
-    bool ArrayList<E>::remove(uint_t index)
+    bool ArrayList<E>::drop(uint_t index)
     {
         if (index < this->_F_size)
         {
@@ -1187,6 +1233,7 @@ namespace UCA_L2INFO_PW4
 
             _F_capacity += _F_capacityIncrement;
             this->_F_array = newVector;
+            return true;
         }
         else
         {
@@ -1312,7 +1359,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool Vector<E>::remove(uint_t index)
+    bool Vector<E>::drop(uint_t index)
     {
         if (index < this->_F_size)
         {
@@ -1439,6 +1486,13 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
+    SortedSet<E>::SortedSet():
+        _F_tree(new Node()),
+        _F_size(0u),
+        _F_sortMethod([](const E& e1, const E& e2) -> int{ return Comparable<E>::CompareTo(e1,e2);})
+    {}
+
+    template < typename E >
     SortedSet<E>::SortedSet(SortMethod<const E&, const E&> sortMethod):
         _F_tree(new Node()),
         _F_size(0u),
@@ -1453,25 +1507,8 @@ namespace UCA_L2INFO_PW4
         _F_size(cpy.size()),
         _F_sortMethod(cpy._F_sortMethod)
     {
-        Function<void(Node*, const Node* const)> browse (
-                [&] (Node* dest, const Node* const src) {
-            if (src->left)
-            {
-                dest->left    = new Node();
-                dest->element = src->element;
-                browse(dest->left, src->left);
-            }
-
-            if (src->right)
-            {
-                dest->right   = new Node();
-                dest->element = src->element;
-                browse(dest->right, src->right);
-            }
-        });
-
         _F_tree->element = cpy._F_tree->element;
-        browse(_F_tree, cpy._F_tree);
+        recursive_assign(_F_tree, cpy._F_tree);
     }
 
     template < typename E >
@@ -1580,14 +1617,14 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool SortedSet<E>::remove(value_t elem [[gnu::unused]])
     {
-        // Todo SortedSet<E>::remove
+        // Todo (v1.0 R) SortedSet<E>::drop
         return false;
     }
 
     template < typename E >
     bool SortedSet<E>::removeAll(const Collection<E> &c)
     {
-        // TODO: optimised
+        // TODO (v1.0 R) optimised SortedSet::removeAll
         bool status(true);
         for (value_t elem : c)
         {
@@ -1597,19 +1634,21 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool SortedSet<E>::removeIf(Predicate<const_ref_t> &filter)
+    bool SortedSet<E>::removeIf(Predicate<const_ref_t> &filter [[gnu::unused]])
     {
-        // TODO: SortedSet<E>::removeIf
+        // TODO (v1.0 R) SortedSet<E>::removeIf
         return false;
     }
 
     template < typename E >
-    bool SortedSet<E>::retainAll(const Collection<E> &c)
+    bool SortedSet<E>::retainAll(const Collection<E> &c [[gnu::unused]])
     {
-        Predicate<const_ref_t> predicate([&](const_ref_t elem) -> bool {
+        // TODO (v1.0 R) SortedSet<E>::retainAll
+        /*Predicate<const_ref_t> predicate([&](const_ref_t elem) -> bool {
             return !c.contains(elem);
         });
-        return removeIf(predicate);
+        return removeIf(predicate);*/
+        return false;
     }
 
     template < typename E >
@@ -1668,23 +1707,33 @@ namespace UCA_L2INFO_PW4
         bool _contains(contains(elem));
         if (_contains && !replace) return true;
 
-        for (uint_t off(0); off < _F_size; off++)
+        if (_F_size > 0 )
         {
-            uint_t hashIndex((index+off)%_F_capacity);
-
-            if (_contains)
+            for (uint_t off(0); off < _F_size; off++)
             {
-                if (!_F_set[hashIndex] && _F_set[hashIndex] == elem)
+                uint_t hashIndex((index + off) % _F_capacity);
+
+                if (_contains)
                 {
+                    if (!_F_set[hashIndex] && _F_set[hashIndex] == elem)
+                    {
+                        _F_set[hashIndex] = elem;
+                    }
+                } else if (_F_set[hashIndex])
+                {
+                    setPadding(off);
                     _F_set[hashIndex] = elem;
+                    _F_size++;
+                    return true;
                 }
             }
-            else if (_F_set[hashIndex])
-            {
-                setPadding(off);
-                _F_set[hashIndex] = elem;
-                break;
-            }
+        }
+        else
+        {
+            uint_t hashIndex(index % _F_capacity);
+            _F_set[hashIndex] = elem;
+            _F_size++;
+            return true;
         }
 
         return false;
@@ -1837,9 +1886,9 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool HashSet<E>::retainAll(const Collection<E> &c)
+    bool HashSet<E>::retainAll(const Collection<E> &c [[gnu::unused]])
     {
-        // Todo: retainall HashSet
+        // Todo (v1.0 R) HashSet::retainAll
         return false;
     }
 
@@ -1950,7 +1999,14 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool ChainedList<E>::addAll(const Collection<E> &c)
     {
-        return false;
+        bool status(true);
+
+        for (auto e : c)
+        {
+            status = add(e) & status;
+        }
+
+        return status;
     }
 
     template < typename E >
@@ -1996,7 +2052,8 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool ChainedList<E>::remove(value_t elem)
     {
-        return removeIf([=](const_ref_t value) { value == elem; });
+        // Todo (NOW) ChainedList<E>::drop
+        return false;
     }
 
     template < typename E >
@@ -2013,7 +2070,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool ChainedList<E>::removeIf(Predicate<const_ref_t> &filter)
+    bool ChainedList<E>::removeIf(Predicate<const_ref_t> &filter [[gnu::unused]])
     {
         return false;
     }
@@ -2035,7 +2092,46 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     UniquePointer<E[]> ChainedList<E>::toArray() const
     {
-        return nullptr;
+        ptr_t array = Alloc<E, traits_type >::alloc(size());
+        if (array)
+        {
+            uint_t i(0);
+            Chain *chain = _F_first;
+            while (chain)
+            {
+                array[i] = chain->elem;
+                chain = chain->next;
+                i++;
+            }
+        }
+
+        return UniquePointer<E[]>(array);
+    }
+
+    template < typename E >
+    Iterator<E, typename ChainedList<E>::traits_type> ChainedList<E>::iterator() const
+    {
+        static ptr_t _F_iter = toArray().release();
+
+        if (needUpdate(-1))
+        {
+            _F_iter = toArray().release();
+        }
+
+        return Iterator<E, traits_type>(_F_iter, &_F_iter[size()]);
+    }
+
+    template < typename E >
+    ConstIterator<E, typename ChainedList<E>::traits_type> ChainedList<E>::const_iterator() const
+    {
+        static ptr_t _F_iter = toArray().release();
+
+        if (needUpdate(-1))
+        {
+            _F_iter = toArray().release();
+        }
+
+        return ConstIterator<E, traits_type>(_F_iter, &_F_iter[size()]);
     }
 
     template < typename K, typename V >
@@ -2140,21 +2236,24 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename K, typename V >
-    bool HashMap<K, V>::removeIf(Predicate<key_const_t> &predicateOnKey)
+    bool HashMap<K, V>::removeIf(Predicate<key_const_t> &predicateOnKey [[gnu::unused]])
     {
+        // Todo (v1.0 R) HashMap::removeIf
         return false;
     }
 
     template < typename K, typename V >
-    bool HashMap<K, V>::removeForValue(Predicate<value_const_t> &predicateOnValue)
+    bool HashMap<K, V>::removeForValue(Predicate<value_const_t> &predicateOnValue [[gnu::unused]])
     {
+        // Todo (v1.0 R) HashMap::removeForValue
         return false;
     }
 
     template < typename K, typename V >
-    bool HashMap<K, V>::retainAll(const Set<K> &c)
+    bool HashMap<K, V>::retainAll(const Set<K> &c [[gnu::unused]])
     {
-        return false;  // Todo HashMap::retainAll
+        // Todo (v1.0 R) HashMap::retainAll
+        return false;
         // return removeIf([&](key_const_t elem) -> bool {
         //     return !c.contains(elem);
         // });
@@ -2174,7 +2273,7 @@ namespace UCA_L2INFO_PW4
         {
             hash_t keyHash(key_traits::hash_code(key));
             uint_t index(keyHash%_F_nodes._F_capacity);
-            for (uint_t offset(0); offset < _F_nodes._F_padding; offset++)
+            for (uint_t offset(0); offset <= _F_nodes._F_padding; offset++)
             {
                 if (_F_nodes._F_set[index + offset].hashCode() == keyHash)
                 {

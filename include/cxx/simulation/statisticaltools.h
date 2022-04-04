@@ -89,6 +89,8 @@ namespace UCA_L2INFO_PW4
         virtual String generatePlot() const override;
         virtual int getType() const override;
         virtual String toString() const override;
+
+        ProbabilityDF& operator =(const ProbabilityDF& pdf);
     };
 
     class CumulativeDF : public PgfPlotsData, Drawable
@@ -112,6 +114,7 @@ namespace UCA_L2INFO_PW4
 
         const ProbabilityDF& getPDF() const;
         int draw() override;
+        int drawFromId();
 
         int getGroupID(String name);
         String getGroupName(int id);

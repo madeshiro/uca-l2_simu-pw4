@@ -82,7 +82,30 @@ namespace UCA_L2INFO_PW4
             pdfMaturity("maturity"),
             parent(parent)
     {
+        maleRabbits = new Vector<Rabbit*>(256);
+        femaleRabbits = new Vector<Rabbit*>(256);
 
+        pdfReproduction.addGroup("2", 0.125);
+        pdfReproduction.addGroup("3", 0.25);
+        pdfReproduction.addGroup("4", 0.25);
+        pdfReproduction.addGroup("5", 0.25);
+        pdfReproduction.addGroup("6", 0.125);
+        cdfReproduction = new CumulativeDF(pdfReproduction);
+
+        pdfLitter.addGroup("3",0.08);
+        pdfLitter.addGroup("4",0.13);
+        pdfLitter.addGroup("5",0.18);
+        pdfLitter.addGroup("6",0.22);
+        pdfLitter.addGroup("7",0.18);
+        pdfLitter.addGroup("8",0.13);
+        pdfLitter.addGroup("9",0.08);
+        cdfLitter = new CumulativeDF(pdfLitter);
+
+        pdfMaturity.addGroup("5", 0.25);
+        pdfMaturity.addGroup("6", 0.20);
+        pdfMaturity.addGroup("7", 0.25);
+        pdfMaturity.addGroup("8", 0.30);
+        cdfMaturity = new CumulativeDF(pdfMaturity);
     }
 
     EntityManager::~EntityManager()
@@ -95,29 +118,29 @@ namespace UCA_L2INFO_PW4
         delete cdfMaturity;
     }
 
-    void EntityManager::doReproduction(Rabbit & rabbit)
+    void EntityManager::doReproduction(Rabbit * rabbit)
     {
         // Condition for a Rabbit to be able to reproduce:
         // - There remain males
         // - Rabbit is a female
         // - Rabbit is fertile
         // - Rabbit hasn't done it maximum number of litter this year
-        if (maleRabbits->size() > 0 && rabbit.isFemale() && rabbit.isFertile())
+        if (maleRabbits->size() > 0 && rabbit->isFemale() && rabbit->isFertile())
         {
-            if (rabbit.getLifetime()-rabbit.getMaturity()%12 == 0)
+            if (rabbit->getLifetime()-rabbit->getMaturity()%12 == 0)
             {
-                rabbit.setLitter(cdfLitter->draw()+3);
+                rabbit->setLitter(cdfLitter->drawFromId());
             }
 
-            if (rabbit.doLitter())
+            if (rabbit->doLitter())
             {
-                int birthAmount(cdfReproduction->draw()+2);
+                int birthAmount(cdfReproduction->drawFromId());
                 for (int i(0); i < birthAmount; i++)
                 {
                     bool female(genrand_real1() < .50);
-                    ushort_t maturity(cdfMaturity->draw() + 5); // group 0 == 5 month to be mature
+                    ushort_t maturity(cdfMaturity->drawFromId());
 
-                    Rabbit kitten(female, generateHashCode(female), maturity);
+                    Rabbit* kitten = new Rabbit(female, generateHashCode(female), maturity);
                     reproduction(kitten);
 
                     // Test childbirth
@@ -133,26 +156,33 @@ namespace UCA_L2INFO_PW4
         }
     }
 
-    bool EntityManager::doSurvive(Rabbit & rabbit)
+    bool EntityManager::doSurvive(Rabbit * rabbit)
     {
-        if (genrand_real1() < rabbit.deathProbability())
+        if (genrand_real1() < rabbit->deathProbability())
         {
-            if (rabbit.isFemale())
+            if (rabbit->isFemale())
             {
                 if (!femaleRabbits->remove(rabbit))
-                    Application::app->out->severe().println("Unable to remove a rabbit from the collection !");
+                    Application::app->out->severe().println("Unable to drop a rabbit from the collection !");
             }
             else
             {
                 if (!maleRabbits->remove(rabbit))
-                    Application::app->out->severe().println("Unable to remove a rabbit from the collection !");
+                    Application::app->out->severe().println("Unable to drop a rabbit from the collection !");
             }
 
-            die();
-            if (rabbit.getLifetime() == 12)
+            die(rabbit->getLifetime());
+            if (rabbit->getLifetime() == 12)
             {
                 die_from_age();
             }
+
+            delete rabbit;
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
@@ -168,9 +198,9 @@ namespace UCA_L2INFO_PW4
         }
     }
 
-    Rabbit EntityManager::createAdult(bool female)
+    Rabbit* EntityManager::createAdult(bool female)
     {
-        Rabbit adult(female, generateHashCode(female), cdfMaturity->draw()+5);
+        Rabbit *adult = new Rabbit(female, generateHashCode(female), cdfMaturity->drawFromId());
         (female ? femaleRabbits : maleRabbits)->add(adult);
         return adult;
     }
@@ -183,6 +213,26 @@ namespace UCA_L2INFO_PW4
     Binaries& EntityManager::loadBinary(BinaryStream stream [[gnu::unused]])
     {
         // Todo loadBinary
+        return *this;
+    }
+
+    EntityManager& EntityManager::operator=(const EntityManager &entityManager)
+    {
+        hashCodeMaleRabbits = entityManager.hashCodeMaleRabbits;
+        hashCodeFemaleRabbits = entityManager.hashCodeFemaleRabbits;
+
+        maleRabbits = entityManager.maleRabbits;
+        femaleRabbits = entityManager.femaleRabbits;
+
+        pdfLitter = entityManager.pdfLitter;
+        pdfReproduction = entityManager.pdfReproduction;
+        pdfMaturity = entityManager.pdfMaturity;
+
+        cdfReproduction = new CumulativeDF(*entityManager.cdfReproduction);
+        cdfLitter       = new CumulativeDF(*entityManager.cdfLitter);
+        cdfMaturity     = new CumulativeDF(*entityManager.cdfMaturity);
+
+        parent = entityManager.parent;
         return *this;
     }
 }

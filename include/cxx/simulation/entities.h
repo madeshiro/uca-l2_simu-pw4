@@ -51,8 +51,8 @@ namespace UCA_L2INFO_PW4
         hash_t hashCodeMaleRabbits   = 0x0;
         hash_t hashCodeFemaleRabbits = 0x0;
 
-        Collection<Rabbit>* maleRabbits;
-        Collection<Rabbit>* femaleRabbits;
+        SharedPointer<Collection<Rabbit*>> maleRabbits;
+        SharedPointer<Collection<Rabbit*>> femaleRabbits;
 
         ProbabilityDF pdfReproduction;
         ProbabilityDF pdfLitter;
@@ -64,23 +64,25 @@ namespace UCA_L2INFO_PW4
 
         Simulation* parent;
     events:
-        event() die;
+        event(uint_t /*lifetime*/) die;
         event() die_from_age;
         event() die_childbirth;
-        event(const Rabbit&) reproduction;
+        event(const Rabbit*) reproduction;
     public:
         EntityManager(Simulation* parent);
         virtual ~EntityManager() final;
 
-        Rabbit createAdult(bool female);
+        Rabbit *createAdult(bool female);
 
-        void doReproduction(Rabbit&);
-        bool doSurvive(Rabbit&);
+        void doReproduction(Rabbit*);
+        bool doSurvive(Rabbit*);
 
         hash_t generateHashCode(bool female);
 
         virtual BinaryStream exportBinary() const override;
         virtual Binaries&  loadBinary(BinaryStream stream) override;
+
+        EntityManager& operator =(const EntityManager& entityManager);
     };
 }
 

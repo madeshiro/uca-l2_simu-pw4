@@ -73,16 +73,16 @@ namespace UCA_L2INFO_PW4
         typedef T*&& rvalue_t;
         typedef T**  ptr_t;
 
-        typedef const T*     const_t;
-        typedef const T**    const_ptr_t;
-        typedef const T*&    const_ref_t;
+        typedef T*  const    const_t;
+        typedef T** const    const_ptr_t;
+        typedef T*  const &  const_ref_t;
 
         typedef ulong_t     size_t;
 
         static hash_t hash_code(const_t obj);
         static ptr_t  copy(const_ptr_t ptr);
         static ptr_t  copy(const_ptr_t ptr, size_t nmemb);
-        static size_t fill(const_ptr_t src, ptr_t dest, size_t size);
+        static size_t fill(const ptr_t src, ptr_t dest, size_t size);
     };
     
     template <>
@@ -218,12 +218,12 @@ namespace UCA_L2INFO_PW4
     }
     
     template < typename T >
-    typename Traits<T*>::size_t Traits<T*>::fill(const_ptr_t src, ptr_t dest, size_t size)
+    typename Traits<T*>::size_t Traits<T*>::fill(const ptr_t src, ptr_t dest, size_t size)
     {
         size_t i(0);
         for (; i < size; i++)
         {
-            dest[i] = src[i];
+            dest[i] = (value_t) src[i];
         }
         return i;
     }

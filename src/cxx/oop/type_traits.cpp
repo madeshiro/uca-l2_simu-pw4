@@ -18,7 +18,10 @@ namespace UCA_L2INFO_PW4
 
     Traits<char>::ptr_t Traits<char>::copy(const_ptr_t str, size_t nmemb)
     {
-        return (ptr_t) memcopy((void *) str, nmemb, sizeof(char));
+        ptr_t cpy = new value_t[nmemb+1];
+        cpy[nmemb] = '\0';
+        fill(str, cpy, nmemb);
+        return cpy;
     }
 
     Traits<char>::size_t Traits<char>::fill(const_ptr_t src, ptr_t dest, size_t size)
@@ -54,7 +57,10 @@ namespace UCA_L2INFO_PW4
 
     Traits<wchar_t>::ptr_t Traits<wchar_t>::copy(const_ptr_t str, size_t nmemb)
     {
-        return (ptr_t) memcopy((void *) str, nmemb, sizeof(wchar_t));
+        ptr_t cpy = new value_t[nmemb+1];
+        cpy[nmemb] = L'\0';
+        fill(str, cpy, nmemb);
+        return cpy;
     }
 
     Traits<wchar_t>::size_t Traits<wchar_t>::fill(const_ptr_t src, ptr_t dest, size_t size)

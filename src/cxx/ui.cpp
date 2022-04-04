@@ -30,7 +30,7 @@ namespace UCA_L2INFO_PW4
     {
         Logger* out(Application::app->out);
         out->format("Simulation {0}/{1} done !\n");
-        // Todo complete progression display !
+
         return true;
     }
 

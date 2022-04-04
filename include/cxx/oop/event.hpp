@@ -72,6 +72,8 @@ namespace UCA_L2INFO_PW4
         {
             return sizeof...(Args);
         }
+
+        virtual Event<Args...>& operator =(const Event<Args...>& cpy);
     };
 
     template < typename... Args >
@@ -172,6 +174,13 @@ namespace UCA_L2INFO_PW4
             connected += _F_dlgts[i].size();
         }
         return connected;
+    }
+
+    template < typename ...Args >
+    Event<Args...> & Event<Args...>::operator=(const Event<Args...> &cpy)
+    {
+        _F_dlgts = cpy._F_dlgts;
+        return *this;
     }
 
     template < typename ...Args >
