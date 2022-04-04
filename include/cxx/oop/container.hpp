@@ -313,19 +313,22 @@ namespace UCA_L2INFO_PW4
         typedef typename Collection<E>::const_ptr_t const_ptr_t;
 
     protected:
-        bool _F_needUpdate;
-        UniquePointer<E[]> _F_toArray;
+        Set() = default;
 
-        Set() : _F_needUpdate(false), _F_toArray(nullptr)
-        {}
+        bool needUpdate(int a) const
+        {
+            static bool _F_needUpdate = true;
+            if (a == 0)
+            {
+                _F_needUpdate = false;
+            }
+            else if (a > 0)
+            {
+                _F_needUpdate = true;
+            }
 
-        // TODO: Recheck the update thing about Iterator
-        virtual void needUpdate(bool status = true) final
-        { _F_needUpdate = status; }
-
-        virtual bool doNeedUpdate() const final
-        { return _F_needUpdate; }
-
+            return _F_needUpdate;
+        }
     public:
         virtual Iterator<E> iterator() const override;
         virtual ConstIterator<E> const_iterator() const override;
@@ -1850,15 +1853,25 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     Iterator<E, typename HashSet<E>::traits_type> HashSet<E>::iterator() const
     {
-        ptr_t ptr = toArray().release();
-        return Iterator<E, traits_type>(ptr, &ptr[_F_size]);
+        static ptr_t _S_array = toArray().release();
+        if (Set<E>::needUpdate(-1))
+        {
+            _S_array = toArray().release();
+            Set<E>::needUpdate(0);
+        }
+        return Iterator<E, traits_type>(_S_array, &_S_array[_F_size]);
     }
 
     template < typename E >
     ConstIterator<E, typename HashSet<E>::traits_type> HashSet<E>::const_iterator() const
     {
-        ptr_t ptr = toArray().release();
-        return ConstIterator<E, traits_type>((const_ptr_t) ptr, (const_ptr_t) &(ptr[_F_size]));
+        static ptr_t _S_array = toArray().release();
+        if (Set<E>::needUpdate(-1))
+        {
+            _S_array = toArray().release();
+            Set<E>::needUpdate(0);
+        }
+        return ConstIterator<E, traits_type>((const_ptr_t)_S_array, (const_ptr_t) &_S_array[_F_size]);
     }
 
     template < typename E >
