@@ -40,6 +40,7 @@ namespace UCA_L2INFO_PW4
 
         double deathProbability() const;
         // virtual String toString() const override;
+        uint_t getMaturity() const;
     };
 
     class Simulation;
@@ -71,8 +72,10 @@ namespace UCA_L2INFO_PW4
         EntityManager(Simulation* parent);
         virtual ~EntityManager() final;
 
+        Rabbit createAdult(bool female);
+
         void doReproduction(Rabbit&);
-        void doSurvive(Rabbit&);
+        bool doSurvive(Rabbit&);
 
         hash_t generateHashCode(bool female);
 

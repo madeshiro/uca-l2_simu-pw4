@@ -14,6 +14,7 @@ namespace UCA_L2INFO_PW4
         // event(const Simulation*) on_progress;
     private:
         Experiment* parent;
+        EntityManager manager;
     public:
         Simulation(Experiment* parent = nullptr);
         virtual ~Simulation();
@@ -21,7 +22,10 @@ namespace UCA_L2INFO_PW4
         virtual BinaryStream exportBinary() const override;
         virtual Simulation&  loadBinary(BinaryStream stream) override;
 
+        void init();
         void run();
+
+        Simulation& operator =(Simulation& sim);
     };
 }
 

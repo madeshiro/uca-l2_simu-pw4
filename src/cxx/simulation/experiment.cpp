@@ -28,10 +28,13 @@ namespace UCA_L2INFO_PW4
 
         for (uint_t i = 0; i < _F_replication; i++)
         {
-            _F_simulations[i] = Simulation(this);
-            on_replication(i + 1, _F_replication, _F_simulations[_P_current]);
+            Simulation simulation(this);
+            _F_simulations[i] = simulation;
 
-            _F_simulations[_P_current].run();
+            on_replication(i + 1, _F_replication, _F_simulations[i]);
+
+            _F_simulations[i].init();
+            _F_simulations[i].run();
 
             on_simulation_end(i+1, _F_replication, _F_simulations[i]);
         }
@@ -78,5 +81,25 @@ namespace UCA_L2INFO_PW4
         uuid &= _F_initFemale << 16 | _F_initMale;
 
         return uuid;
+    }
+
+    uint_t Experiment::getReplicationAmount() const
+    {
+        return _F_replication;
+    }
+
+    uint_t Experiment::getMonthDuration() const
+    {
+        return _F_duration;
+    }
+
+    uint_t Experiment::getRequestMale() const
+    {
+        return _F_initMale;
+    }
+
+    uint_t Experiment::getRequestFemale() const
+    {
+        return _F_initFemale;
     }
 }

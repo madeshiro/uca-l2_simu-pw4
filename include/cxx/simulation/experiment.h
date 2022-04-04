@@ -12,7 +12,6 @@ namespace UCA_L2INFO_PW4
         uint_t _F_replication, _F_duration, _F_initMale, _F_initFemale;
         ulong_t * mt_keys, mt_key_length;
 
-        uint_t _P_current;
         Simulation* _F_simulations;
         File _F_directory;
     events:
@@ -30,6 +29,11 @@ namespace UCA_L2INFO_PW4
         void stop();
         void pause();
 
+        uint_t getReplicationAmount() const;
+        uint_t getMonthDuration() const;
+
+        uint_t getRequestMale() const;
+        uint_t getRequestFemale() const;
         virtual ullong_t uuid() const;
     };
 }

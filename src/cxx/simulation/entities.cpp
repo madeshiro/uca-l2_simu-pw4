@@ -9,7 +9,8 @@ namespace UCA_L2INFO_PW4
     Rabbit::Rabbit(bool isFemale, hash_t hash, ushort_t maturity): _F_hash_code(hash),
         _F_lifetime(0),
         _F_female(isFemale),
-        _F_maturity(maturity)
+        _F_maturity(maturity),
+        _F_litter(0)
     {
         /* ... */
     }
@@ -58,16 +59,21 @@ namespace UCA_L2INFO_PW4
     {
         if (isAdult())
         {
-            if (_F_lifetime < 7)
+            if (_F_lifetime < 7*12)
             {
                 return .75;
             }
             else
             {
-                return .75 - (.15 * (_F_lifetime-7.));
+                return .75 - (.15 * ((uint_t)(_F_lifetime-7*12)%12));
             }
         }
         else return .50;
+    }
+
+    uint_t Rabbit::getMaturity() const
+    {
+        return _F_maturity;
     }
 
     EntityManager::EntityManager(Simulation* parent):
@@ -98,7 +104,7 @@ namespace UCA_L2INFO_PW4
         // - Rabbit hasn't done it maximum number of litter this year
         if (maleRabbits->size() > 0 && rabbit.isFemale() && rabbit.isFertile())
         {
-            if (rabbit.getLifetime()%12 == 0)
+            if (rabbit.getLifetime()-rabbit.getMaturity()%12 == 0)
             {
                 rabbit.setLitter(cdfLitter->draw()+3);
             }
@@ -127,7 +133,7 @@ namespace UCA_L2INFO_PW4
         }
     }
 
-    void EntityManager::doSurvive(Rabbit & rabbit)
+    bool EntityManager::doSurvive(Rabbit & rabbit)
     {
         if (genrand_real1() < rabbit.deathProbability())
         {
@@ -160,6 +166,13 @@ namespace UCA_L2INFO_PW4
         {
             return hashCodeMaleRabbits++;
         }
+    }
+
+    Rabbit EntityManager::createAdult(bool female)
+    {
+        Rabbit adult(female, generateHashCode(female), cdfMaturity->draw()+5);
+        (female ? femaleRabbits : maleRabbits)->add(adult);
+        return adult;
     }
 
     BinaryStream EntityManager::exportBinary() const
