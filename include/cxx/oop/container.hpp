@@ -1050,14 +1050,11 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool ArrayList<E>::remove(value_t elem)
     {
-        //Predicate<const_ref_t> predicate;
-        //predicate = Predicate<const_ref_t>([elem](const_ref_t e) -> bool {
-        //    return elem == e;
-        //});
+        uint_t *removedIndex = new uint_t[this->size()], removedCnt(0);
+        for ()
 
-        //return removeIf(predicate);
-        // TODO fixed that part
-        return false;
+        delete[] removedIndex;
+        return true;
     }
 
     template < typename E >
@@ -1402,15 +1399,25 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     Iterator<E> Set<E>::iterator() const
     {
-        return Iterator<E>(nullptr, nullptr);
+        static ptr_t _S_array = this->toArray().release();
+        if (needUpdate(-1))
+        {
+            _S_array = this->toArray().release();
+            needUpdate(0);
+        }
+        return Iterator<E>(_S_array, &_S_array[this->size()]);
     }
 
     template < typename E >
     ConstIterator<E> Set<E>::const_iterator() const
     {
-
-        // Todo const_iterator for set
-        return ConstIterator<E>(nullptr, nullptr);
+        static ptr_t _S_array = this->toArray().release();
+        if (needUpdate(-1))
+        {
+            _S_array = this->toArray().release();
+            needUpdate(0);
+        }
+        return ConstIterator<E>((const_ptr_t)_S_array, (const_ptr_t) &_S_array[this->size()]);
     }
 
     template < typename E >
@@ -1509,6 +1516,7 @@ namespace UCA_L2INFO_PW4
         {
             emplacement->element = elem;
             this->_F_size++;
+            this->needUpdate(true);
         }
 
         return true;
@@ -1570,17 +1578,22 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    bool SortedSet<E>::remove(value_t elem)
+    bool SortedSet<E>::remove(value_t elem [[gnu::unused]])
     {
-        Predicate<const_ref_t> predicate([=](const_ref_t e) -> bool {return elem == e;});
-        return removeIf(predicate);
+        // Todo SortedSet<E>::remove
+        return false;
     }
 
     template < typename E >
     bool SortedSet<E>::removeAll(const Collection<E> &c)
     {
         // TODO: optimised
-        return true;
+        bool status(true);
+        for (value_t elem : c)
+        {
+            status = remove(elem) && status;
+        }
+        return status;
     }
 
     template < typename E >
@@ -1608,8 +1621,13 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     UniquePointer<E[]> SortedSet<E>::toArray() const
     {
-        // TODO: SortedSet<E>::toArray
-        return UniquePointer<E[]>();
+        ptr_t array = Alloc<E[], traits_type>::alloc(size());
+        if (array)
+        {
+
+        }
+
+        return UniquePointer<E[]>(array);
     }
 
     template < typename E >
