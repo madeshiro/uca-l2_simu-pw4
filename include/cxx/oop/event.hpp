@@ -121,7 +121,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename ...Args >
-    Event<Args...>::Event(): _F_dlgts(new HashSet<Delegate<Args...>*>[5])
+    Event<Args...>::Event(): _F_dlgts(new HashSet<Delegate<Args...>*>[6])
     {
         /* ... */
     }
@@ -149,11 +149,14 @@ namespace UCA_L2INFO_PW4
     {
         for (int p = Critical; p >= Lowest; p--)
         {
-            for (Delegate<Args...> *dlgt : _F_dlgts[p])
+            if (_F_dlgts[p].size())
             {
-                if (!dlgt->call(args...))
+                for (Delegate<Args...> *dlgt: _F_dlgts[p])
                 {
-                    return;
+                    if (!dlgt->call(args...))
+                    {
+                        return;
+                    }
                 }
             }
         }

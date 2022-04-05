@@ -28,13 +28,13 @@ namespace UCA_L2INFO_PW4
     class Logger final
     {
         OutputStream* stream;
-        String prefix;
+        String _F_prefix;
 
         bool _F_tmp = false;
     protected:
         Logger(const Logger& log, String lvl);
     public:
-        Logger(OutputStream* stream, String prefix = "logger");
+        Logger(OutputStream* stream, String prefix = "");
         virtual ~Logger() final;
 
         void setPrefix(const String p);
@@ -46,6 +46,13 @@ namespace UCA_L2INFO_PW4
         template <typename ...T>
         void format(const char* format, T... args)
         {
+            if (!_F_prefix.isEmpty())
+            {
+                stream->write("[", 1u);
+                stream->write(_F_prefix.getCharSequence(), _F_prefix.length());
+                stream->write("] ", 2u);
+            }
+
             print(String(format).format(args...));
         }
 

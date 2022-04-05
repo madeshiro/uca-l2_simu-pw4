@@ -29,7 +29,7 @@ namespace UCA_L2INFO_PW4
     bool ConsoleUI::displayProgression(int cnt, int exp_total, Simulation & sim)
     {
         Logger* out(Application::app->out);
-        out->format("Simulation {0}/{1} done !\n");
+        out->format("Simulation {0}/{1} done !\n", cnt, exp_total);
 
         return true;
     }

@@ -15,6 +15,11 @@ namespace UCA_L2INFO_PW4
         /* ... */
     }
 
+    Rabbit::~Rabbit() noexcept
+    {
+        /* */
+    }
+
     hash_t Rabbit::hashCode() const
     {
         return _F_hash_code;
@@ -77,45 +82,19 @@ namespace UCA_L2INFO_PW4
     }
 
     EntityManager::EntityManager(Simulation* parent):
-            pdfReproduction("reproduction"),
-            pdfLitter("litter"),
-            pdfMaturity("maturity"),
-            parent(parent)
+        parent(parent)
     {
         maleRabbits = new Vector<Rabbit*>(256);
         femaleRabbits = new Vector<Rabbit*>(256);
-
-        pdfReproduction.addGroup("2", 0.125);
-        pdfReproduction.addGroup("3", 0.25);
-        pdfReproduction.addGroup("4", 0.25);
-        pdfReproduction.addGroup("5", 0.25);
-        pdfReproduction.addGroup("6", 0.125);
-        cdfReproduction = new CumulativeDF(pdfReproduction);
-
-        pdfLitter.addGroup("3",0.08);
-        pdfLitter.addGroup("4",0.13);
-        pdfLitter.addGroup("5",0.18);
-        pdfLitter.addGroup("6",0.22);
-        pdfLitter.addGroup("7",0.18);
-        pdfLitter.addGroup("8",0.13);
-        pdfLitter.addGroup("9",0.08);
-        cdfLitter = new CumulativeDF(pdfLitter);
-
-        pdfMaturity.addGroup("5", 0.25);
-        pdfMaturity.addGroup("6", 0.20);
-        pdfMaturity.addGroup("7", 0.25);
-        pdfMaturity.addGroup("8", 0.30);
-        cdfMaturity = new CumulativeDF(pdfMaturity);
     }
 
     EntityManager::~EntityManager()
     {
-        delete maleRabbits;
-        delete femaleRabbits;
+        for (Rabbit* rabbit : *maleRabbits)
+            delete rabbit;
 
-        delete cdfReproduction;
-        delete cdfLitter;
-        delete cdfMaturity;
+        for (Rabbit* rabbit : *femaleRabbits)
+            delete rabbit;
     }
 
     void EntityManager::doReproduction(Rabbit * rabbit)
@@ -127,20 +106,23 @@ namespace UCA_L2INFO_PW4
         // - Rabbit hasn't done it maximum number of litter this year
         if (maleRabbits->size() > 0 && rabbit->isFemale() && rabbit->isFertile())
         {
-            if (rabbit->getLifetime()-rabbit->getMaturity()%12 == 0)
+            if ((rabbit->getLifetime()-rabbit->getMaturity())%12 == 0)
             {
-                rabbit->setLitter(cdfLitter->drawFromId());
+                rabbit->setLitter(parent->experiment()->cdfLitter->drawFromId());
             }
 
             if (rabbit->doLitter())
             {
-                int birthAmount(cdfReproduction->drawFromId());
+                int birthAmount(parent->experiment()->cdfReproduction->drawFromId());
                 for (int i(0); i < birthAmount; i++)
                 {
                     bool female(genrand_real1() < .50);
-                    ushort_t maturity(cdfMaturity->drawFromId());
+                    ushort_t maturity(parent->experiment()->cdfMaturity->drawFromId());
 
                     Rabbit* kitten = new Rabbit(female, generateHashCode(female), maturity);
+                    Application::app->out->format("new <kitten> Rabbit("
+                                                  "female:{0}, maturity:{1})\n",
+                                                  female, maturity);
                     reproduction(kitten);
 
                     // Test childbirth
@@ -200,8 +182,12 @@ namespace UCA_L2INFO_PW4
 
     Rabbit* EntityManager::createAdult(bool female)
     {
-        Rabbit *adult = new Rabbit(female, generateHashCode(female), cdfMaturity->drawFromId());
+        Rabbit *adult = new Rabbit(female, generateHashCode(female), parent->experiment()->cdfMaturity->drawFromId());
         (female ? femaleRabbits : maleRabbits)->add(adult);
+
+        Application::app->out->format("new <adult> Rabbit("
+                                      "female:{0}, maturity:{1})\n",
+                                      female, adult->_F_maturity);
         return adult;
     }
 
@@ -223,14 +209,6 @@ namespace UCA_L2INFO_PW4
 
         maleRabbits = entityManager.maleRabbits;
         femaleRabbits = entityManager.femaleRabbits;
-
-        pdfLitter = entityManager.pdfLitter;
-        pdfReproduction = entityManager.pdfReproduction;
-        pdfMaturity = entityManager.pdfMaturity;
-
-        cdfReproduction = new CumulativeDF(pdfReproduction);
-        cdfLitter       = new CumulativeDF(pdfLitter);
-        cdfMaturity     = new CumulativeDF(pdfMaturity);
 
         parent = entityManager.parent;
         return *this;

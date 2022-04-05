@@ -26,6 +26,8 @@ namespace UCA_L2INFO_PW4
         void run();
 
         Simulation& operator =(Simulation& sim);
+
+        Experiment* experiment();
     };
 }
 

@@ -54,17 +54,17 @@ namespace UCA_L2INFO_PW4
         virtual Iterator<T, traits_type> iterator() const = 0;
         virtual ConstIterator<T, traits_type> const_iterator() const = 0;
 
-        ptr_t begin() const;
-        ptr_t end() const;
+        virtual ptr_t begin() const;
+        virtual ptr_t end() const;
 
-        ptr_t rbegin();
-        ptr_t rend();
+        virtual ptr_t rbegin();
+        virtual ptr_t rend();
 
-        const_ptr_t cbegin() const;
-        const_ptr_t cend() const;
+        virtual const_ptr_t cbegin() const;
+        virtual const_ptr_t cend() const;
 
-        const_ptr_t crbegin() const;
-        const_ptr_t crend() const;
+        virtual const_ptr_t crbegin() const;
+        virtual const_ptr_t crend() const;
     };
 
     template<typename E>
@@ -439,7 +439,9 @@ namespace UCA_L2INFO_PW4
             {
                 if (element)
                 {
+                    // Todo Error on setup bucket could make pointer invalid (out of range)
                     delete element;
+                    element = nullptr;
                 }
             };
 
@@ -472,8 +474,11 @@ namespace UCA_L2INFO_PW4
 
             virtual void clear()
             {
-                delete element;
-                element = nullptr;
+                if (element)
+                {
+                    delete element;
+                    element = nullptr;
+                }
             }
         } *_F_set;
 
@@ -733,10 +738,20 @@ namespace UCA_L2INFO_PW4
 
             HashNode() = default;
             HashNode(K key, V value): key(key), value(value) {/* ... */}
+            HashNode(const HashNode& node):
+                key(node.key), value(node.value)
+            {/* ... */ }
 
             virtual hash_t hashCode() const override
             {
                 return key_traits::hash_code(key);
+            }
+
+            HashNode& operator =(const HashNode& node)
+            {
+                key = node.key;
+                value = node.value;
+                return *this;
             }
         };
 
@@ -802,49 +817,49 @@ namespace UCA_L2INFO_PW4
     template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::begin() const
     {
-        return iterator()._F_begin;
+        return this->iterator()._F_begin;
     }
 
     template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::end() const
     {
-        return iterator()._F_end;
+        return this->iterator()._F_end;
     }
 
     template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::cbegin() const
     {
-        return const_iterator()._F_begin;
+        return this->const_iterator()._F_begin;
     }
 
     template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::cend() const
     {
-        return const_iterator()._F_end;
+        return this->const_iterator()._F_end;
     }
 
     template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::rbegin()
     {
-        return iterator()._F_end - 1;
+        return this->iterator()._F_end - 1;
     }
 
     template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::rend()
     {
-        return iterator()._F_begin - 1;
+        return this->iterator()._F_begin - 1;
     }
 
     template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crbegin() const
     {
-        return const_iterator()._F_end - 1;
+        return this->const_iterator()._F_end - 1;
     }
 
     template<typename T, typename _Traits>
     typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crend() const
     {
-        return const_iterator()._F_begin - 1;
+        return this->const_iterator()._F_begin - 1;
     }
 
     template<typename E>
@@ -889,7 +904,7 @@ namespace UCA_L2INFO_PW4
     template<typename E>
     AbstractList<E>::~AbstractList()
     {
-        AbstractList<E>::clear();
+        this->clear();
     }
 
     template<typename E>
@@ -1342,13 +1357,14 @@ namespace UCA_L2INFO_PW4
         {
             for (uint_t i(0), j(0), k(0); i < this->_F_size; i++)
             {
-                if (k < nbIndexes && i != indexes[k])
-                {
-                    this->_F_array[j] = this->_F_array[i];
-                }
-                else if (i == indexes[k])
+                if (k < nbIndexes && i == indexes[k])
                 {
                     k++;
+                }
+                else
+                {
+                    this->_F_array[j] = this->_F_array[i];
+                    j++;
                 }
             }
 
@@ -1695,6 +1711,7 @@ namespace UCA_L2INFO_PW4
         if (_F_set)
         {
             delete[] _F_set;
+            _F_set = nullptr;
         }
     }
 
@@ -1724,6 +1741,8 @@ namespace UCA_L2INFO_PW4
                     setPadding(off);
                     _F_set[hashIndex] = elem;
                     _F_size++;
+
+                    this->needUpdate(true);
                     return true;
                 }
             }
@@ -1733,6 +1752,8 @@ namespace UCA_L2INFO_PW4
             uint_t hashIndex(index % _F_capacity);
             _F_set[hashIndex] = elem;
             _F_size++;
+
+            this->needUpdate(true);
             return true;
         }
 
@@ -1782,6 +1803,7 @@ namespace UCA_L2INFO_PW4
         delete[] _F_set;
         _F_capacity = newCapacity;
         _F_set = buckets;
+        this->needUpdate(true);
     }
 
     template < typename E >
@@ -1901,20 +1923,25 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     UniquePointer<E[]> HashSet<E>::toArray() const
     {
-        ptr_t elements = Alloc<E>::alloc(size());
-        if (elements)
+        if (size()>0)
         {
-            for (uint_t i(0), j(0); i < _F_capacity && j < _F_size; i++)
+            ptr_t elements = Alloc<E>::alloc(size());
+            if (elements)
             {
-                if (_F_set[i])
+                for (uint_t i(0), j(0); i < _F_capacity && j < _F_size; i++)
                 {
-                    elements[j] = *(_F_set[i].element);
-                    j++;
+                    if (!_F_set[i])
+                    {
+                        elements[j] = *(_F_set[i].element);
+                        j++;
+                    }
                 }
             }
-        }
 
-        return UniquePointer<E[]>(elements);
+
+            return UniquePointer<E[]>(elements);
+        }
+        else return UniquePointer<E[]>(nullptr);
     }
 
     template < typename E >
@@ -2151,9 +2178,9 @@ namespace UCA_L2INFO_PW4
     {
         HashSet<K> keys;
 
-        for (const HashNode node : _F_nodes)
+        for (HashNode node : _F_nodes)
         {
-            keys.add(static_cast<key_const_t>(node.key));
+            keys.add(node.key);
         }
 
         return keys;
@@ -2275,9 +2302,12 @@ namespace UCA_L2INFO_PW4
             uint_t index(keyHash%_F_nodes._F_capacity);
             for (uint_t offset(0); offset <= _F_nodes._F_padding; offset++)
             {
-                if (_F_nodes._F_set[index + offset].hashCode() == keyHash)
+                if (!_F_nodes._F_set[index+offset])
                 {
-                    return &(_F_nodes._F_set[index + offset].element->value);
+                    if (_F_nodes._F_set[index + offset].hashCode() == keyHash)
+                    {
+                        return &(_F_nodes._F_set[index + offset].element->value);
+                    }
                 }
             }
         }

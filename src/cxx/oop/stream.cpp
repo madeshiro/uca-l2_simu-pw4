@@ -3,11 +3,11 @@
 namespace UCA_L2INFO_PW4
 {
     Logger::Logger(const Logger &log, String lvl):
-    stream(log.stream), prefix(log.prefix.concat("/", lvl)), _F_tmp(true)
+            stream(log.stream), _F_prefix(log._F_prefix.concat("/", lvl)), _F_tmp(true)
     { /* ... */ }
 
     Logger::Logger(OutputStream *stream, String prefix):
-    stream(stream), prefix(prefix)
+            stream(stream), _F_prefix(prefix)
     { /* ... */ }
 
     Logger::~Logger()
@@ -36,21 +36,34 @@ namespace UCA_L2INFO_PW4
 
     void Logger::setPrefix(const String p)
     {
-        this->prefix = p;
+        this->_F_prefix = p;
     }
 
     String Logger::getPrefix() const
     {
-        return prefix;
+        return _F_prefix;
     }
 
     void Logger::print(String str)
     {
+        if (!_F_prefix.isEmpty())
+        {
+            stream->write("[", 1u);
+            stream->write(_F_prefix.getCharSequence(), _F_prefix.length());
+            stream->write("] ", 2u);
+        }
         stream->write(str.getCharSequence(), str.length());
     }
 
     void Logger::println(String str)
     {
+        if (!_F_prefix.isEmpty())
+        {
+            stream->write("[", 1u);
+            stream->write(_F_prefix.getCharSequence(), _F_prefix.length());
+            stream->write("] ", 2u);
+        }
+
         stream->write(str.getCharSequence(), str.length());
         stream->write("\n", 1);
     }

@@ -158,6 +158,7 @@ namespace UCA_L2INFO_PW4
 
                     experiment = new Experiment(runReplication, runDuration, requestMale, requestFemale);
                     ui()->connectExperiment(*experiment);
+                    experiment->set_mt_key(new ulong_t[4]{0x123,0x234,0x345,0x456}, 4);
 
                     if (!ui()->isGraphical())
                     {

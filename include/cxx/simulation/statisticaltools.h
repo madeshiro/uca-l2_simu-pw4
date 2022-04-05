@@ -90,6 +90,8 @@ namespace UCA_L2INFO_PW4
         virtual int getType() const override;
         virtual String toString() const override;
 
+        HashSet<String> getGroups() const;
+
         ProbabilityDF& operator =(const ProbabilityDF& pdf);
     };
 

@@ -12,8 +12,17 @@ namespace UCA_L2INFO_PW4
         uint_t _F_replication, _F_duration, _F_initMale, _F_initFemale;
         ulong_t * mt_keys, mt_key_length;
 
-        Simulation* _F_simulations;
+        Simulation** _F_simulations;
         File _F_directory;
+
+    public:
+        ProbabilityDF pdfReproduction;
+        ProbabilityDF pdfLitter;
+        ProbabilityDF pdfMaturity;
+
+        CumulativeDF* cdfReproduction;
+        CumulativeDF* cdfLitter;
+        CumulativeDF* cdfMaturity;
     events:
         event(int, int, Simulation&) on_replication;
         event(int, int, Simulation&) on_simulation_end;

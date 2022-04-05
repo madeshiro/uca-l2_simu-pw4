@@ -171,12 +171,26 @@ namespace UCA_L2INFO_PW4
         return *this;
     }
 
+    HashSet<String> ProbabilityDF::getGroups() const
+    {
+        return _F_pdf.keySet();
+    }
+
     CumulativeDF::CDFNode::CDFNode(String _name, double _cumul): name(_name), cumul(_cumul)
     { /* ... */ }
 
     CumulativeDF::CumulativeDF(const ProbabilityDF &df): _F_probabilityDF(df),
         _F_cdf(new CDFNode[df.size()])
-    { /* ... */ }
+    {
+        uint_t i(0);
+        double cumul(0.);
+        for (String group : df.getGroups())
+        {
+            cumul += df.getProbabilityFrom(group);
+            _F_cdf[i].name = group;
+            _F_cdf[i].cumul = cumul;
+        }
+    }
 
     CumulativeDF::CumulativeDF(const CumulativeDF &obj): PgfPlotsData(obj),
         _F_probabilityDF(obj._F_probabilityDF),
@@ -199,10 +213,10 @@ namespace UCA_L2INFO_PW4
 
     int CumulativeDF::draw()
     {
-        double variate = genrand_real1();
+        double variate = genrand_real2();
         for (uint_t i(0); i < _F_probabilityDF.size(); i++)
         {
-            if (variate <= _F_cdf[i].cumul)
+            if (variate < _F_cdf[i].cumul)
                 return (int) i;
         }
         return (int) _F_probabilityDF.size()-1;

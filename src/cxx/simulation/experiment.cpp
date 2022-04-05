@@ -8,9 +8,34 @@ namespace UCA_L2INFO_PW4
         _F_replication(replication), _F_duration(month_duration),
         _F_initMale(male), _F_initFemale(female),
         mt_keys(nullptr), mt_key_length(0u),
-        _F_directory(String::toHexString(uuid()))
+        _F_directory(String::toHexString(uuid())),
+        pdfReproduction("reproduction"),
+        pdfLitter("litter"),
+        pdfMaturity("maturity")
     {
-        _F_simulations = new Simulation[_F_replication];
+        _F_simulations = new Simulation*[_F_replication];
+
+        pdfReproduction.addGroup("2", 0.125);
+        pdfReproduction.addGroup("3", 0.25);
+        pdfReproduction.addGroup("4", 0.25);
+        pdfReproduction.addGroup("5", 0.25);
+        pdfReproduction.addGroup("6", 0.125);
+        cdfReproduction = new CumulativeDF(pdfReproduction);
+
+        pdfLitter.addGroup("3",0.08);
+        pdfLitter.addGroup("4",0.13);
+        pdfLitter.addGroup("5",0.18);
+        pdfLitter.addGroup("6",0.22);
+        pdfLitter.addGroup("7",0.18);
+        pdfLitter.addGroup("8",0.13);
+        pdfLitter.addGroup("9",0.08);
+        cdfLitter = new CumulativeDF(pdfLitter);
+
+        pdfMaturity.addGroup("5", 0.25);
+        pdfMaturity.addGroup("6", 0.20);
+        pdfMaturity.addGroup("7", 0.25);
+        pdfMaturity.addGroup("8", 0.30);
+        cdfMaturity = new CumulativeDF(pdfMaturity);
     }
 
     Experiment::~Experiment()
@@ -19,7 +44,17 @@ namespace UCA_L2INFO_PW4
             delete mt_keys;
 
         if (_F_simulations)
+        {
+            for (uint_t i(0); i < _F_replication; i++)
+            {
+                delete _F_simulations[i];
+            }
             delete[] _F_simulations;
+        }
+
+        delete cdfReproduction;
+        delete cdfLitter;
+        delete cdfMaturity;
     }
 
     void Experiment::run()
@@ -28,15 +63,14 @@ namespace UCA_L2INFO_PW4
 
         for (uint_t i = 0; i < _F_replication; i++)
         {
-            Simulation simulation(this);
-            _F_simulations[i] = simulation;
+            _F_simulations[i] = new Simulation(this);
 
-            on_replication(i + 1, _F_replication, _F_simulations[i]);
+            on_replication(i + 1, _F_replication, *_F_simulations[i]);
 
-            _F_simulations[i].init();
-            _F_simulations[i].run();
+            _F_simulations[i]->init();
+            _F_simulations[i]->run();
 
-            on_simulation_end(i+1, _F_replication, _F_simulations[i]);
+            on_simulation_end(i+1, _F_replication, *_F_simulations[i]);
         }
 
         on_experiment_end(this);

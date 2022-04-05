@@ -197,6 +197,8 @@ namespace UCA_L2INFO_PW4
         bool beginsWith(const_str_t str) const;
         bool beginsWith(const string_t& str) const;
 
+        bool isEmpty() const;
+
         bool endsWith(char_t c) const;
         bool endsWith(const_str_t str) const;
         bool endsWith(const string_t& str) const;
@@ -291,6 +293,7 @@ namespace UCA_L2INFO_PW4
         /* STATIC METHODS */
 
         static string_t ToString(char_t);
+        static string_t ToString(bool);
         static string_t ToString(int);
         static string_t ToString(long);
         static string_t ToString(float);
@@ -456,7 +459,7 @@ namespace UCA_L2INFO_PW4
     typename __String__<_CharT, _Traits, _Alloc>::string_t &
     __String__<_CharT, _Traits, _Alloc>::append(const string_t& str)
     {
-        if (_F_capacity >= length()+str.length())
+        if (_F_capacity <= length()+str.length())
         {
             if (!__grow(1+(_F_capacity - (length()+str.length()))))
             {
@@ -556,6 +559,12 @@ namespace UCA_L2INFO_PW4
             return true;
         }
         else return false;
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    bool __String__<_CharT, _Traits, _Alloc>::isEmpty() const
+    {
+        return _F_length == 0;
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
@@ -1164,11 +1173,11 @@ namespace UCA_L2INFO_PW4
                     break;
             }
 
-            for (uint_t i = 0, pow = length()-offset; i < length(); i++)
+            for (uint_t i = 0, pow = length()-offset-1; i < length(); i++, pow--)
             {
                 char_t c(_F_charseq[i]);
 
-                value += (int) __builtin_pow((double)((char) c) - '0', (double) pow);
+                value += (int)((double)((char) c) - '0')*__builtin_pow(10., (double) pow);
             }
         }
 
@@ -1193,11 +1202,11 @@ namespace UCA_L2INFO_PW4
                     break;
             }
 
-            for (uint_t i = 0, pow = length()-offset; i < length(); i++)
+            for (uint_t i = 0, pow = length()-offset-1; i < length(); i++, pow--)
             {
                 char_t c(_F_charseq[i]);
 
-                value += (long_t) __builtin_pow((double)((char) c) - '0', (double) pow);
+                value += (long_t)((double)((char) c) - '0')*__builtin_pow(10., (double) pow);
             }
         }
 
@@ -1412,6 +1421,17 @@ namespace UCA_L2INFO_PW4
     __String__<_CharT, _Traits, _Alloc>::ToString(char_t c)
     {
         return string_t(c);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::ToString(bool b)
+    {
+        const char *_bstr = (b ? "true" : "false");
+        string_t str;
+        for (int i(0); _bstr[i] != '\0'; i++)
+            str.append((char_t) _bstr[i]);
+        return str;
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>

@@ -27,7 +27,7 @@ namespace UCA_L2INFO_PW4
         int _F_litter;
     public:
         Rabbit(bool isFemale, hash_t hash, ushort_t maturity);
-        ~Rabbit() override = default;
+        ~Rabbit() noexcept override;
 
         hash_t hashCode() const override;
         uint_t getLifetime() const;
@@ -53,14 +53,6 @@ namespace UCA_L2INFO_PW4
 
         SharedPointer<Collection<Rabbit*>> maleRabbits;
         SharedPointer<Collection<Rabbit*>> femaleRabbits;
-
-        ProbabilityDF pdfReproduction;
-        ProbabilityDF pdfLitter;
-        ProbabilityDF pdfMaturity;
-
-        CumulativeDF* cdfReproduction;
-        CumulativeDF* cdfLitter;
-        CumulativeDF* cdfMaturity;
 
         Simulation* parent;
     events:

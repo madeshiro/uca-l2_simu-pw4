@@ -54,6 +54,8 @@ namespace UCA_L2INFO_PW4
                 }
             }
         }
+
+        // Todo Build statistic and free memory
     }
 
     Simulation& Simulation::operator=(Simulation &sim)
@@ -61,5 +63,10 @@ namespace UCA_L2INFO_PW4
         parent = sim.parent;
         manager = sim.manager;
         return *this;
+    }
+
+    Experiment *Simulation::experiment()
+    {
+        return parent;
     }
 }
