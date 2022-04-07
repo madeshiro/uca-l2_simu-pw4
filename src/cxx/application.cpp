@@ -15,8 +15,8 @@ namespace UCA_L2INFO_PW4
         options.set("performExperiment", true);
         options.set("initFromFile", false);
 
-        arguments.set("requestMale", String::ToString(4));
-        arguments.set("requestFemale", String::ToString(4));
+        arguments.set("requestMale", String::ToString(8));
+        arguments.set("requestFemale", String::ToString(8));
         arguments.set("runDuration", String::ToString(240));
         arguments.set("runReplication", String::ToString(30));
     }

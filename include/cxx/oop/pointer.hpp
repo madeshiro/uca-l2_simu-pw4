@@ -301,11 +301,17 @@ namespace UCA_L2INFO_PW4
     template<typename T, typename _Deleter>
     SharedPointer<T, _Deleter>::~SharedPointer()
     {
-        (*_F_useCount)--;
-        if (*_F_useCount == 0)
+        if (this->_F_ptr)
         {
-            delete _F_useCount;
-            deleter::free(Pointer<T, _Deleter>::_F_ptr);
+            (*_F_useCount)--;
+            if (*_F_useCount == 0)
+            {
+                delete _F_useCount;
+                deleter::free(Pointer<T, _Deleter>::_F_ptr);
+
+                _F_useCount = nullptr;
+                this->_F_ptr = nullptr;
+            }
         }
     }
 

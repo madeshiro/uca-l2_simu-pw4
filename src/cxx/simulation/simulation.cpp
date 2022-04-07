@@ -43,7 +43,10 @@ namespace UCA_L2INFO_PW4
         {
             for (Rabbit *rabbit: *manager.maleRabbits)
             {
-                manager.doSurvive(rabbit);
+                if (manager.doSurvive(rabbit))
+                {
+                    rabbit->increaseLifetime();
+                }
             }
 
             for (Rabbit *rabbit: *manager.femaleRabbits)
@@ -51,6 +54,7 @@ namespace UCA_L2INFO_PW4
                 if (manager.doSurvive(rabbit))
                 {
                     manager.doReproduction(rabbit);
+                    rabbit->increaseLifetime();
                 }
             }
         }

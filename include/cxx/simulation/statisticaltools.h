@@ -107,10 +107,10 @@ namespace UCA_L2INFO_PW4
             ~CDFNode() = default;
         };
 
-        const ProbabilityDF _F_probabilityDF;
+        ProbabilityDF& _F_probabilityDF;
         CDFNode* _F_cdf;
     public:
-        CumulativeDF(const ProbabilityDF& df);
+        CumulativeDF(ProbabilityDF& df);
         CumulativeDF(const CumulativeDF& obj);
         virtual ~CumulativeDF();
 

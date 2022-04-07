@@ -179,7 +179,7 @@ namespace UCA_L2INFO_PW4
     CumulativeDF::CDFNode::CDFNode(String _name, double _cumul): name(_name), cumul(_cumul)
     { /* ... */ }
 
-    CumulativeDF::CumulativeDF(const ProbabilityDF &df): _F_probabilityDF(df),
+    CumulativeDF::CumulativeDF(ProbabilityDF &df): _F_probabilityDF(df),
         _F_cdf(new CDFNode[df.size()])
     {
         uint_t i(0);
@@ -189,6 +189,7 @@ namespace UCA_L2INFO_PW4
             cumul += df.getProbabilityFrom(group);
             _F_cdf[i].name = group;
             _F_cdf[i].cumul = cumul;
+            i++;
         }
     }
 

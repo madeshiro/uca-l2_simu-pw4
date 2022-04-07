@@ -430,9 +430,9 @@ namespace UCA_L2INFO_PW4
     private:
         struct Bucket
         {
-            value_t *element;
+            SharedPointer<value_t> element;
 
-            Bucket() : element(nullptr)
+            Bucket(): element(nullptr)
             {/* ... */}
 
             virtual ~Bucket()
@@ -440,8 +440,8 @@ namespace UCA_L2INFO_PW4
                 if (element)
                 {
                     // Todo Error on setup bucket could make pointer invalid (out of range)
-                    delete element;
-                    element = nullptr;
+                    // delete element;
+                    // element = nullptr;
                 }
             };
 
@@ -457,10 +457,11 @@ namespace UCA_L2INFO_PW4
 
             virtual Bucket &operator=(value_t v)
             {
-                if (element == nullptr)
+                if (!element)
                 {
                     element = new value_t(v);
-                } else
+                }
+                else
                 {
                     *element = v;
                 }
@@ -469,15 +470,14 @@ namespace UCA_L2INFO_PW4
 
             virtual operator bool() const
             {
-                return element == nullptr;
+                return element.pointer() == nullptr;
             }
 
             virtual void clear()
             {
                 if (element)
                 {
-                    delete element;
-                    element = nullptr;
+                    element.reset(nullptr);
                 }
             }
         } *_F_set;
@@ -741,6 +741,8 @@ namespace UCA_L2INFO_PW4
             HashNode(const HashNode& node):
                 key(node.key), value(node.value)
             {/* ... */ }
+
+            virtual ~HashNode() = default;
 
             virtual hash_t hashCode() const override
             {
@@ -1262,17 +1264,10 @@ namespace UCA_L2INFO_PW4
     { /* ... */ }
 
     template < typename E >
-    Vector<E>::Vector(const Vector<E> &obj): AbstractList<E>()
+    Vector<E>::Vector(const Vector<E> &obj): AbstractList<E>(obj)
     {
-        ptr_t newVector = allocator::alloc(obj.capacity());
-        if (newVector)
-        {
-            traits_type::fill(obj._F_array, newVector, obj.size());
-            this->_F_array = newVector;
-            this->_F_size  = obj.size();
-            _F_capacity    = obj._F_capacity;
-            _F_capacityIncrement = obj._F_capacityIncrement;
-        }
+        _F_capacity = obj._F_capacity;
+        _F_capacityIncrement = obj._F_capacityIncrement;
     }
 
     template < typename E >
@@ -1302,7 +1297,7 @@ namespace UCA_L2INFO_PW4
             }
         }
 
-        for (const_ref_t elem : c)
+        for (auto elem : c)
         {
             this->_F_array[this->_F_size] = elem;
             this->_F_size++;
@@ -1371,7 +1366,7 @@ namespace UCA_L2INFO_PW4
             this->_F_size -= nbIndexes;
         }
 
-        return true;
+        return nbIndexes > 0;
     }
 
     template < typename E >
@@ -1693,7 +1688,10 @@ namespace UCA_L2INFO_PW4
     HashSet<E>::HashSet(uint_t initialCapacity, float loadFactor):
         _F_set(new Bucket[initialCapacity]),  _F_size(0u), _F_capacity(initialCapacity), _F_loadFactor(loadFactor)
     {
-        /* ... */
+            for (uint_t i(0); i < initialCapacity; i++)
+            {
+                _F_set[i].clear();
+            }
     }
 
     template < typename E >
@@ -1784,7 +1782,7 @@ namespace UCA_L2INFO_PW4
                 hash_t hashIndex(_F_set[i].hashCode()%newCapacity);
 
                 auto assign = [&,hashIndex,this] () -> uint_t {
-                    for (uint_t off(0); ;off++)
+                    for (uint_t off(0); off < _F_size; off++)
                     {
                         if (buckets[(hashIndex + off) % newCapacity])
                         {
@@ -1792,8 +1790,8 @@ namespace UCA_L2INFO_PW4
                             return off;
                         }
 
-                        return 0; // suppress warning
                     }
+                    return 0; // suppress warning
                 };
 
                 setPadding(assign());

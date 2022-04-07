@@ -41,6 +41,7 @@ namespace UCA_L2INFO_PW4
         double deathProbability() const;
         // virtual String toString() const override;
         uint_t getMaturity() const;
+        void increaseLifetime();
     };
 
     class Simulation;

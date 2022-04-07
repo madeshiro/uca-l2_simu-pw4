@@ -81,6 +81,11 @@ namespace UCA_L2INFO_PW4
         return _F_maturity;
     }
 
+    void Rabbit::increaseLifetime()
+    {
+        _F_lifetime++;
+    }
+
     EntityManager::EntityManager(Simulation* parent):
         parent(parent)
     {
@@ -129,7 +134,9 @@ namespace UCA_L2INFO_PW4
                     if (genrand_real1() < .50)
                     {
                         die_childbirth();
-                    } else
+                        delete kitten;
+                    }
+                    else
                     {
                         (female ? femaleRabbits : maleRabbits)->add(kitten);
                     }
@@ -183,6 +190,7 @@ namespace UCA_L2INFO_PW4
     Rabbit* EntityManager::createAdult(bool female)
     {
         Rabbit *adult = new Rabbit(female, generateHashCode(female), parent->experiment()->cdfMaturity->drawFromId());
+        adult->_F_lifetime = 8;
         (female ? femaleRabbits : maleRabbits)->add(adult);
 
         Application::app->out->format("new <adult> Rabbit("
