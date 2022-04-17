@@ -1,5 +1,6 @@
 #include "cxx/simulation/simulation.h"
 #include "cxx/simulation/experiment.h"
+#include "cxx/application.h"
 
 namespace UCA_L2INFO_PW4
 {
@@ -39,18 +40,33 @@ namespace UCA_L2INFO_PW4
 
     void Simulation::run()
     {
+        UniquePointer<Rabbit*[]> males, females;
+
         for (uint_t month(0); month < parent->getMonthDuration(); month++)
         {
-            for (Rabbit *rabbit: *manager.maleRabbits)
+            males = manager.maleRabbits->toArray();
+            females = manager.femaleRabbits->toArray();
+            uint_t malesSize = manager.maleRabbits->size();
+            uint_t femalesSize = manager.femaleRabbits->size();
+
+            if (malesSize == 0 && femalesSize == 0)
             {
+                Application::app->out->info().format("month({0}): decimated population !\n", (int)month);
+                return;
+            }
+
+            for (uint_t i(0); i < malesSize; i++)
+            {
+                Rabbit* rabbit(males[i]);
                 if (manager.doSurvive(rabbit))
                 {
                     rabbit->increaseLifetime();
                 }
             }
 
-            for (Rabbit *rabbit: *manager.femaleRabbits)
+            for (uint_t i(0); i < femalesSize; i++)
             {
+                Rabbit* rabbit(females[i]);
                 if (manager.doSurvive(rabbit))
                 {
                     manager.doReproduction(rabbit);
@@ -72,5 +88,15 @@ namespace UCA_L2INFO_PW4
     Experiment *Simulation::experiment()
     {
         return parent;
+    }
+
+    bool Simulation::register_childbirth()
+    {
+        return true;
+    }
+
+    bool Simulation::register_birth(Rabbit *kitten)
+    {
+        return true;
     }
 }

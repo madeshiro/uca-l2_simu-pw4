@@ -214,7 +214,13 @@ namespace UCA_L2INFO_PW4
     template < typename T >
     typename Traits<T*>::ptr_t Traits<T*>::copy(const_ptr_t ptr, size_t nmemb)
     {
-        return (ptr_t) memcopy((void*)ptr, nmemb, sizeof(T*));
+        ptr_t cpy = new value_t[nmemb];
+        for (uint_t i(0); i < nmemb; i++)
+        {
+            cpy[i] = ptr[i];
+        }
+
+        return cpy;
     }
     
     template < typename T >

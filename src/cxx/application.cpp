@@ -15,8 +15,8 @@ namespace UCA_L2INFO_PW4
         options.set("performExperiment", true);
         options.set("initFromFile", false);
 
-        arguments.set("requestMale", String::ToString(8));
-        arguments.set("requestFemale", String::ToString(8));
+        arguments.set("requestMale", String::ToString(100));
+        arguments.set("requestFemale", String::ToString(100));
         arguments.set("runDuration", String::ToString(240));
         arguments.set("runReplication", String::ToString(30));
     }
@@ -62,8 +62,8 @@ namespace UCA_L2INFO_PW4
     Application::Application(int argc, char **argv, bool _main):
         appsArgs(argc, argv),
         experiment(nullptr),
-        out(new Logger(new FileOutputStream(stdout, "stdout"))),
-        err(new Logger(new FileOutputStream(stderr, "stderr"))),
+        out(new Logger(new FileOutputStream(stdout, "stdout"), "Simu")),
+        err(new Logger(new FileOutputStream(stderr, "stderr"), "Simu")),
         in(new FileInputStream(stdin, "stdin"))
     {
         if (_main)

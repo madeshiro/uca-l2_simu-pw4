@@ -46,13 +46,6 @@ namespace UCA_L2INFO_PW4
         template <typename ...T>
         void format(const char* format, T... args)
         {
-            if (!_F_prefix.isEmpty())
-            {
-                stream->write("[", 1u);
-                stream->write(_F_prefix.getCharSequence(), _F_prefix.length());
-                stream->write("] ", 2u);
-            }
-
             print(String(format).format(args...));
         }
 

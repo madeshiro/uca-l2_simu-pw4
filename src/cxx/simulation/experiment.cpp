@@ -1,6 +1,7 @@
 #include "cxx/simulation/experiment.h"
 #include "mt19937ar.h"
 #include "cxx/oop/file.h"
+#include "cxx/application.h"
 
 namespace UCA_L2INFO_PW4
 {
@@ -63,6 +64,7 @@ namespace UCA_L2INFO_PW4
 
         for (uint_t i = 0; i < _F_replication; i++)
         {
+            Application::app->out->setPrefix(String("Simu#{0}").format((int)i+1));
             _F_simulations[i] = new Simulation(this);
 
             on_replication(i + 1, _F_replication, *_F_simulations[i]);

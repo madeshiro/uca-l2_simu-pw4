@@ -10,6 +10,11 @@ namespace UCA_L2INFO_PW4
         class Json : public Object
         {
             //JsonContainer root;
+
+        public:
+            virtual String toString() const override {
+                return "";
+            }
         };
 
         class JsonStringifyable : public Object
@@ -18,6 +23,10 @@ namespace UCA_L2INFO_PW4
             virtual Json toJson() const {
                 return Json(); // Todo: make pure when Json implemented !
             };
+
+            virtual String toString() const override {
+                return toJson().toString();
+            }
         };
     }
 }

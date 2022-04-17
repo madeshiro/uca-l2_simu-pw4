@@ -461,13 +461,13 @@ namespace UCA_L2INFO_PW4
     {
         if (_F_capacity <= length()+str.length())
         {
-            if (!__grow(1+(_F_capacity - (length()+str.length()))))
+            if (!__grow(1+((length()+str.length())-_F_capacity)))
             {
                 return *this;
             }
         }
 
-        for (uint_t i = 0, j = length(); i < str.length(); i++)
+        for (uint_t i = 0, j = length(); i < str.length(); i++, j++)
         {
             _F_charseq[j] = str[i];
         }

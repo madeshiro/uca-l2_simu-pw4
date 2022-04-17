@@ -52,8 +52,8 @@ namespace UCA_L2INFO_PW4
         hash_t hashCodeMaleRabbits   = 0x0;
         hash_t hashCodeFemaleRabbits = 0x0;
 
-        SharedPointer<Collection<Rabbit*>> maleRabbits;
-        SharedPointer<Collection<Rabbit*>> femaleRabbits;
+        SharedPointer<Vector<Rabbit*>> maleRabbits;
+        SharedPointer<Vector<Rabbit*>> femaleRabbits;
 
         Simulation* parent;
     events:

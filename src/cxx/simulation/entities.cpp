@@ -66,11 +66,11 @@ namespace UCA_L2INFO_PW4
         {
             if (_F_lifetime < 7*12)
             {
-                return .75;
+                return .25;
             }
             else
             {
-                return .75 - (.15 * ((uint_t)(_F_lifetime-7*12)%12));
+                return .25 + (.15 * ((uint_t)(_F_lifetime-7*12)%12));
             }
         }
         else return .50;
@@ -95,11 +95,17 @@ namespace UCA_L2INFO_PW4
 
     EntityManager::~EntityManager()
     {
-        for (Rabbit* rabbit : *maleRabbits)
-            delete rabbit;
+        if (maleRabbits->size() > 0)
+        {
+            for (Rabbit *rabbit: *maleRabbits)
+                delete rabbit;
+        }
 
-        for (Rabbit* rabbit : *femaleRabbits)
-            delete rabbit;
+        if (femaleRabbits->size() > 0)
+        {
+            for (Rabbit *rabbit: *femaleRabbits)
+                delete rabbit;
+        }
     }
 
     void EntityManager::doReproduction(Rabbit * rabbit)
@@ -109,9 +115,9 @@ namespace UCA_L2INFO_PW4
         // - Rabbit is a female
         // - Rabbit is fertile
         // - Rabbit hasn't done it maximum number of litter this year
-        if (maleRabbits->size() > 0 && rabbit->isFemale() && rabbit->isFertile())
+        if (maleRabbits->size() > 0 && rabbit->isFemale())
         {
-            if ((rabbit->getLifetime()-rabbit->getMaturity())%12 == 0)
+            if ((rabbit->getLifetime()-rabbit->getMaturity())%12 == 0 && rabbit->isFertile())
             {
                 rabbit->setLitter(parent->experiment()->cdfLitter->drawFromId());
             }
@@ -131,7 +137,7 @@ namespace UCA_L2INFO_PW4
                     reproduction(kitten);
 
                     // Test childbirth
-                    if (genrand_real1() < .50)
+                    if (genrand_real1() < .15)
                     {
                         die_childbirth();
                         delete kitten;
@@ -147,6 +153,7 @@ namespace UCA_L2INFO_PW4
 
     bool EntityManager::doSurvive(Rabbit * rabbit)
     {
+        Application::app->out->format("death probability: {0}\n", rabbit->deathProbability());
         if (genrand_real1() < rabbit->deathProbability())
         {
             if (rabbit->isFemale())
@@ -161,7 +168,7 @@ namespace UCA_L2INFO_PW4
             }
 
             die(rabbit->getLifetime());
-            if (rabbit->getLifetime() == 12)
+            if (rabbit->getLifetime() == 240)
             {
                 die_from_age();
             }
@@ -193,9 +200,9 @@ namespace UCA_L2INFO_PW4
         adult->_F_lifetime = 8;
         (female ? femaleRabbits : maleRabbits)->add(adult);
 
-        Application::app->out->format("new <adult> Rabbit("
-                                      "female:{0}, maturity:{1})\n",
-                                      female, adult->_F_maturity);
+        // Application::app->out->format("new <adult> Rabbit("
+        //                               "female:{0}, maturity:{1})\n",
+        //                               female, adult->_F_maturity);
         return adult;
     }
 

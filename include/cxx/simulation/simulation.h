@@ -9,12 +9,17 @@ namespace UCA_L2INFO_PW4
     class Experiment;
     class Simulation final : public Binaries
     {
-    public:
+    events:
         // event(const Simulation*) on_replication;
         // event(const Simulation*) on_progress;
+    public delegates:
+        bool register_childbirth();
+        bool register_birth(Rabbit* kitten);
     private:
         Experiment* parent;
         EntityManager manager;
+
+
     public:
         Simulation(Experiment* parent = nullptr);
         virtual ~Simulation();

@@ -106,7 +106,7 @@ namespace UCA_L2INFO_PW4
 
         virtual size_t size() const = 0;
 
-        virtual UniquePointer<E[]> toArray() const = 0;
+        virtual E* toArray() const = 0;
 
         /* OPERATORS */
 
@@ -205,7 +205,7 @@ namespace UCA_L2INFO_PW4
 
         virtual size_t size() const override;
 
-        virtual UniquePointer<E[]> toArray() const override;
+        virtual E* toArray() const override;
 
         virtual Iterator<E, traits_type> iterator() const override;
 
@@ -405,7 +405,7 @@ namespace UCA_L2INFO_PW4
 
         virtual size_t size() const;
 
-        virtual UniquePointer<E[]> toArray() const;
+        virtual E* toArray() const;
     };
 
     template<typename E>
@@ -536,7 +536,7 @@ namespace UCA_L2INFO_PW4
 
         virtual size_t size() const override;
 
-        virtual UniquePointer<E[]> toArray() const override;
+        virtual E* toArray() const override;
 
         virtual Iterator<E, traits_type> iterator() const override;
 
@@ -635,7 +635,7 @@ namespace UCA_L2INFO_PW4
 
         virtual size_t size() const override;
 
-        virtual UniquePointer<E[]> toArray() const override;
+        virtual E* toArray() const override;
 
         virtual Iterator<E, traits_type> iterator() const override;
 
@@ -890,7 +890,7 @@ namespace UCA_L2INFO_PW4
         if (newArray)
         {
             traits_type::fill(_F_array, newArray, _F_size);
-            delete _F_array;
+            if (_F_array) delete[] _F_array;
             _F_array = newArray;
             return true;
         } else return false;
@@ -1022,9 +1022,9 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    UniquePointer<E[]> AbstractList<E>::toArray() const
+    E* AbstractList<E>::toArray() const
     {
-        return UniquePointer<E[]>(traits_type::copy(_F_array, _F_size));
+        return traits_type::copy(_F_array, _F_size);
     }
 
     template < typename E >
@@ -1242,20 +1242,11 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool Vector<E>::growVector()
     {
-        ptr_t newVector = allocator::alloc(_F_capacity+_F_capacityIncrement);
-        if (newVector)
+        if (this->grow(_F_capacity, _F_capacityIncrement))
         {
-            traits_type::fill(this->_F_array, newVector, this->_F_size);
-            deleter::free(this->_F_array);
-
             _F_capacity += _F_capacityIncrement;
-            this->_F_array = newVector;
             return true;
-        }
-        else
-        {
-            return false;
-        }
+        } else return false;
     }
 
     template < typename E >
@@ -1457,10 +1448,10 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     Iterator<E> Set<E>::iterator() const
     {
-        static ptr_t _S_array = this->toArray().release();
+        static ptr_t _S_array = this->toArray();
         if (needUpdate(-1))
         {
-            _S_array = this->toArray().release();
+            _S_array = this->toArray();
             needUpdate(0);
         }
         return Iterator<E>(_S_array, &_S_array[this->size()]);
@@ -1469,10 +1460,10 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     ConstIterator<E> Set<E>::const_iterator() const
     {
-        static ptr_t _S_array = this->toArray().release();
+        static ptr_t _S_array = this->toArray();
         if (needUpdate(-1))
         {
-            _S_array = this->toArray().release();
+            _S_array = this->toArray();
             needUpdate(0);
         }
         return ConstIterator<E>((const_ptr_t)_S_array, (const_ptr_t) &_S_array[this->size()]);
@@ -1669,15 +1660,15 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    UniquePointer<E[]> SortedSet<E>::toArray() const
+    E* SortedSet<E>::toArray() const
     {
         ptr_t array = Alloc<E[], traits_type>::alloc(size());
         if (array)
         {
-
+            // Todo SortedSet<E>::toArray
         }
 
-        return UniquePointer<E[]>(array);
+        return array;
     }
 
     template < typename E >
@@ -1919,7 +1910,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    UniquePointer<E[]> HashSet<E>::toArray() const
+    E* HashSet<E>::toArray() const
     {
         if (size()>0)
         {
@@ -1937,18 +1928,18 @@ namespace UCA_L2INFO_PW4
             }
 
 
-            return UniquePointer<E[]>(elements);
+            return elements;
         }
-        else return UniquePointer<E[]>(nullptr);
+        else return nullptr;
     }
 
     template < typename E >
     Iterator<E, typename HashSet<E>::traits_type> HashSet<E>::iterator() const
     {
-        static ptr_t _S_array = toArray().release();
+        static ptr_t _S_array = toArray();
         if (Set<E>::needUpdate(-1))
         {
-            _S_array = toArray().release();
+            _S_array = toArray();
             Set<E>::needUpdate(0);
         }
         return Iterator<E, traits_type>(_S_array, &_S_array[_F_size]);
@@ -1957,10 +1948,10 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     ConstIterator<E, typename HashSet<E>::traits_type> HashSet<E>::const_iterator() const
     {
-        static ptr_t _S_array = toArray().release();
+        static ptr_t _S_array = toArray();
         if (Set<E>::needUpdate(-1))
         {
-            _S_array = toArray().release();
+            _S_array = toArray();
             Set<E>::needUpdate(0);
         }
         return ConstIterator<E, traits_type>((const_ptr_t)_S_array, (const_ptr_t) &_S_array[_F_size]);
@@ -2115,7 +2106,7 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    UniquePointer<E[]> ChainedList<E>::toArray() const
+    E* ChainedList<E>::toArray() const
     {
         ptr_t array = Alloc<E, traits_type >::alloc(size());
         if (array)
@@ -2130,7 +2121,7 @@ namespace UCA_L2INFO_PW4
             }
         }
 
-        return UniquePointer<E[]>(array);
+        return array;
     }
 
     template < typename E >
