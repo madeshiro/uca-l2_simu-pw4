@@ -241,9 +241,9 @@ namespace UCA_L2INFO_PW4
 
         virtual bool drop(uint_t index) override;
 
-        virtual bool removeAll(const Collection<E> &c);
+        virtual bool removeAll(const Collection<E> &c) override;
 
-        virtual bool removeIf(Predicate<const_ref_t> &filter);
+        virtual bool removeIf(Predicate<const_ref_t> &filter) override;
     };
 
     template<typename E>

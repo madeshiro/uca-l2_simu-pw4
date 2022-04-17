@@ -1,3 +1,20 @@
+/*
+ * UCA-L2 simulation "practical work #4" : a realistic simulation of rabbit population growth
+ * Copyright (C) 2022 -- Rin Baudelet
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 #ifndef CPP_STATISTICALTOOLS_H
 #define CPP_STATISTICALTOOLS_H
 #include "cxx/oop/container.hpp"
@@ -130,8 +147,8 @@ namespace UCA_L2INFO_PW4
     {
         String _F_name;
     protected:
-        HashMap<String, ulong_t> _F_bins;
-        ulong_t _F_total;
+        HashMap<String, llong_t> _F_bins;
+        llong_t _F_total;
         ulong_t _F_pop;
     public:
         BarChart(String name);
@@ -140,6 +157,9 @@ namespace UCA_L2INFO_PW4
 
         virtual ulong_t getPopulation() const;
         virtual ulong_t getValuesSum() const;
+
+        virtual ulong_t increment(const Object& which, ulong_t many = 1);
+        virtual ulong_t decrement(const Object& which, ulong_t many = 1);
 
         virtual ulong_t set(const Object& which, ulong_t amount);
         virtual void    remove(const Object& which);
@@ -154,7 +174,7 @@ namespace UCA_L2INFO_PW4
         struct Interval : public Object
         {
             double min, max;
-            long_t value = 0;
+            double value = 0;
 
             Interval(double _min, double _max);
             virtual hash_t hashCode() const override;
@@ -164,8 +184,6 @@ namespace UCA_L2INFO_PW4
     public:
         Histogram(double min, double interval, uint_t count);
         virtual ~Histogram() override;
-
-        long_t increment(double which, long_t many = 1);
 
         virtual String generatePlot() const override;
         virtual int getType() const override;
@@ -198,8 +216,14 @@ namespace UCA_L2INFO_PW4
         virtual int getType() const override;
         virtual String toString() const override;
 
+        virtual Iterator<Coordinates> iterator() const override;
+        virtual ConstIterator<Coordinates> const_iterator() const override;
+
         double sum() const;
         double avg() const;
+
+        double y(double x) const;
+        bool has(double x) const;
     };
 }
 

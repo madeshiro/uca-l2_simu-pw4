@@ -251,8 +251,6 @@ namespace UCA_L2INFO_PW4
         }
     }
 
-
-
     String CumulativeDF::generatePlot() const
     {
         // TODO CumulativeDF::generatePlot
@@ -340,5 +338,41 @@ namespace UCA_L2INFO_PW4
     double LineChart::avg() const
     {
         return sum() / (double) _F_values.size();
+    }
+
+    Iterator<Coordinates> LineChart::iterator() const
+    {
+        return _F_values.iterator();
+    }
+
+    ConstIterator<Coordinates> LineChart::const_iterator() const
+    {
+        return _F_values.const_iterator();
+    }
+
+    double LineChart::y(double x) const
+    {
+        for (Coordinates c : (*this))
+        {
+            if (c.x == x)
+            {
+                return c.y;
+            }
+        }
+
+        return -1.;
+    }
+
+    bool LineChart::has(double x) const
+    {
+        for (Coordinates c : (*this))
+        {
+            if (c.x == x)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

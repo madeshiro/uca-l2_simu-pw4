@@ -1,3 +1,20 @@
+/*
+ * UCA-L2 simulation "practical work #4" : a realistic simulation of rabbit population growth
+ * Copyright (C) 2022 -- Rin Baudelet
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 #ifndef DEFINES_H
 #define DEFINES_H
 
@@ -26,21 +43,6 @@ typedef long long           llong_t;
 #ifndef __cplusplus
 #define true    1
 #define false   0
-#else
-#define foreach(type, elem, obj) { \
-        Iterator<type>& __iter = obj.iterator(); \
-        if (__iter.hasNext())\
-        {\
-            for (auto elem ;__iter.hasNext(); elem=__iter.next()) { \
-                \
-            } \
-        }
-
-#define cforeach(type, elem, obj)  \
-        ConstIterator<type> __iter = obj.const_iterator(); \
-        for (const type* __begin = __iter._F_begin; __begin < __iter._F_end; __begin++) \
-        { const auto elem = *__begin;
-
 #endif
 
 #ifndef __nullable
