@@ -51,9 +51,6 @@ namespace UCA_L2INFO_PW4
         void set_mt_key(ulong_t mtKeys[], ulong_t mtKeyLength);
 
         void run();
-        void join();
-        void stop();
-        void pause();
 
         uint_t getReplicationAmount() const;
         uint_t getMonthDuration() const;

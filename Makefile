@@ -65,6 +65,7 @@ INCLUDES = mt19937ar.h \
 			cxx/oop/stream.h \
 			cxx/oop/sock.h \
 			cxx/oop/file.h \
+			cxx/oop/thread.hpp \
 			cxx/serv/packet.h \
 			cxx/json/json.h \
 			cxx/json/jsonvalue.h
@@ -85,6 +86,7 @@ SOURCES = main.cpp \
 			cxx/oop/sock.cpp \
 			cxx/oop/file.cpp \
 			cxx/oop/type_traits.cpp \
+			cxx/oop/thread.cpp \
 			cxx/serv/packet.cpp \
 			cxx/json/json.cpp \
 			cxx/json/jsonvalue.cpp
@@ -100,6 +102,7 @@ OBJECTS  = main.cpp.o \
 			file.cpp.o \
 			object.cpp.o \
 			type_traits.cpp.o \
+			thread.cpp.o \
 			sock.cpp.o \
 			stream.cpp.o \
 			codec.cpp.o \
@@ -155,6 +158,9 @@ binary.cpp.o: cxx/oop/binary.cpp cxx/oop/binary.h defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
 type_traits.cpp.o: cxx/oop/type_traits.cpp cxx/oop/type_traits.hpp defines.h
 	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+thread.cpp.o: cxx/oop/thread.cpp cxx/oop/thread.hpp defines.h
+	$(CXX) $(CXXFLAGS) -c $< -o $(OUT_DIR_TARGET)$@
+
 
 #### > serv
 codec.cpp.o: cxx/serv/codec.cpp cxx/serv/codec.h defines.h

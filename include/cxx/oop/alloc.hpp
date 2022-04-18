@@ -114,7 +114,7 @@ namespace UCA_L2INFO_PW4
     template<typename T, typename _Traits>
     typename Alloc<T, _Traits>::ptr_t Alloc<T, _Traits>::alloc(size_t nmemb)
     {
-        return (ptr_t) ::malloc(sizeof(T)*nmemb);
+        return new T[nmemb];
     }
 
     template<typename T, typename _Traits>
@@ -132,13 +132,13 @@ namespace UCA_L2INFO_PW4
     template<typename T, typename _Traits>
     typename Alloc<T[], _Traits>::ptr_t Alloc<T[], _Traits>::alloc()
     {
-        return (ptr_t) ::malloc(sizeof(T));
+        return new T[1u];
     }
 
     template<typename T, typename _Traits>
     typename Alloc<T[], _Traits>::ptr_t Alloc<T[], _Traits>::alloc(size_t nmemb)
     {
-        return (ptr_t) ::malloc(sizeof(T)*nmemb);
+        return new T[nmemb];
     }
 
     template<typename T, typename _Traits>

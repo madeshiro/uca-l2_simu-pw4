@@ -154,7 +154,7 @@ namespace UCA_L2INFO_PW4
         }
         else
         {
-            return 0;
+            return 0;//*dynamic_cast<const hash_t *>(&obj);
         }
     }
 

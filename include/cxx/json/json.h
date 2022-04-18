@@ -19,6 +19,7 @@
 #define CPP_JSON_H
 
 #include "cxx/oop/stream.h"
+#include "cxx/oop/exception.h"
 
 namespace UCA_L2INFO_PW4
 {
@@ -44,6 +45,17 @@ namespace UCA_L2INFO_PW4
             virtual String toString() const override {
                 return toJson().toString();
             }
+        };
+
+        class JsonInvalidType : public Exception
+        {
+        public:
+            JsonInvalidType();
+            JsonInvalidType(String msg);
+            JsonInvalidType(String msg, String file, String function, int line);
+            JsonInvalidType(const JsonInvalidType&);
+
+            virtual String getName() const override;
         };
     }
 }

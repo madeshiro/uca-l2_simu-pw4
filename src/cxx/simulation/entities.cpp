@@ -131,9 +131,9 @@ namespace UCA_L2INFO_PW4
                     ushort_t maturity(parent->experiment()->cdfMaturity->drawFromId());
 
                     Rabbit* kitten = new Rabbit(female, generateHashCode(female), maturity);
-                    Application::app->out->format("new <kitten> Rabbit("
-                                                  "female:{0}, maturity:{1})\n",
-                                                  female, maturity);
+                    // Application::app->out->format("new <kitten> Rabbit("
+                    //                               "female:{0}, maturity:{1})\n",
+                    //                               female, maturity);
                     reproduction(kitten);
 
                     // Test childbirth
@@ -153,7 +153,6 @@ namespace UCA_L2INFO_PW4
 
     bool EntityManager::doSurvive(Rabbit * rabbit)
     {
-        Application::app->out->format("death probability: {0}\n", rabbit->deathProbability());
         if (genrand_real1() < rabbit->deathProbability())
         {
             if (rabbit->isFemale())

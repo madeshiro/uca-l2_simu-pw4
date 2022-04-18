@@ -210,6 +210,8 @@ namespace UCA_L2INFO_PW4
         virtual Iterator<E, traits_type> iterator() const override;
 
         virtual ConstIterator<E, traits_type> const_iterator() const override;
+
+        virtual AbstractList<E>& operator =(const AbstractList<E>&);
     };
 
     template<typename E>
@@ -244,6 +246,12 @@ namespace UCA_L2INFO_PW4
         virtual bool removeAll(const Collection<E> &c) override;
 
         virtual bool removeIf(Predicate<const_ref_t> &filter) override;
+
+        virtual ArrayList<E>& operator =(const ArrayList<E>& list)
+        {
+            AbstractList<E>::operator=(list);
+            return *this;
+        }
     };
 
     template<typename E>
@@ -890,7 +898,7 @@ namespace UCA_L2INFO_PW4
         if (newArray)
         {
             traits_type::fill(_F_array, newArray, _F_size);
-            if (_F_array) delete[] _F_array;
+            deleter::free(_F_array);
             _F_array = newArray;
             return true;
         } else return false;
@@ -1030,13 +1038,36 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     Iterator<E, typename AbstractList<E>::traits_type> AbstractList<E>::iterator() const
     {
-        return Iterator<E, traits_type>(_F_array, (&_F_array[_F_size]) - 1);
+        return Iterator<E, traits_type>(_F_array, (&_F_array[_F_size]));
     }
 
     template < typename E >
     ConstIterator<E, typename AbstractList<E>::traits_type> AbstractList<E>::const_iterator() const
     {
-        return ConstIterator<E, traits_type>(_F_array, (&_F_array[_F_size]) - 1);
+        return ConstIterator<E, traits_type>(_F_array, (&_F_array[_F_size]));
+    }
+
+    template < typename E >
+    AbstractList<E>& AbstractList<E>::operator=(const AbstractList<E> & list)
+    {
+        if (_F_array)
+        {
+            deleter::free(_F_array);
+            _F_array = nullptr;
+            _F_size = 0;
+        }
+
+        if (list.size() >  0)
+        {
+            _F_array = allocator::alloc(list.size());
+            if (_F_array)
+            {
+                traits_type::fill(list._F_array, _F_array, list._F_size);
+                _F_size = list.size();
+            }
+        }
+
+        return *this;
     }
 
     template < typename E >
@@ -1054,7 +1085,7 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool ArrayList<E>::add(value_t elem)
     {
-        if (AbstractList<E>::grow(this->_F_size))
+        if (AbstractList<E>::grow(this->_F_size, 1u))
         {
             this->_F_array[this->_F_size] = elem;
             this->_F_size++;

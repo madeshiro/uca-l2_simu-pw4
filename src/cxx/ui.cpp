@@ -2,6 +2,22 @@
 
 namespace UCA_L2INFO_PW4
 {
+    int WebGUI::server(void * args [[gnu::unused]])
+    {
+        return 0;
+    }
+
+    WebGUI::WebGUI():
+        Thread(new ThreadClassFunction<WebGUI>(this, &WebGUI::server))
+    {
+        /* ... */
+    }
+
+    WebGUI::~WebGUI()
+    {
+        delete _F_entry;
+    }
+
     void WebGUI::requestInit()
     {
     }

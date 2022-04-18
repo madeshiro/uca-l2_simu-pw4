@@ -51,6 +51,11 @@ namespace UCA_L2INFO_PW4
 
         virtual Pointer<T, _Deleter>& operator =(ptr_t ptr) = 0;
 
+        virtual bool operator ==(const Pointer<T, _Deleter>& pointer)
+        {
+            return _F_ptr == pointer._F_ptr;
+        }
+
         virtual bool operator ==(const_ptr_t ptr) const;
         virtual bool operator <=(const_ptr_t ptr) const;
         virtual bool operator >=(const_ptr_t ptr) const;

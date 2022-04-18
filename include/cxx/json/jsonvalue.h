@@ -20,6 +20,7 @@
 #include "defines.h"
 #include "cxx/oop/object.h"
 #include "cxx/oop/container.hpp"
+#include "json.h"
 
 namespace UCA_L2INFO_PW4
 {
@@ -40,34 +41,48 @@ namespace UCA_L2INFO_PW4
         {
             union jvalue_t
             {
+                bool b;
                 llong_t ll;
                 ldouble_t   llf;
                 char *  str;
-            };
 
-            jvalue_t _F_value;
+                struct scientific {
+                    float value;
+                    int exponent;
+                } scientific;
+            } _F_value;
+
         public:
             enum Type : int
             {
+                Null,
+                Boolean,
                 Integer,
                 Float,
                 Scientific,
                 String
             };
 
-            template < typename T >
-            JsonValue(T value);
-            JsonValue(double value, bool scientific);
+            JsonValue();
+            JsonValue(short);
+            JsonValue(int);
+            JsonValue(long);
+            JsonValue(llong_t);
+            JsonValue(float);
+            JsonValue(double);
+            JsonValue(ldouble_t);
 
             virtual ~JsonValue();
 
             template <typename T>
-            T getValue()
-            {
-                return value;
-            }
+            T getValue();
 
             Type getType() const;
+
+            virtual ::UCA_L2INFO_PW4::String toString() const override;
+
+        private:
+            Type _F_type;
         };
     }
 }

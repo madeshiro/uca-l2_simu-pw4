@@ -193,6 +193,7 @@ namespace UCA_L2INFO_PW4
     {
         double x, y;
 
+        Coordinates() = default;
         Coordinates(double _x, double _y);
         ~Coordinates() = default;
 

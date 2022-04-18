@@ -84,21 +84,6 @@ namespace UCA_L2INFO_PW4
         this->mt_key_length = mtKeyLength;
     }
 
-    void Experiment::join()
-    {
-        /* for 1.0 release w/ thread */
-    }
-
-    void Experiment::stop()
-    {
-        /* for 1.0 release w/ thread */
-    }
-
-    void Experiment::pause()
-    {
-        /* for 1.0 release w/ thread */
-    }
-
     ullong_t Experiment::uuid() const
     {
         ullong_t uuid = (ullong_t) ~0x0;

@@ -18,13 +18,16 @@
 #ifndef CPP_UI_H
 #define CPP_UI_H
 #include "application.h"
+#include "cxx/oop/thread.hpp"
 
 namespace UCA_L2INFO_PW4
 {
-    class WebGUI final : public UserInterface
+    class WebGUI final : public UserInterface, Thread
     {
+        int server(void* args);
     public:
-        WebGUI() = default;
+        WebGUI();
+        virtual ~WebGUI() override;
 
         virtual bool displayProgression(int, int, Simulation&) override;
         virtual void requestInit() override;
