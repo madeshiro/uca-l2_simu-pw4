@@ -126,3 +126,12 @@ window.onload = function () {
 document.onscroll = function () {
     document.documentElement.dataset.scroll = window.scrollY;
 }
+
+function al() {
+    let a = {"a":"b", "c": {
+            "d": [10,11,12],
+            "e": false
+        }
+    };
+    alert(JSON.stringify(a));
+}

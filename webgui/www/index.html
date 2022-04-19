@@ -28,9 +28,9 @@
         <script src="js/apps/application.js"></script>
         <script src="js/script.js"></script>
         <header>
-            <a href="/"><img src="resources/logo.png" alt="website logo"/></a>
+            <a id="website-logo" href="/"><img src="images/logo.png" alt="website logo"/></a>
             <div class="flex-container" id="nav-menu">
-                <nav-button>
+                <nav-button class="current-page">
                     <a href="index.html" class="header-button">
                         <ion-icon name="home-outline"></ion-icon>
                     </a>
@@ -49,11 +49,11 @@
                     <span>GitHub</span>
                 </nav-button>
             </div>
-            <div class="header-spacing"></div>
+            <div class="page-title">UCA-L2 SIMU -- Home</div>
             <div class="flex-container" id="util-buttons">
                 <util-button id="parameter-button">
                     <label>
-                        <input type="button" value="Account" onclick="alert('ok');">
+                        <input type="button" value="Account" onclick="al();">
                         <span><ion-icon name="person-outline"></ion-icon></span>
                     </label>
                 </util-button>
@@ -70,13 +70,6 @@
                 </util-button>
             </div>
         </header>
-        <div id="concept-picture">
-            <img src="resources/concept1.png" alt="">
-            <img src="resources/concept2.png" alt="">
-            <img src="resources/concept3.png" alt="">
-        </div>
-        <div id="overview-panel">
-        </div>
         <popup-window>
             <label id="popup-close-button">
                 <input type="checkbox" onchange="hidePopup(this)" checked>
@@ -96,7 +89,6 @@
                 <a href="about.html">about</a>
             </div>
         </footer>
-
         <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
         <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     </body>

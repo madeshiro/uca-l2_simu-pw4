@@ -48,7 +48,8 @@
     --popup-border: gray;
 }
 
-* {
+*
+{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -161,7 +162,7 @@ popup-window #popup-close-button span
         height: 150px;
         padding: 10px;
 
-        transition: 700ms height;
+        transition: 700ms transform;
     }
 
     body
@@ -172,12 +173,15 @@ popup-window #popup-close-button span
 
     html:not([data-scroll='0']) header
     {
-        height: 75px;
+        /*height: 75px;*/
+        transform: scaleY(50%) translateY(-75px);
     }
+
 
     html:not([data-scroll='0']) #website-logo
     {
-        transform: scale(50%) translateY(-55%);
+        /*transform: scale(50%) translateY(-55%);*/
+        transform: scaleX(50%);
     }
 
     html:not([data-scroll='0']) body
@@ -187,12 +191,16 @@ popup-window #popup-close-button span
 
     html:not([data-scroll='0']) #nav-menu
     {
-        transform: translateX(-30%) translateY(-45%) scale(66%);
+        /*transform: translateX(-30%) translateY(-45%) scale(66%);*/
+        transform: scaleX(50%);
+        margin-left: -20%;
     }
 
     html:not([data-scroll='0']) #util-buttons
     {
-        transform: translateX(25%) scale(50%);
+        /*transform: translateX(25%) scale(50%);*/
+        transform: scaleX(50%);
+        margin-right: -5%;
     }
 
     #website-logo
@@ -292,9 +300,20 @@ popup-window #popup-close-button span
         transform: rotate(360deg);
     }
 
-    #nav-menu nav-button:hover ~ nav-button
+    .page-title
     {
+        visibility: hidden;
+    }
 
+    .current-page
+    {
+        width: 275px !important;
+    }
+
+    .current-page span
+    {
+        opacity: 1 !important;
+        width: 180px !important;
     }
 
     #nav-menu nav-button:hover span

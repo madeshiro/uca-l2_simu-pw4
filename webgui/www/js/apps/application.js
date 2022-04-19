@@ -22,8 +22,34 @@
  * @version 0.1 alpha
  */
 
-class CppApplication
-{
+class PacketType {
+    static PING = new PacketType("ping", 0x0);
+    static STATUS = new PacketType("status", 0x1);
+
+    constructor(name, id) {
+        this.name = name;
+        this.id = id;
+    }
+
+    generate
+}
+
+class Packet {
+
+    /**
+     *
+     * @param {PacketType} type
+     * @param {Object} shipment
+     */
+    constructor(type, shipment) {
+        this.header = {
+            "type": type.name,
+            "size": shipment.stringify()
+        }
+    }
+}
+
+class CppApplication {
     static portRange = [9000, 10000];
 
     /**
@@ -52,6 +78,6 @@ class CppApplication
      * @returns {boolean}
      */
     ping() {
-        return true;
+        return false;
     }
 }
