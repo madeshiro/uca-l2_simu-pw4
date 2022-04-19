@@ -15,41 +15,66 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-@media (prefers-color-scheme: dark) {
-    code {
-        background: #3d3e3a;
-        color: #CCCCCC;
-    }
+:root {
+    --colorscheme-background:   #FFFFFF;
+    --colorscheme-code:         #222222;
+    --colorscheme-keyword:      #C47533;
+    --colorscheme-function:     #35BB46;
+    --colorscheme-identifier:   #000000;
+    --colorscheme-number:       #6897BB;
+    --colorscheme-type:         #4B77AF;
+    --colorscheme-classtype:    #4B77AF;
+}
 
-    .keyword > code {
-        color: #CC7832;
-    }
+[data-theme="dark"] {
+    --colorscheme-background:   #3D3E3A;
+    --colorscheme-code:         #CCCCCC;
+    --colorscheme-keyword:      #CC7832;
+    --colorscheme-function:     #35BB46;
+    --colorscheme-identifier:   #FFFFFF;
+    --colorscheme-number:       #6897BB;
+    --colorscheme-type:         #4B77AF;
+    --colorscheme-classtype:    #4B77AF;
+}
 
-    .function > code {
+code {
+    background: var(--colorscheme-background);
+    color: var(--colorscheme-code);
+}
 
-    }
+.keyword {
+    color: var(--colorscheme-keyword) !important;
+}
 
-    .vfunction > .function {
-        font-style: italic;
-    }
+.function {
+    color: var(--colorscheme-function);
+}
 
-    .identifier > code {
-        color: #000000;
-    }
+.vfunction > .function {
+    font-style: italic;
+}
 
-    .type > code {
+.identifier {
+    color: var(--colorscheme-identifier);
+}
 
-    }
+.number {
+    color: var(--colorscheme-number);
+}
 
-    .classtype > .type {
-        font-weight: bold;
-    }
+.type {
+    color: var(--colorscheme-type);
+}
+
+.classtype {
+    font-weight: bold;
+    color: var(--colorscheme-classtype);
 }
 
 @media (prefers-color-scheme: light) {
     code {
-        background: #3d3e3a;
-        color: #CCCCCC;
+        background: #FFFFFF;
+        color: #222222;
     }
 
     .keyword > code {
@@ -57,7 +82,7 @@
     }
 
     .function > code {
-
+        color: #35bb46;
     }
 
     .vfunction > .function {
@@ -68,8 +93,12 @@
         color: #000000;
     }
 
-    .type > code {
+    .number > code {
+        color: #6897bb;
+    }
 
+    .type > code {
+        color: #4b77af;
     }
 
     .classtype > .type {

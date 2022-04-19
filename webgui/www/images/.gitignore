@@ -1,0 +1,5 @@
+# Ignore everything (resources folder)
+*
+
+# Add .gitignore
+!.gitignore

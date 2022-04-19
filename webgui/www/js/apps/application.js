@@ -24,5 +24,34 @@
 
 class CppApplication
 {
+    static portRange = [9000, 10000];
 
+    /**
+     *
+     * @param {string} ip
+     * @param {number} port
+     */
+    constructor(ip, port) {
+        this.server_ip = ip;
+
+        if (port < CppApplication.portRange[0] || port > CppApplication.portRange[1])
+        {
+            throw new Error("Invalid port ! must be in range" +
+            `${CppApplication.portRange[0]} -> ${CppApplication.portRange[1]}`);
+        }
+
+        this.server_port = port;
+    }
+
+    get port() {
+        return this.server_port;
+    }
+
+    /**
+     *
+     * @returns {boolean}
+     */
+    ping() {
+        return true;
+    }
 }
