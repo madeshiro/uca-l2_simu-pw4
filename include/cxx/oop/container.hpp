@@ -2189,11 +2189,12 @@ namespace UCA_L2INFO_PW4
             uint_t index(keyHash%_F_nodes._F_capacity);
             for (uint_t offset(0); offset <= _F_nodes._F_padding; offset++)
             {
-                if (!_F_nodes._F_set[index+offset])
+                uint_t hashIndex = (index+offset)%_F_nodes._F_capacity;
+                if (!_F_nodes._F_set[hashIndex])
                 {
-                    if (_F_nodes._F_set[index + offset].hashCode() == keyHash)
+                    if (_F_nodes._F_set[hashIndex].hashCode() == keyHash)
                     {
-                        return &(_F_nodes._F_set[index + offset].element->value);
+                        return &(_F_nodes._F_set[hashIndex].element->value);
                     }
                 }
             }
