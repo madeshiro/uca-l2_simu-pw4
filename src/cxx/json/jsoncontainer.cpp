@@ -65,6 +65,12 @@ namespace UCA_L2INFO_PW4
 
         bool JsonMap::set(key_t key, JsonObject *value)
         {
+            value_ptr_t old;
+            if ((old=get(key)))
+            {
+                delete *old;
+            }
+
             value->setIndentLevel(getIndentLevel()+1);
             return HashMap<String, JsonObject*>::set(key, value);
         }
@@ -98,11 +104,12 @@ namespace UCA_L2INFO_PW4
                 {
                     if (doIndentation)
                     {
-                        for (int i(0); i < getIndentLevel(); i++)
+                        for (int i(0); i < getIndentLevel()+1; i++)
                             text.append('\t');
                     }
                     text.append(String("\"{0}\": ").format(key));
                     JsonObject* obj(*get(key));
+                    obj->setIndentLevel(getIndentLevel()+1);
                     text.append(obj->stringify(doIndentation));
                     if (elemCount + 1 < this->size())
                     {
@@ -116,6 +123,11 @@ namespace UCA_L2INFO_PW4
                     elemCount++;
                 }
             }
+            if (doIndentation)
+            {
+                for (int indent(0); indent < getIndentLevel(); indent++)
+                    text.append('\t');
+            }
             return text.append('}');
         }
 
@@ -128,7 +140,6 @@ namespace UCA_L2INFO_PW4
         {
             this->clear();
             this->setIndentLevel(map.getIndentLevel());
-
 
             for (String key : map.keySet().forEach())
             {
@@ -236,9 +247,10 @@ namespace UCA_L2INFO_PW4
                 {
                     if (doIndentation)
                     {
-                        for (int indent(0); indent < getIndentLevel(); indent++)
+                        for (int indent(0); indent < getIndentLevel()+1; indent++)
                             text.append('\t');
                     }
+                    get(i)->setIndentLevel(getIndentLevel()+1);
                     text.append(get(i)->stringify(doIndentation));
                     if (i + 1 < this->size())
                     {
@@ -249,6 +261,11 @@ namespace UCA_L2INFO_PW4
                         text.append('\n');
                     }
                 }
+            }
+            if (doIndentation)
+            {
+                for (int indent(0); indent < getIndentLevel(); indent++)
+                    text.append('\t');
             }
             return text.append(']');
         }
