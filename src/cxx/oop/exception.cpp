@@ -133,10 +133,4 @@ namespace UCA_L2INFO_PW4
     {
         return "IndexOutOfBoundException";
     }
-
-    // template<>
-    // void Delete<StackTrace[], Traits<StackTrace>>::free(ptr_t ptr)
-    // {
-    //     delete ptr;
-    // }
 }

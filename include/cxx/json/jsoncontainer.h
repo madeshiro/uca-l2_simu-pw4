@@ -17,25 +17,50 @@
  */
 #ifndef CPP_JSONCONTAINER_H
 #define CPP_JSONCONTAINER_H
+#include "cxx/oop/string.hpp"
+#include "cxx/oop/container.hpp"
 #include "jsonvalue.h"
-#include "../oop/container.hpp"
 
 namespace UCA_L2INFO_PW4
 {
     namespace json
     {
-        class JsonMap : public HashMap<String, JsonObject*>, JsonObject
+        class JsonMap : public HashMap<String, JsonObject*>, public JsonObject
         {
         public:
+            JsonMap() = default;
+            JsonMap(const HashMap<String, JsonObject*>& object);
+            virtual ~JsonMap();
+
+            virtual bool set(key_t key, value_t value) override;
+
+            virtual bool isArray() const override;
+            virtual bool isMap() const override;
+            virtual bool isValue() const override;
 
             virtual String toString() const override;
+            virtual String stringify(bool doIndentation = true) const override;
+
+            virtual JsonObject* clone() const override;
         };
 
-        class JsonArray : public ArrayList<JsonObject*>, JsonObject
+        class JsonArray : public ArrayList<JsonObject*>, public JsonObject
         {
         public:
             JsonArray() = default;
+            JsonArray(const Collection<JsonObject*>& list);
             virtual ~JsonArray();
+
+            bool add(JsonObject* obj) override;
+
+            virtual bool isArray() const override;
+            virtual bool isMap() const override;
+            virtual bool isValue() const override;
+
+            virtual String toString() const override;
+            virtual String stringify(bool doIndentation = true) const override;
+
+            virtual JsonObject* clone() const override;
         };
     }
 }

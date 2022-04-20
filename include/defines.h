@@ -18,6 +18,12 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#define CHARSET_ASCII   0x010
+#define CHARSET_LATIN1  0x020
+#define CHARSET_UTF8    0x040
+#define CHARSET_UTF16   0x080
+#define CHARSET_UTF32   0x100
+
 typedef unsigned short      ushort_t;
 typedef unsigned int        uint_t;
 typedef unsigned long long  ulong_t;

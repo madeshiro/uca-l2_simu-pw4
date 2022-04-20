@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "cxx/oop/object.h"
 #include "cxx/oop/container.hpp"
-#include "json.h"
 
 namespace UCA_L2INFO_PW4
 {
@@ -28,13 +27,22 @@ namespace UCA_L2INFO_PW4
     {
         class JsonObject : public Object
         {
+        protected:
+            int _F_indentLevel = 0;
+
+            JsonObject(int indentLvl=0);
         public:
+            JsonObject(const JsonObject& obj);
 
-            virtual bool isArray() = 0;
-            virtual bool isMap() = 0;
-            virtual bool isValue() = 0;
+            virtual bool isArray() const = 0;
+            virtual bool isMap() const = 0;
+            virtual bool isValue() const = 0;
 
-            virtual String stringify(bool doIndentation = true) = 0;
+            void setIndentLevel(int);
+            int  getIndentLevel() const;
+
+            virtual String stringify(bool doIndentation = true) const = 0;
+            virtual JsonObject* clone() const = 0;
         };
 
         class JsonValue : public JsonObject
@@ -64,22 +72,33 @@ namespace UCA_L2INFO_PW4
             };
 
             JsonValue();
-            JsonValue(short);
+            JsonValue(bool);
             JsonValue(int);
             JsonValue(long);
-            JsonValue(llong_t);
+            JsonValue(short);
             JsonValue(float);
             JsonValue(double);
+            JsonValue(llong_t);
             JsonValue(ldouble_t);
+            JsonValue(::UCA_L2INFO_PW4::String);
+
+            JsonValue(const JsonValue& jValue);
 
             virtual ~JsonValue();
 
             template <typename T>
-            T getValue();
+            T getValue() const;
 
             Type getType() const;
 
+            virtual bool isArray() const override;
+            virtual bool isMap() const override;
+            virtual bool isValue() const override;
+
             virtual ::UCA_L2INFO_PW4::String toString() const override;
+            virtual ::UCA_L2INFO_PW4::String stringify(bool doIndentation=true) const override;
+
+            virtual JsonObject* clone() const override;
 
         private:
             Type _F_type;

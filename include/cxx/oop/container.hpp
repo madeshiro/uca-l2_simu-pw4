@@ -765,7 +765,7 @@ namespace UCA_L2INFO_PW4
             }
         };
 
-    private:
+    protected:
         HashSet<HashNode> _F_nodes;
     public:
         HashMap();
