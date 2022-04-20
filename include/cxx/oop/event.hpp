@@ -169,7 +169,7 @@ namespace UCA_L2INFO_PW4
         {
             if (_F_dlgts[p].size())
             {
-                for (Delegate<Args...> *dlgt: _F_dlgts[p])
+                for (Delegate<Args...> *dlgt: _F_dlgts[p].forEach())
                 {
                     if (!dlgt->call(args...))
                     {

@@ -230,8 +230,8 @@ namespace UCA_L2INFO_PW4
         ArrayList<uint_t> findAll(const_str_t str) const;
         ArrayList<uint_t> findAll(const string_t& str) const;
 
-        Iterator<char_t, traits_type> iterator() const override;
-        ConstIterator<char_t, traits_type> const_iterator() const override;
+        str_t begin() const override;
+        str_t end() const override;
 
         uint_t length() const override;
 
@@ -718,19 +718,17 @@ namespace UCA_L2INFO_PW4
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
-    Iterator<typename __String__<_CharT, _Traits, _Alloc>::char_t,
-             typename __String__<_CharT, _Traits, _Alloc>::traits_type>
-    __String__<_CharT, _Traits, _Alloc>::iterator() const
+    typename __String__<_CharT, _Traits, _Alloc>::str_t
+    __String__<_CharT, _Traits, _Alloc>::begin() const
     {
-        return Iterator<char_t, traits_type>(_F_charseq, _F_charseq+_F_length);
+        return _F_charseq;
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
-    ConstIterator<typename __String__<_CharT, _Traits, _Alloc>::char_t,
-            typename __String__<_CharT, _Traits, _Alloc>::traits_type>
-    __String__<_CharT, _Traits, _Alloc>::const_iterator() const
+    typename __String__<_CharT, _Traits, _Alloc>::str_t
+    __String__<_CharT, _Traits, _Alloc>::end() const
     {
-        return ConstIterator<char_t, traits_type>(_F_charseq, _F_charseq+_F_length);
+        return &_F_charseq[_F_length];
     }
 
     template<typename _CharT, typename _Traits, typename _Alloc>

@@ -6,14 +6,14 @@ namespace UCA_L2INFO_PW4
     namespace json
     {
         JsonMap::JsonMap(const HashMap<String, JsonObject *> &object):
-                HashMap<String, JsonObject *>()
+                HashMap<String, JsonObject *>(), JsonObject()
         {
             if (dynamic_cast<const JsonObject*>(&object))
             {
                 this->setIndentLevel(((const JsonMap&)object).getIndentLevel());
             }
 
-            for (String key : object.keySet())
+            for (String key : object.keySet().forEach())
             {
                 JsonObject* value(*object.get(key));
                 if (value->isMap())
@@ -31,9 +31,30 @@ namespace UCA_L2INFO_PW4
             }
         }
 
+        JsonMap::JsonMap(const JsonMap& object):
+                HashMap<String, JsonObject *>(), JsonObject(object.getIndentLevel())
+        {
+
+            for (String key : object.keySet().forEach())
+            {
+                JsonObject* value(*object.get(key));
+                if (value->isMap())
+                {
+                    this->set(key, new JsonMap((const JsonMap&) *value));
+                }
+                else if (value->isArray())
+                {
+                    this->set(key, new JsonArray((const JsonArray&) *value));
+                }
+                else
+                {
+                    this->set(key, new JsonValue((const JsonValue&) *value));
+                }
+            }
+        }
         JsonMap::~JsonMap()
         {
-            for (HashNode node : this->_F_nodes)
+            for (HashNode node : this->_F_nodes.forEach())
             {
                 if (node.value)
                 {
@@ -73,7 +94,7 @@ namespace UCA_L2INFO_PW4
             String text(doIndentation ? "{\n" : "{");
             {
                 size_t elemCount(0);
-                for (String key : keySet())
+                for (String key : this->keySet().forEach())
                 {
                     if (doIndentation)
                     {
@@ -81,7 +102,8 @@ namespace UCA_L2INFO_PW4
                             text.append('\t');
                     }
                     text.append(String("\"{0}\": ").format(key));
-                    text.append((*get(key))->stringify(doIndentation));
+                    JsonObject* obj(*get(key));
+                    text.append(obj->stringify(doIndentation));
                     if (elemCount + 1 < this->size())
                     {
                         text.append(", ");
@@ -90,6 +112,8 @@ namespace UCA_L2INFO_PW4
                     {
                         text.append('\n');
                     }
+
+                    elemCount++;
                 }
             }
             return text.append('}');
@@ -97,18 +121,61 @@ namespace UCA_L2INFO_PW4
 
         JsonObject* JsonMap::clone() const
         {
-            return new JsonMap(*this);
+            return new JsonMap((const JsonMap&) *this);
+        }
+
+        JsonMap& JsonMap::operator=(const JsonMap &map)
+        {
+            this->clear();
+            this->setIndentLevel(map.getIndentLevel());
+
+
+            for (String key : map.keySet().forEach())
+            {
+                JsonObject* value(*map.get(key));
+                if (value->isMap())
+                {
+                    this->set(key, new JsonMap((const JsonMap&) *value));
+                }
+                else if (value->isArray())
+                {
+                    this->set(key, new JsonArray((const JsonArray&) *value));
+                }
+                else
+                {
+                    this->set(key, new JsonValue((const JsonValue&) *value));
+                }
+            }
+
+            return *this;
         }
 
         JsonArray::JsonArray(const Collection<JsonObject *> &list):
             ArrayList<JsonObject *>()
         {
-            if (dynamic_cast<const JsonArray*>(&list))
+            for (JsonObject* obj : list.forEach())
             {
-                setIndentLevel(dynamic_cast<const JsonArray*>(&list)->getIndentLevel());
-            }
+                if (obj->isArray())
+                {
+                    obj = new JsonArray((const JsonArray&) *obj);
+                }
+                else if (obj->isMap())
+                {
+                    obj = new JsonMap((const JsonMap&) *obj);
+                }
+                else
+                {
+                    obj = new JsonValue((const JsonValue&) *obj);
+                }
 
-            for (JsonObject* obj : list)
+                this->add(obj);
+            }
+        }
+
+        JsonArray::JsonArray(const JsonArray& list):
+            ArrayList<JsonObject *>(), JsonObject(list.getIndentLevel())
+        {
+            for (JsonObject* obj : list.forEach())
             {
                 if (obj->isArray())
                 {
@@ -186,9 +253,35 @@ namespace UCA_L2INFO_PW4
             return text.append(']');
         }
 
+        JsonArray& JsonArray::operator=(const JsonArray &list)
+        {
+            this->clear();
+            this->setIndentLevel(list.getIndentLevel());
+
+            for (JsonObject* obj : list)
+            {
+                if (obj->isArray())
+                {
+                    obj = new JsonArray((const JsonArray&) *obj);
+                }
+                else if (obj->isMap())
+                {
+                    obj = new JsonMap((const JsonMap&) *obj);
+                }
+                else
+                {
+                    obj = new JsonValue((const JsonValue&) *obj);
+                }
+
+                this->add(obj);
+            }
+
+            return *this;
+        }
+
         JsonObject* JsonArray::clone() const
         {
-            return new JsonArray(*this);
+            return new JsonArray((const JsonArray&) *this);
         }
     }
 }

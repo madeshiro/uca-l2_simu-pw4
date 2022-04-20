@@ -41,6 +41,7 @@ namespace UCA_L2INFO_PW4
 
                 bool _F_isString;
             public:
+                JsonPath();
                 JsonPath(String str);
                 JsonPath(int index);
                 JsonPath(const JsonPath& path);
@@ -57,7 +58,7 @@ namespace UCA_L2INFO_PW4
                 virtual JsonPath& operator=(const JsonPath& path);
             };
 
-            constexpr static const char ctrlChars[] = {'\n', '\t', '\r', '\"', '\\'};
+            constexpr static const char ctrlChars[] = {'\\', '\n', '\t', '\r', '\"'};
             constexpr static const char spacingChars[] = {' ', '\n', '\t', '\r'};
 
             Json(bool objAsRoot = true);

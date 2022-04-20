@@ -7,10 +7,10 @@ namespace UCA_L2INFO_PW4
     using namespace json;
 
     JsonObject::JsonObject(int indentLvl): _F_indentLevel(indentLvl)
-    {}
+    {/*...*/}
 
     JsonObject::JsonObject(const JsonObject &obj): _F_indentLevel(obj._F_indentLevel)
-    {}
+    {/*...*/}
 
     void JsonObject::setIndentLevel(int lvl)
     {
@@ -65,6 +65,11 @@ namespace UCA_L2INFO_PW4
     JsonValue::JsonValue(ldouble_t value): _F_type(Float)
     {
         _F_value.llf = value;
+    }
+
+    JsonValue::JsonValue(const char* str): _F_type(String)
+    {
+        _F_value.str = Traits<char>::copy(str);
     }
 
     JsonValue::JsonValue(::UCA_L2INFO_PW4::String str): _F_type(String)

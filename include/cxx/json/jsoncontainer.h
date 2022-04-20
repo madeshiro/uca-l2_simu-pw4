@@ -30,6 +30,7 @@ namespace UCA_L2INFO_PW4
         public:
             JsonMap() = default;
             JsonMap(const HashMap<String, JsonObject*>& object);
+            JsonMap(const JsonMap& map);
             virtual ~JsonMap();
 
             virtual bool set(key_t key, value_t value) override;
@@ -41,6 +42,8 @@ namespace UCA_L2INFO_PW4
             virtual String toString() const override;
             virtual String stringify(bool doIndentation = true) const override;
 
+            virtual JsonMap& operator =(const JsonMap& map);
+
             virtual JsonObject* clone() const override;
         };
 
@@ -49,6 +52,7 @@ namespace UCA_L2INFO_PW4
         public:
             JsonArray() = default;
             JsonArray(const Collection<JsonObject*>& list);
+            JsonArray(const JsonArray& list);
             virtual ~JsonArray();
 
             bool add(JsonObject* obj) override;
@@ -59,6 +63,8 @@ namespace UCA_L2INFO_PW4
 
             virtual String toString() const override;
             virtual String stringify(bool doIndentation = true) const override;
+
+            virtual JsonArray& operator =(const JsonArray& list);
 
             virtual JsonObject* clone() const override;
         };

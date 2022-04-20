@@ -217,8 +217,8 @@ namespace UCA_L2INFO_PW4
         virtual int getType() const override;
         virtual String toString() const override;
 
-        virtual Iterator<Coordinates> iterator() const override;
-        virtual ConstIterator<Coordinates> const_iterator() const override;
+        Coordinates* begin() const override;
+        Coordinates* end() const override;
 
         double sum() const;
         double avg() const;

@@ -5,6 +5,11 @@ namespace UCA_L2INFO_PW4
 {
     namespace json
     {
+        Json::JsonPath::JsonPath(): _F_isString(false)
+        {
+            _F_identifier.index=0;
+        }
+
         Json::JsonPath::JsonPath(int index): _F_isString(false)
         {
             _F_identifier.index = index;
@@ -203,18 +208,20 @@ namespace UCA_L2INFO_PW4
             {
                 if (container.obj->isMap())
                 {
+                    container.map = dynamic_cast<JsonMap *>(container.obj);
                     if (!container.map->contains(path[i]))
                     {
                         if (path[i+1].isString())
-                            container.map->set(path[i], new JsonMap);
+                            container.map->set(path[i].getName(), new JsonMap);
                         else
-                            container.map->set(path[i], new JsonArray);
+                            container.map->set(path[i].getName(), new JsonArray);
                     }
 
-                    container.obj = *container.map->get(path[i]);
+                    container.obj = *container.map->get(path[i].getName());
                 }
-                else
+                else if (container.obj->isArray())
                 {
+                    container.list = dynamic_cast<JsonArray *>(container.obj);
                     if ((size_t) path[i] == container.list->size())
                     {
                         if (path[i+1].isString())
@@ -229,17 +236,20 @@ namespace UCA_L2INFO_PW4
 
                     container.obj = container.list->get(path[i]);
                 }
+                else return false;
             }
 
             JsonPath emplacement(path.get(path.size()-1));
             if (emplacement.isString())
             {
                 if (!container.obj->isMap()) return false;
+                container.map = dynamic_cast<JsonMap *>(container.obj);
                 container.map->set(emplacement, obj.clone());
             }
             else
             {
                 if (!container.obj->isArray()) return false;
+                container.list = dynamic_cast<JsonArray *>(container.obj);
                 if ((size_t) emplacement < container.list->size())
                 {
                     container.list->set(obj.clone(), emplacement);

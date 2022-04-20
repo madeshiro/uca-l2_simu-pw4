@@ -184,7 +184,7 @@ namespace UCA_L2INFO_PW4
     {
         uint_t i(0);
         double cumul(0.);
-        for (String group : df.getGroups())
+        for (String group : df.getGroups().forEach())
         {
             cumul += df.getProbabilityFrom(group);
             _F_cdf[i].name = group;
@@ -340,14 +340,14 @@ namespace UCA_L2INFO_PW4
         return sum() / (double) _F_values.size();
     }
 
-    Iterator<Coordinates> LineChart::iterator() const
+    Coordinates* LineChart::begin() const
     {
-        return _F_values.iterator();
+        return _F_values.begin();
     }
 
-    ConstIterator<Coordinates> LineChart::const_iterator() const
+    Coordinates* LineChart::end() const
     {
-        return _F_values.const_iterator();
+        return _F_values.end();
     }
 
     double LineChart::y(double x) const

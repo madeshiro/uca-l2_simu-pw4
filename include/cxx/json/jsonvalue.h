@@ -80,6 +80,7 @@ namespace UCA_L2INFO_PW4
             JsonValue(double);
             JsonValue(llong_t);
             JsonValue(ldouble_t);
+            JsonValue(const char*);
             JsonValue(::UCA_L2INFO_PW4::String);
 
             JsonValue(const JsonValue& jValue);

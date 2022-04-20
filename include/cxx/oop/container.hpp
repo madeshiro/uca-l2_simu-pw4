@@ -7,68 +7,50 @@
 namespace UCA_L2INFO_PW4
 {
     template<typename T, typename _Traits = Traits<T> >
-    struct Iterator
-    {
-    public:
-        typedef _Traits traits_type;
-
-        typedef typename traits_type::value_t value_t;
-        typedef typename traits_type::ref_t ref_t;
-        typedef typename traits_type::ptr_t ptr_t;
-        typedef typename traits_type::rvalue_t rvalue_t;
-
-        ptr_t _F_begin, _F_end;
-
-        Iterator(ptr_t begin, ptr_t end);
-
-        virtual ~Iterator()
-        {
-        };
-    };
-
-    template<typename T, typename _Traits = Traits<T> >
-    struct ConstIterator
-    {
-    public:
-        typedef _Traits traits_type;
-
-        typedef typename traits_type::const_t const_t;
-        typedef typename traits_type::const_ref_t const_ref_t;
-        typedef typename traits_type::const_ptr_t const_ptr_t;
-
-        const_ptr_t _F_begin, _F_end;
-
-        ConstIterator(const_ptr_t begin, const_ptr_t end);
-        virtual ~ConstIterator()
-        {
-        }
-    };
-
-    template<typename T, typename _Traits = Traits<T> >
     struct Iterable : public Object
     {
         typedef _Traits traits_type;
         typedef typename traits_type::ptr_t ptr_t;
         typedef typename traits_type::const_ptr_t const_ptr_t;
 
-        virtual Iterator<T, traits_type> iterator() const = 0;
-        virtual ConstIterator<T, traits_type> const_iterator() const = 0;
+        virtual ptr_t begin() const = 0;
+        virtual ptr_t end() const   = 0;
+    };
 
-        virtual ptr_t begin() const;
-        virtual ptr_t end() const;
+    template<typename T, typename _Traits = Traits<T>>
+    class Iterator : public Iterable<T, _Traits>
+    {
+        typedef _Traits traits_type;
+        typedef typename traits_type::value_t value_t;
+        typedef typename traits_type::ptr_t ptr_t;
+        typedef typename traits_type::const_ptr_t const_ptr_t;
 
-        virtual ptr_t rbegin();
-        virtual ptr_t rend();
+        SharedPointer<value_t[]> _F_ptr;
+        ptr_t _F_begin, _F_end;
+    public:
+        Iterator(ptr_t begin, ptr_t end, bool handleMemory=false);
+        Iterator(ptr_t begin, size_t size, bool handleMemory=false);
+        Iterator(const Iterator<T, _Traits>& iter);
+        virtual ~Iterator() override = default;
 
-        virtual const_ptr_t cbegin() const;
-        virtual const_ptr_t cend() const;
+        virtual ptr_t begin() const override { return _F_begin; }
+        virtual ptr_t end() const override { return _F_end; }
 
-        virtual const_ptr_t crbegin() const;
-        virtual const_ptr_t crend() const;
+        virtual Iterator<T, _Traits>& operator =(const Iterator<T, _Traits>& iter);
+    };
+
+    template<typename T, typename _Traits = Traits<T>>
+    struct Foreachable : public Object
+    {
+        typedef _Traits traits_type;
+        typedef typename traits_type::ptr_t ptr_t;
+        typedef typename traits_type::const_ptr_t const_ptr_t;
+
+        virtual Iterator<T, _Traits> forEach() const = 0;
     };
 
     template<typename E>
-    class Collection : public Iterable<E, Traits<E> >
+    class Collection : public Foreachable<E>
     {
     public:
         typedef Traits<E> traits_type;
@@ -118,7 +100,7 @@ namespace UCA_L2INFO_PW4
     };
 
     template<typename E>
-    class List /* interface */ : public Collection<E>
+    class List /* interface */ : public Collection<E>, public Iterable<E, Traits<E>>
     {
     public:
         typedef typename Collection<E>::traits_type traits_type;
@@ -207,11 +189,11 @@ namespace UCA_L2INFO_PW4
 
         virtual E* toArray() const override;
 
-        virtual Iterator<E, traits_type> iterator() const override;
-
-        virtual ConstIterator<E, traits_type> const_iterator() const override;
-
         virtual AbstractList<E>& operator =(const AbstractList<E>&);
+
+        virtual ptr_t begin() const override;
+        virtual ptr_t end() const override;
+        virtual Iterator<E, traits_type> forEach() const override;
     };
 
     template<typename E>
@@ -320,26 +302,9 @@ namespace UCA_L2INFO_PW4
         typedef typename Collection<E>::const_ref_t const_ref_t;
         typedef typename Collection<E>::const_ptr_t const_ptr_t;
 
+        virtual Iterator<E, Traits<E>> forEach() const override;
     protected:
         Set() = default;
-
-        bool needUpdate(int a) const
-        {
-            static bool _F_needUpdate = true;
-            if (a == 0)
-            {
-                _F_needUpdate = false;
-            }
-            else if (a > 0)
-            {
-                _F_needUpdate = true;
-            }
-
-            return _F_needUpdate;
-        }
-    public:
-        virtual Iterator<E> iterator() const override;
-        virtual ConstIterator<E> const_iterator() const override;
     };
 
     template<typename E>
@@ -545,10 +510,6 @@ namespace UCA_L2INFO_PW4
         virtual size_t size() const override;
 
         virtual E* toArray() const override;
-
-        virtual Iterator<E, traits_type> iterator() const override;
-
-        virtual ConstIterator<E, traits_type> const_iterator() const override;
     };
 
     template<typename E>
@@ -645,9 +606,7 @@ namespace UCA_L2INFO_PW4
 
         virtual E* toArray() const override;
 
-        virtual Iterator<E, traits_type> iterator() const override;
-
-        virtual ConstIterator<E, traits_type> const_iterator() const override;
+        virtual Iterator<E, traits_type> forEach() const override;
     };
 
     template<typename K, typename V>
@@ -750,7 +709,10 @@ namespace UCA_L2INFO_PW4
                 key(node.key), value(node.value)
             {/* ... */ }
 
-            virtual ~HashNode() = default;
+            virtual ~HashNode()
+            {
+
+            };
 
             virtual hash_t hashCode() const override
             {
@@ -812,64 +774,32 @@ namespace UCA_L2INFO_PW4
     };
 
     template<typename T, typename _Traits>
-    Iterator<T, _Traits>::Iterator(ptr_t begin, ptr_t end)
-    {
-        _F_begin = begin;
-        _F_end = end;
-    }
-
-    template<typename T, typename _Traits>
-    ConstIterator<T, _Traits>::ConstIterator(const_ptr_t begin, const_ptr_t end):
-        _F_begin(begin), _F_end(end)
+    Iterator<T, _Traits>::Iterator(ptr_t begin, ptr_t end, bool handleMemory):
+        _F_ptr(handleMemory ? begin : nullptr), _F_begin(begin), _F_end(end)
     {
     }
 
     template<typename T, typename _Traits>
-    typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::begin() const
+    Iterator<T, _Traits>::Iterator(ptr_t begin, size_t size, bool handleMemory):
+        _F_ptr(handleMemory ? begin : nullptr),
+        _F_begin(begin), _F_end(&_F_begin[size])
+    {}
+
+    template<typename T, typename _Traits>
+    Iterator<T, _Traits>::Iterator(const Iterator<T, _Traits> &iter):
+        _F_ptr(iter._F_ptr),
+        _F_begin(iter._F_begin), _F_end(iter._F_end)
     {
-        return this->iterator()._F_begin;
     }
 
     template<typename T, typename _Traits>
-    typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::end() const
+    Iterator<T, _Traits>& Iterator<T, _Traits>::operator=(const Iterator<T, _Traits> &iter)
     {
-        return this->iterator()._F_end;
-    }
+        _F_ptr = iter._F_ptr;
+        _F_begin = iter._F_begin;
+        _F_end = iter._F_end;
 
-    template<typename T, typename _Traits>
-    typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::cbegin() const
-    {
-        return this->const_iterator()._F_begin;
-    }
-
-    template<typename T, typename _Traits>
-    typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::cend() const
-    {
-        return this->const_iterator()._F_end;
-    }
-
-    template<typename T, typename _Traits>
-    typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::rbegin()
-    {
-        return this->iterator()._F_end - 1;
-    }
-
-    template<typename T, typename _Traits>
-    typename Iterable<T, _Traits>::ptr_t Iterable<T, _Traits>::rend()
-    {
-        return this->iterator()._F_begin - 1;
-    }
-
-    template<typename T, typename _Traits>
-    typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crbegin() const
-    {
-        return this->const_iterator()._F_end - 1;
-    }
-
-    template<typename T, typename _Traits>
-    typename Iterable<T, _Traits>::const_ptr_t Iterable<T, _Traits>::crend() const
-    {
-        return this->const_iterator()._F_begin - 1;
+        return *this;
     }
 
     template<typename E>
@@ -945,7 +875,7 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool AbstractList<E>::containsAll(const Collection<E> &c) const
     {
-        for (auto elem : c)
+        for (auto elem : c.forEach())
         {
             if (contains(elem) == false)
                 return false;
@@ -989,7 +919,7 @@ namespace UCA_L2INFO_PW4
         ptr_t newArray = allocator::alloc(c.size()), __p = newArray;
         if (newArray)
         {
-            for (const_ref_t elem : c)
+            for (const_ref_t elem : c.forEach())
             {
                 int _indexOf(indexOf(elem));
                 if (_indexOf >= 0)
@@ -1036,18 +966,6 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    Iterator<E, typename AbstractList<E>::traits_type> AbstractList<E>::iterator() const
-    {
-        return Iterator<E, traits_type>(_F_array, (&_F_array[_F_size]));
-    }
-
-    template < typename E >
-    ConstIterator<E, typename AbstractList<E>::traits_type> AbstractList<E>::const_iterator() const
-    {
-        return ConstIterator<E, traits_type>(_F_array, (&_F_array[_F_size]));
-    }
-
-    template < typename E >
     AbstractList<E>& AbstractList<E>::operator=(const AbstractList<E> & list)
     {
         if (_F_array)
@@ -1068,6 +986,24 @@ namespace UCA_L2INFO_PW4
         }
 
         return *this;
+    }
+
+    template < typename E >
+    typename AbstractList<E>::ptr_t AbstractList<E>::begin() const
+    {
+        return _F_array;
+    }
+
+    template < typename E >
+    typename AbstractList<E>::ptr_t AbstractList<E>::end() const
+    {
+        return &_F_array[this->size()];
+    }
+
+    template < typename E >
+    Iterator<E, typename AbstractList<E>::traits_type> AbstractList<E>::forEach() const
+    {
+        return Iterator<E, traits_type>(begin(), end());
     }
 
     template < typename E >
@@ -1181,7 +1117,7 @@ namespace UCA_L2INFO_PW4
         UniquePointer<int[]> elemIndexes(new int[c.size()]);
         uint_t f(0);
 
-        for (auto elem : c)
+        for (auto elem : c.forEach())
         {
             int index(this->indexOf(elem));
             if (index != -1)
@@ -1319,7 +1255,7 @@ namespace UCA_L2INFO_PW4
             }
         }
 
-        for (auto elem : c)
+        for (auto elem : c.forEach())
         {
             this->_F_array[this->_F_size] = elem;
             this->_F_size++;
@@ -1415,7 +1351,7 @@ namespace UCA_L2INFO_PW4
     {
         bool status(true);
 
-        for (auto e : c)
+        for (auto e : c.forEach())
         {
             status = status && this->remove(e);
         }
@@ -1477,27 +1413,10 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    Iterator<E> Set<E>::iterator() const
+    Iterator<E, Traits<E>> Set<E>::forEach() const
     {
-        static ptr_t _S_array = this->toArray();
-        if (needUpdate(-1))
-        {
-            _S_array = this->toArray();
-            needUpdate(0);
-        }
-        return Iterator<E>(_S_array, &_S_array[this->size()]);
-    }
-
-    template < typename E >
-    ConstIterator<E> Set<E>::const_iterator() const
-    {
-        static ptr_t _S_array = this->toArray();
-        if (needUpdate(-1))
-        {
-            _S_array = this->toArray();
-            needUpdate(0);
-        }
-        return ConstIterator<E>((const_ptr_t)_S_array, (const_ptr_t) &_S_array[this->size()]);
+        ptr_t array(this->toArray());
+        return Iterator<E, Traits<E>>(array, array+this->size(), true);
     }
 
     template < typename E >
@@ -1761,8 +1680,6 @@ namespace UCA_L2INFO_PW4
                     setPadding(off);
                     _F_set[hashIndex] = elem;
                     _F_size++;
-
-                    this->needUpdate(true);
                     return true;
                 }
             }
@@ -1772,8 +1689,6 @@ namespace UCA_L2INFO_PW4
             uint_t hashIndex(index % _F_capacity);
             _F_set[hashIndex] = elem;
             _F_size++;
-
-            this->needUpdate(true);
             return true;
         }
 
@@ -1823,14 +1738,13 @@ namespace UCA_L2INFO_PW4
         delete[] _F_set;
         _F_capacity = newCapacity;
         _F_set = buckets;
-        this->needUpdate(true);
     }
 
     template < typename E >
     bool HashSet<E>::addAll(const Collection<E> &c)
     {
         bool status(true);
-        for (auto e : c)
+        for (auto e : c.forEach())
         {
             status = add(e) && status;
         }
@@ -1866,7 +1780,7 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool HashSet<E>::containsAll(const Collection<E> &c) const
     {
-        for (auto e : c)
+        for (auto e : c.forEach())
         {
             if (!contains(e))
                 return false;
@@ -1904,7 +1818,7 @@ namespace UCA_L2INFO_PW4
     template < typename E >
     bool HashSet<E>::removeAll(const Collection<E> &c)
     {
-        for (auto e : c)
+        for (auto e : c.forEach())
         {
             remove(e);
         }
@@ -1962,30 +1876,6 @@ namespace UCA_L2INFO_PW4
             return elements;
         }
         else return nullptr;
-    }
-
-    template < typename E >
-    Iterator<E, typename HashSet<E>::traits_type> HashSet<E>::iterator() const
-    {
-        static ptr_t _S_array = toArray();
-        if (Set<E>::needUpdate(-1))
-        {
-            _S_array = toArray();
-            Set<E>::needUpdate(0);
-        }
-        return Iterator<E, traits_type>(_S_array, &_S_array[_F_size]);
-    }
-
-    template < typename E >
-    ConstIterator<E, typename HashSet<E>::traits_type> HashSet<E>::const_iterator() const
-    {
-        static ptr_t _S_array = toArray();
-        if (Set<E>::needUpdate(-1))
-        {
-            _S_array = toArray();
-            Set<E>::needUpdate(0);
-        }
-        return ConstIterator<E, traits_type>((const_ptr_t)_S_array, (const_ptr_t) &_S_array[_F_size]);
     }
 
     template < typename E >
@@ -2156,29 +2046,10 @@ namespace UCA_L2INFO_PW4
     }
 
     template < typename E >
-    Iterator<E, typename ChainedList<E>::traits_type> ChainedList<E>::iterator() const
+    Iterator<E, typename ChainedList<E>::traits_type> ChainedList<E>::forEach() const
     {
-        static ptr_t _F_iter = toArray().release();
-
-        if (needUpdate(-1))
-        {
-            _F_iter = toArray().release();
-        }
-
-        return Iterator<E, traits_type>(_F_iter, &_F_iter[size()]);
-    }
-
-    template < typename E >
-    ConstIterator<E, typename ChainedList<E>::traits_type> ChainedList<E>::const_iterator() const
-    {
-        static ptr_t _F_iter = toArray().release();
-
-        if (needUpdate(-1))
-        {
-            _F_iter = toArray().release();
-        }
-
-        return ConstIterator<E, traits_type>(_F_iter, &_F_iter[size()]);
+        ptr_t array(toArray());
+        return Iterator<E, traits_type>(array, array+this->size(), true);
     }
 
     template < typename K, typename V >
@@ -2198,7 +2069,7 @@ namespace UCA_L2INFO_PW4
     {
         HashSet<K> keys;
 
-        for (HashNode node : _F_nodes)
+        for (HashNode node : this->_F_nodes.forEach())
         {
             keys.add(node.key);
         }
@@ -2211,7 +2082,7 @@ namespace UCA_L2INFO_PW4
     {
         ArrayList<V> values;
 
-        for (const HashNode node : _F_nodes)
+        for (const HashNode node : _F_nodes.forEach())
         {
             values.add(static_cast<value_const_t>(node.value));
         }
@@ -2223,7 +2094,7 @@ namespace UCA_L2INFO_PW4
     bool HashMap<K,V>::addAll(const Map<K, V> &map)
     {
         bool status(true);
-        for (auto key : map.keySet())
+        for (auto key : map.keySet().forEach())
         {
             status = this->set(key, *map.get(key)) && status;
         }
@@ -2248,7 +2119,7 @@ namespace UCA_L2INFO_PW4
     template < typename K, typename V >
     bool HashMap<K, V>::containsAll(const Collection<K> &c) const
     {
-        for (auto key : c)
+        for (auto key : c.forEach())
         {
             if (!contains(key))
                 return false;
@@ -2274,7 +2145,7 @@ namespace UCA_L2INFO_PW4
     bool HashMap<K, V>::removeAll(const Set<K> &c)
     {
         bool status(true);
-        for (auto key : c)
+        for (auto key : c.forEach())
         {
             status = remove(key) && status;
         }
