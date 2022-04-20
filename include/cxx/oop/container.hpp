@@ -410,12 +410,6 @@ namespace UCA_L2INFO_PW4
 
             virtual ~Bucket()
             {
-                if (element)
-                {
-                    // Todo Error on setup bucket could make pointer invalid (out of range)
-                    // delete element;
-                    // element = nullptr;
-                }
             };
 
             virtual bool operator==(value_t elem)
@@ -1665,17 +1659,19 @@ namespace UCA_L2INFO_PW4
 
         if (_F_size > 0 )
         {
-            for (uint_t off(0); off < _F_size; off++)
+            for (uint_t off(0); off <= _F_size; off++)
             {
-                uint_t hashIndex((index + off) % _F_capacity);
+                uint_t hashIndex = (index + off) % _F_capacity;
 
                 if (_contains)
                 {
                     if (!_F_set[hashIndex] && _F_set[hashIndex] == elem)
                     {
                         _F_set[hashIndex] = elem;
+                        return true;
                     }
-                } else if (_F_set[hashIndex])
+                }
+                else if (_F_set[hashIndex])
                 {
                     setPadding(off);
                     _F_set[hashIndex] = elem;
