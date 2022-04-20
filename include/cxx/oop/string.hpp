@@ -319,6 +319,7 @@ namespace UCA_L2INFO_PW4
         static string_t ToString(const Object&);
         static string_t ToString(const string_t &str);
 
+        static string_t ToString(hash_t);
         static string_t toHexString(ullong_t);
     };
 
@@ -1522,12 +1523,19 @@ namespace UCA_L2INFO_PW4
 
     }
 
-template<typename _CharT, typename _Traits, typename _Alloc>
-typename __String__<_CharT, _Traits, _Alloc>::string_t
-__String__<_CharT, _Traits, _Alloc>::ToString(const string_t& obj)
-{
-    return string_t (obj);
-}
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::ToString(const string_t& obj)
+    {
+        return string_t (obj);
+    }
+
+    template<typename _CharT, typename _Traits, typename _Alloc>
+    typename __String__<_CharT, _Traits, _Alloc>::string_t
+    __String__<_CharT, _Traits, _Alloc>::ToString(hash_t hash)
+    {
+        return toHexString(hash);
+    }
 
     template<typename _CharT, typename _Traits, typename _Alloc>
     typename __String__<_CharT, _Traits, _Alloc>::string_t
