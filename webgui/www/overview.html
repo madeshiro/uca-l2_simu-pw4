@@ -19,78 +19,109 @@
 <html lang="en" data-scroll="0">
 <head>
     <meta charset="UTF-8">
-    <title>Simulation project - Project Overview</title>
+    <title>Simulation project - Home</title>
     <link rel="stylesheet" href="stylesheet/theme.css">
     <link rel="stylesheet" href="stylesheet/media.css">
     <link rel="stylesheet" href="stylesheet/colorscheme.css">
+    <link rel="stylesheet" href="stylesheet/charts.css">
 </head>
 <body>
-<script src="js/apps/application.js"></script>
-<script src="js/script.js"></script>
-<header>
-    <a id="website-logo" href="/"><img src="images/logo.png" alt="website logo"/></a>
-    <div class="flex-container" id="nav-menu">
-        <nav-button>
-            <a href="index.html" class="header-button">
-                <ion-icon name="home-outline"></ion-icon>
-            </a>
-            <span>Home</span>
-        </nav-button>
-        <nav-button class="current-page">
-            <a href="overview.html" class="header-button project-menu-button">
-                <ion-icon name="folder-open-outline"></ion-icon>
-            </a>
-            <span>Project <br/> overview</span>
-        </nav-button>
-        <nav-button>
-            <a href="https://github.com/madeshiro/uca-l2_simu-pw4" class="github-button">
-                <img src="images/Octocat.png" alt="Octocat (GitHub mascot)"/>
-            </a>
-            <span>GitHub</span>
-        </nav-button>
+    <script src="js/apps/application.js"></script>
+    <script src="js/script.js"></script>
+    <header>
+        <a id="website-logo" href="/"><img src="images/logo.png" alt="website logo"/></a>
+        <div class="flex-container" id="nav-menu">
+            <nav-button>
+                <a href="index.html" class="header-button">
+                    <ion-icon name="home-outline"></ion-icon>
+                </a>
+                <span>Home</span>
+            </nav-button>
+            <nav-button class="current-page">
+                <a href="overview.html" class="header-button project-menu-button">
+                    <ion-icon name="folder-open-outline"></ion-icon>
+                </a>
+                <span>Project <br/> overview</span>
+            </nav-button>
+            <nav-button>
+                <a href="https://github.com/madeshiro/uca-l2_simu-pw4" class="github-button">
+                    <img src="images/Octocat.png" alt="Octocat (GitHub mascot)"/>
+                </a>
+                <span>GitHub</span>
+            </nav-button>
+        </div>
+        <div class="page-title">UCA-L2 SIMU -- Home</div>
+        <div class="flex-container" id="util-buttons">
+            <util-button id="parameter-button">
+                <label>
+                    <input type="button" value="Account" onclick="al();">
+                    <span><ion-icon name="person-outline"></ion-icon></span>
+                </label>
+            </util-button>
+            <util-button id="light-button">
+                <label>
+                    <input id="input-light-button" type="checkbox" onchange="toggleDarkMode(this);">
+                    <span><ion-icon name="flash-outline"></ion-icon></span>
+                </label>
+            </util-button>
+            <util-button id="cpp-apps-button">
+                <a href="application.html">
+                    <img src="images/cpp_logo.svg" alt="Cpp Apps button"/>
+                </a>
+            </util-button>
+        </div>
+    </header>
+    <div id="main-content">
+        <chart type="barchart" style="width: 50%">
+            <chart-header>
+                <a class="flex-space"></a>
+                <chart-title>My Super Title</chart-title>
+                <chart-colorpicker>
+                    <a class="colorpicker-classic"></a>
+                    <a class="colorpicker-colorblind-red"></a>
+                    <a class="colorpicker-colorblind-green"></a>
+                    <a class="colorpicker-colorblind-blue"></a>
+                </chart-colorpicker>
+            </chart-header>
+            <chart-body>
+                <axis-x>Month</axis-x>
+                <axis-y>Population</axis-y>
+                <chart-data>
+                    <item style="--chart-draw-color: var(--colorpicker-1);" class="linechart-dot"></item>
+                    <item style="--chart-draw-color: var(--colorpicker-1);" class="linechart-seg"></item>
+                    <item style="--chart-draw-color: var(--colorpicker-1);" class="linechart-dot"></item>
+                </chart-data>
+                <chart-caption>
+                    <item style="--chart-draw-color: var(--colorpicker-1);">
+                        <div></div>Males
+                    </item>
+                    <item style="--chart-draw-color: var(--colorpicker-2);">
+                        <div></div>Females
+                    </item>
+                </chart-caption>
+            </chart-body>
+        </chart>
     </div>
-    <div class="header-spacing">
-    </div>
-    <div class="flex-container" id="util-buttons">
-        <util-button id="parameter-button">
-            <label>
-                <input type="button" value="Account" onclick="alert('ok');">
-                <span><ion-icon name="person-outline"></ion-icon></span>
-            </label>
-        </util-button>
-        <util-button id="light-button">
-            <label>
-                <input id="input-light-button" type="checkbox" onchange="toggleDarkMode(this);">
-                <span><ion-icon name="flash-outline"></ion-icon></span>
-            </label>
-        </util-button>
-        <util-button id="cpp-apps-button">
-            <a href="application.html">
-                <img src="images/cpp_logo.svg" alt="Cpp Apps button"/>
-            </a>
-        </util-button>
-    </div>
-</header>
-<popup-window>
-    <label id="popup-close-button">
-        <input type="checkbox" onchange="hidePopup(this)" checked>
-        <span>
-                    <ion-icon name="close-outline"></ion-icon>
-                </span>
-    </label>
-    <div><ion-icon name="checkmark-circle-outline"></ion-icon></div>
-    <div id="popup-text">
-        This is a common alert to tell the user about some important stuff like how CppApplication worked or anything looked alike.
-    </div>
-</popup-window>
-<footer>
-    <div class="foot-flex-container">
-        <a href="/"><img src="resources/logo.png" alt="website logo"/></a>
-        <a>Rin Baudelet 2022 ©</a>
-        <a href="about.html">about</a>
-    </div>
-</footer>
-<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-</body>
+    <popup-window>
+        <label id="popup-close-button">
+            <input type="checkbox" onchange="hidePopup(this)" checked>
+            <span>
+                        <ion-icon name="close-outline"></ion-icon>
+                    </span>
+        </label>
+        <div><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+        <div id="popup-text">
+            This is a common alert to tell the user about some important stuff like how CppApplication worked or anything looked alike.
+        </div>
+    </popup-window>
+    <footer>
+        <div class="foot-flex-container">
+            <a href="/"><img src="images/4logo.png" alt="website logo"/></a>
+            <a>Rin Baudelet 2022 ©</a>
+            <a href="about.html">about</a>
+        </div>
+    </footer>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    </body>
 </html>

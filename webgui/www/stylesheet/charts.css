@@ -1,0 +1,263 @@
+:root
+{
+    --cframe-border-color: darkorange;
+    --cframe-header-background: gray;
+    --cframe-text-color: black;
+    --cframe-body-background: lightgray;
+
+
+    --colorpicker-1: lightblue;
+    --colorpicker-2: lightgreen;
+    --colorpicker-3: pink;
+    --colorpicker-4: red;
+    --colorpicker-5: yellow;
+    --colorpicker-6: orange;
+    --colorpicker-7: #965a96;
+}
+
+[data-theme="dark"]
+{
+    --cframe-border-color: #312e2e;
+    --cframe-header-background: #312e2e;
+    --cframe-body-background: #987c69;
+    --cframe-text-color: white;
+
+    --colorpicker-1: lightblue;
+    --colorpicker-2: lightgreen;
+    --colorpicker-3: pink;
+    --colorpicker-4: red;
+    --colorpicker-5: yellow;
+    --colorpicker-6: orange;
+    --colorpicker-7: #965a96;
+}
+
+[color-picker="red"]
+{
+    --colorpicker-1: lightblue;
+    --colorpicker-2: lightgreen;
+    --colorpicker-3: pink;
+    --colorpicker-4: red;
+    --colorpicker-5: yellow;
+    --colorpicker-6: orange;
+    --colorpicker-7: #965a96;
+}
+
+[color-picker="blue"]
+{
+    --colorpicker-1: lightblue;
+    --colorpicker-2: lightgreen;
+    --colorpicker-3: pink;
+    --colorpicker-4: red;
+    --colorpicker-5: yellow;
+    --colorpicker-6: orange;
+    --colorpicker-7: #965a96;
+}
+
+[color-picker="green"]
+{
+    --colorpicker-1: lightblue;
+    --colorpicker-2: lightgreen;
+    --colorpicker-3: pink;
+    --colorpicker-4: red;
+    --colorpicker-5: yellow;
+    --colorpicker-6: orange;
+    --colorpicker-7: #965a96;
+}
+
+.overflow-x
+{
+    overflow-x: scroll;
+}
+
+chart
+{
+    color: var(--cframe-text-color);
+
+    border-radius: 15px;
+    border: 2px solid var(--cframe-border-color);
+
+    display: flex;
+    flex-direction: column;
+}
+
+chart-header
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+
+    border-top-right-radius: 13px;
+    border-top-left-radius: 13px;
+
+    width: 100%;
+    height: 30px;
+    background-color: var(--cframe-header-background);
+}
+
+chart-header chart-title
+{
+    flex: 1 1 55%;
+
+    font-weight: bold;
+    font-family: sans-serif;
+}
+
+chart-header .flex-space
+{
+    flex: 1;
+}
+
+chart-header chart-colorpicker
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    flex: 1;
+
+    min-width: 80px;
+}
+
+chart-header chart-colorpicker a
+{
+    border-radius: 50%;
+
+    width: 25px;
+    height: 25px;
+    border: 2px solid black;
+
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+chart-header chart-colorpicker a:hover
+{
+    filter: brightness(120%);
+}
+
+.colorpicker-classic
+{
+    background-color: yellow;
+}
+
+.colorpicker-colorblind-blue
+{
+    background-color: blue;
+}
+
+.colorpicker-colorblind-green
+{
+    background-color: green;
+}
+
+.colorpicker-colorblind-red
+{
+    background-color: red;
+}
+
+chart-body
+{
+    position: relative;
+
+    padding-top: 10px;
+    padding-bottom: 50px;
+    padding-left: 10%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    min-height: 200px;
+    background-color: var(--cframe-body-background);
+
+    border-bottom-right-radius: 13px;
+    border-bottom-left-radius: 13px;
+}
+
+chart-body axis-x
+{
+    display: flex;
+
+    position: absolute;
+    left: 0;
+    bottom: 10px;
+
+    height: 90%;
+    width: 10%;
+    text-align: center;
+
+    justify-content: center;
+    align-items: center;
+}
+
+chart-body axis-y
+{
+    display: flex;
+
+    position: absolute;
+    left: 10px;
+    bottom: 0;
+
+    height: 50px;
+    width: 90%;
+    text-align: center;
+
+    justify-content: center;
+    align-items: center;
+}
+
+chart-body chart-data
+{
+    min-width: 80%;
+    height: 400px;
+
+    background-color: red;
+}
+
+chart-body chart-caption
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 20%;
+    height: 100%;
+}
+
+chart-body chart-caption item
+{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    font-family: sans-serif;
+
+    background-color: #3D3E3A;
+    border-radius: 10px;
+    width: 90%;
+}
+
+chart-body chart-caption item div
+{
+    position: relative;
+
+    height: 5px;
+    width: 25px;
+    background-color: var(--chart-draw-color);
+
+    margin-right: 10px;
+}
+
+@media only screen and (orientation: landscape)
+{
+
+}
+@media only screen and (orientation: portrait)
+{
+
+}
