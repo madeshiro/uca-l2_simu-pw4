@@ -1,10 +1,11 @@
 :root
 {
-    --cframe-border-color: darkorange;
+    --cframe-border-color: gray;
     --cframe-header-background: gray;
     --cframe-text-color: black;
-    --cframe-body-background: lightgray;
+    --cframe-body-background: #c9c7c7;
 
+    --cframe-caption-background: gray;
 
     --colorpicker-1: lightblue;
     --colorpicker-2: lightgreen;
@@ -17,10 +18,12 @@
 
 [data-theme="dark"]
 {
-    --cframe-border-color: #312e2e;
-    --cframe-header-background: #312e2e;
+    --cframe-border-color: #3c3f41;
+    --cframe-header-background: #3c3f41;
     --cframe-body-background: #987c69;
     --cframe-text-color: white;
+
+    --cframe-caption-background: #3D3E3A;
 
     --colorpicker-1: lightblue;
     --colorpicker-2: lightgreen;
@@ -33,13 +36,13 @@
 
 [color-picker="red"]
 {
-    --colorpicker-1: lightblue;
-    --colorpicker-2: lightgreen;
-    --colorpicker-3: pink;
-    --colorpicker-4: red;
-    --colorpicker-5: yellow;
+    --colorpicker-1: #965a96;
+    --colorpicker-2: lightblue;
+    --colorpicker-3: red;
+    --colorpicker-4: lightgreen;
+    --colorpicker-5: pink;
     --colorpicker-6: orange;
-    --colorpicker-7: #965a96;
+    --colorpicker-7: yellow;
 }
 
 [color-picker="blue"]
@@ -74,7 +77,7 @@ chart
     color: var(--cframe-text-color);
 
     border-radius: 15px;
-    border: 2px solid var(--cframe-border-color);
+    border: 4px solid var(--cframe-border-color);
 
     display: flex;
     flex-direction: column;
@@ -87,11 +90,11 @@ chart-header
     align-items: center;
     flex-direction: row;
 
-    border-top-right-radius: 13px;
-    border-top-left-radius: 13px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
 
     width: 100%;
-    height: 30px;
+    height: 40px;
     background-color: var(--cframe-header-background);
 }
 
@@ -116,7 +119,7 @@ chart-header chart-colorpicker
 
     flex: 1;
 
-    min-width: 80px;
+    min-width: 100px;
 }
 
 chart-header chart-colorpicker a
@@ -125,7 +128,7 @@ chart-header chart-colorpicker a
 
     width: 25px;
     height: 25px;
-    border: 2px solid black;
+    border: 1px dot-dash black;
 
     cursor: pointer;
     transition: 0.5s;
@@ -133,12 +136,14 @@ chart-header chart-colorpicker a
 
 chart-header chart-colorpicker a:hover
 {
-    filter: brightness(120%);
+    filter: drop-shadow(0px 0px 3px white);
 }
 
 .colorpicker-classic
 {
-    background-color: yellow;
+    background: repeating-linear-gradient(to right,
+        black, black 50%, white 50%, white 100%
+    );
 }
 
 .colorpicker-colorblind-blue
@@ -156,7 +161,7 @@ chart-header chart-colorpicker a:hover
     background-color: red;
 }
 
-chart-body
+chart chart-body
 {
     position: relative;
 
@@ -175,44 +180,148 @@ chart-body
     border-bottom-left-radius: 13px;
 }
 
-chart-body axis-x
-{
-    display: flex;
-
-    position: absolute;
-    left: 0;
-    bottom: 10px;
-
-    height: 90%;
-    width: 10%;
-    text-align: center;
-
-    justify-content: center;
-    align-items: center;
-}
-
-chart-body axis-y
+chart.linechart chart-body .axis-x-label
 {
     display: flex;
 
     position: absolute;
     left: 10px;
-    bottom: 0;
+    bottom: -10px;
 
     height: 50px;
     width: 90%;
     text-align: center;
+    font-weight: bold;
 
     justify-content: center;
     align-items: center;
 }
 
-chart-body chart-data
+chart.barchart chart-body .axis-y-label,
+chart.linechart chart-body .axis-y-label
 {
-    min-width: 80%;
-    height: 400px;
+    display: flex;
 
-    background-color: red;
+    position: absolute;
+    left: -10px;
+    bottom: 10px;
+
+    text-orientation: upright;
+    writing-mode: vertical-rl;
+
+    height: 90%;
+    width: 10%;
+    text-align: center;
+    font-weight: bold;
+
+    justify-content: center;
+    align-items: center;
+}
+
+chart chart-body chart-data
+{
+    position: relative;
+    display: flex;
+
+    min-width: 80%;
+    height: 400px; /* Todo var(--chart-height); */;
+
+    --chart-frame-height: attr(frame-height number);
+    --chart-frame-width: attr(frame-width number);
+
+    --chart-frame-min-x: attr(min-x number);
+    --chart-frame-max-x: attr(max-x number);
+    --chart-frame-min-y: attr(min-y number);
+    --chart-frame-max-y: attr(min-y number);
+}
+
+/*
+    draw linechart's grid
+ */
+chart.linechart chart-body chart-data
+{
+    background:
+            repeating-linear-gradient(to right, transparent, transparent calc(10% - 1px), lightgray calc(10% - 1px), lightgray calc(10%)),
+            repeating-linear-gradient(to top, transparent, transparent calc(10% - 1px), lightgray calc(10% - 1px), lightgray calc(10%)),
+            repeating-linear-gradient(gray, gray);
+}
+
+chart chart-data axis.axis-horizontal
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: absolute;
+    bottom: 0;
+
+    height: 10px;
+    width: 100%;
+}
+
+chart.linechart chart-data axis.axis-horizontal
+{
+    background: repeating-linear-gradient(to right,
+        transparent, transparent calc(2.5% - 1px), lightblue calc(2.5% - 1px), lightblue 2.5%
+    ), repeating-linear-gradient(to top, lightgray, lightgray 1px, transparent 1px, transparent 100%);;
+}
+
+chart-data axis.axis-horizontal label
+{
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: auto;
+    min-width: 100%;
+    left: 0;
+    bottom: -15px;
+}
+
+chart-data axis.axis-horizontal label a
+{
+    flex: 1;
+    font-size: 0.8em;
+    text-align: right;
+}
+
+chart-data axis.axis-vertical
+{
+    display: inline;
+    position: absolute;
+    left: 0;
+
+    height: 100%;
+    width: 10px;
+
+    background: repeating-linear-gradient(to top,
+    transparent, transparent calc(2.5% - 1px), lightblue calc(2.5% - 1px), lightblue 2.5%
+    ),
+    repeating-linear-gradient(to right, lightgray, lightgray 1px, transparent 1px, transparent 100%);
+}
+
+chart-data axis.axis-vertical label
+{
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+
+    height: 100%;
+    width: auto;
+    left: -15px;
+    bottom: 0;
+}
+
+chart-data axis.axis-vertical label a
+{
+    flex: 1;
+    font-size: 0.8em;
+    text-align: right;
 }
 
 chart-body chart-caption
@@ -237,7 +346,7 @@ chart-body chart-caption item
 
     font-family: sans-serif;
 
-    background-color: #3D3E3A;
+    background-color: var(--cframe-caption-background);
     border-radius: 10px;
     width: 90%;
 }
@@ -251,6 +360,34 @@ chart-body chart-caption item div
     background-color: var(--chart-draw-color);
 
     margin-right: 10px;
+}
+
+chart chart-body chart-data item.linechart-dot
+{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: var(--chart-draw-color);
+
+    left: calc(var(--point-x) - 5px);
+    bottom: calc(var(--point-y) - 5px);
+
+    border-radius: 50%;
+}
+
+chart chart-body chart-data item.linechart-seg
+{
+    position: absolute;
+    background-color: var(--chart-draw-color);
+
+    left: var(--point-x);
+    bottom: var(--point-y);
+
+    height: 2px;
+    width: var(--seg-hyp);
+
+    transform: rotate(var(--seg-angle));
+    transform-origin: left bottom;
 }
 
 @media only screen and (orientation: landscape)

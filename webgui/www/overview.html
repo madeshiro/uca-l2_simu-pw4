@@ -28,6 +28,7 @@
 <body>
     <script src="js/apps/application.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/webchart.js"></script>
     <header>
         <a id="website-logo" href="/"><img src="images/logo.png" alt="website logo"/></a>
         <div class="flex-container" id="nav-menu">
@@ -72,13 +73,73 @@
         </div>
     </header>
     <div id="main-content">
-        <chart type="barchart" style="width: 50%">
+        <chart class="linechart" style="width: 50%">
             <chart-header>
                 <a class="flex-space"></a>
-                <chart-title>My Super Title</chart-title>
+                <chart-title>Line Chart -- Sample</chart-title>
                 <chart-colorpicker>
-                    <a class="colorpicker-classic"></a>
-                    <a class="colorpicker-colorblind-red"></a>
+                    <a class="colorpicker-classic" onclick="toggleColorPicker(null);"></a>
+                    <a class="colorpicker-colorblind-red" onclick="toggleColorPicker('red');"></a>
+                    <a class="colorpicker-colorblind-green"></a>
+                    <a class="colorpicker-colorblind-blue"></a>
+                </chart-colorpicker>
+            </chart-header>
+            <chart-body>
+                <a class="axis-x-label">Month</a>
+                <a class="axis-y-label">Population</a>
+                <chart-data frame-height="400" frame-width="542" min-x="0" max-x="240" min-y="0" max-y="100">
+                    <axis class="axis-horizontal">
+                        <label>
+                            <a>24</a>
+                            <a>48</a>
+                            <a>72</a>
+                            <a>96</a>
+                            <a>120</a>
+                            <a>144</a>
+                            <a>168</a>
+                            <a>192</a>
+                            <a>216</a>
+                            <a>240</a>
+                        </label>
+                    </axis>
+                    <axis class="axis-vertical">
+                        <label>
+                            <a>100</a>
+                            <a>80</a>
+                            <a>60</a>
+                            <a>40</a>
+                            <a>20</a>
+                        </label>
+                    </axis>
+                    <items style="--chart-draw-color: var(--colorpicker-1);">
+                        <item class="linechart-dot" style="--point-x: 10%; --point-y: 10%"></item>
+                        <item class="linechart-seg" dx="0.10" dy="0.10" style="--point-x: 10%; --point-y: 10%;"></item>
+                        <item class="linechart-dot" style="--point-x: 20%; --point-y: 20%"></item>
+                        <item class="linechart-seg" dx="0.15" dy="0.25" style="--point-x: 20%; --point-y: 20%;"></item>
+                        <item class="linechart-dot" style="--point-x: 35%; --point-y: 45%"></item>
+                    </items>
+                </chart-data>
+                <chart-caption>
+                    <item style="--chart-draw-color: var(--colorpicker-1);">
+                        <div></div>Males
+                    </item>
+                    <item style="--chart-draw-color: var(--colorpicker-2);">
+                        <div></div>Females
+                    </item>
+                    <item style="--chart-draw-color: var(--colorpicker-3);">
+                        <div></div>Intersex
+                    </item>
+                </chart-caption>
+            </chart-body>
+        </chart>
+        <div style="height: 100px;" id="debug"></div>
+        <chart class="barchart" style="width: 50%">
+            <chart-header>
+                <a class="flex-space"></a>
+                <chart-title>Bar Chart -- Sample</chart-title>
+                <chart-colorpicker>
+                    <a class="colorpicker-classic" onclick="toggleColorPicker(null);"></a>
+                    <a class="colorpicker-colorblind-red" onclick="toggleColorPicker('red');"></a>
                     <a class="colorpicker-colorblind-green"></a>
                     <a class="colorpicker-colorblind-blue"></a>
                 </chart-colorpicker>
@@ -87,6 +148,22 @@
                 <axis-x>Month</axis-x>
                 <axis-y>Population</axis-y>
                 <chart-data>
+                    <axis class="axis-horizontal">
+                        <label>
+                            <a>24</a>
+                            <a>48</a>
+                            <a>72</a>
+                            <a>96</a>
+                            <a>120</a>
+                            <a>144</a>
+                            <a>168</a>
+                            <a>192</a>
+                            <a>216</a>
+                            <a>240</a>
+                        </label>
+                    </axis>
+                    <axis class="axis-vertical"></axis>
+
                     <item style="--chart-draw-color: var(--colorpicker-1);" class="linechart-dot"></item>
                     <item style="--chart-draw-color: var(--colorpicker-1);" class="linechart-seg"></item>
                     <item style="--chart-draw-color: var(--colorpicker-1);" class="linechart-dot"></item>
@@ -97,6 +174,9 @@
                     </item>
                     <item style="--chart-draw-color: var(--colorpicker-2);">
                         <div></div>Females
+                    </item>
+                    <item style="--chart-draw-color: var(--colorpicker-3);">
+                        <div></div>Intersex
                     </item>
                 </chart-caption>
             </chart-body>

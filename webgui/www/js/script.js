@@ -70,10 +70,12 @@ function detectCppApplication() {
 function displayPopup(msg, icon)
 {
     let popup = document.getElementsByTagName("popup-window")[0];
+    let popup_text = document.getElementById("popup-text");
 
     if (popup !== null && popup instanceof HTMLElement)
     {
         popup.style.visibility = "visible";
+        popup_text.innerText = msg;
 
         setTimeout(hidePopup, 5000, true);
     }
