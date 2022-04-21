@@ -79,6 +79,10 @@ class Chart {
         return this.htmlHeader;
     }
 
+    createCaption() {
+        return null;
+    }
+
     /**
      *
      * @returns {String}
@@ -104,7 +108,16 @@ class Chart {
             return null;
         }
 
-
+        switch (obj.chart.type) {
+            case 'linechart':
+                return new LineChart(obj);
+            case 'barchart':
+                return new BarChart(obj);
+            case 'histogram':
+                return new Histogram(obj);
+            default:
+                return null;
+        }
     }
 }
 
@@ -129,6 +142,24 @@ class LineChart extends Chart {
          * @type {Array}
          */
         this.sets = [];
+        for (let set of jsonObject.data) {
+            this.sets.push(set);
+        }
+
+        let xLabel = document.createElement("a");
+        let yLabel = document.createElement("a");
+        let xText  = document.createTextNode(this.xLabel);
+        let yText  = document.createTextNode(this.yLabel);
+        xLabel.appendChild(xText);
+        yLabel.appendChild(yText);
+    }
+
+    get xLabel() {
+        return this.meta.axis.x;
+    }
+
+    get yLabel() {
+        return this.meta.axis.y;
     }
 
     get xMin() {
@@ -145,6 +176,25 @@ class LineChart extends Chart {
 
     get yMax() {
         return this.meta.dimension.maxY;
+    }
+
+    createCaption() {
+        document.createElement("chart-caption");
+
+        let colorpickerNb = 1;
+        for (let set in this.sets) {
+            let item = document.createElement("item");
+            let emptyDiv = document.createElement("div");
+            let text = document.createTextNode(set.name);
+
+            item.style.setProperty("--chart-draw-color", `var(--colorpicker-${colorpickerNb}`);
+            item.appendChild(emptyDiv);
+            item.appendChild(text);
+
+            colorpickerNb++;
+        }
+
+
     }
 
     /**
@@ -174,7 +224,7 @@ class LineChart extends Chart {
         if (setNumber > this.sets.length)
             return false;
 
-        this.sets[setNumber-1].add({"x": x, "y": y});
+        this.sets[setNumber-1].points.add({"x": x, "y": y});
         return true;
     }
 
@@ -193,8 +243,9 @@ class LineChart extends Chart {
 
     drawPoints(clearItems = true) {
         let colorId = 1;
-        for (let points of this.sets) {
+        for (let set of this.sets) {
             let htmlChartData = this.htmlBody.getElementsByTagName("chart-data")[0];
+            let points = set.points;
 
             if (clearItems) {
                 for (let items in htmlChartData.getElementsByTagName("items")) {

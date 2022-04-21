@@ -390,6 +390,58 @@ chart chart-body chart-data item.linechart-seg
     transform-origin: left bottom;
 }
 
+chart chart-body chart-data item.linechart-dot:hover
+{
+    filter: drop-shadow(0 0 2px white);
+}
+
+chart chart-body chart-data item div.chart-detail
+{
+    position: relative;
+    left: 20px;
+    top: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    visibility: hidden;
+
+    min-width: 150px;
+    border-radius: 10px;
+    background-color: var(--chart-draw-color);
+}
+
+chart chart-body chart-data item div.detail-header
+{
+    width: 100%;
+
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+    background-color: var(--chart-draw-color);
+    filter: brightness(80%);
+}
+
+chart chart-body chart-data item div.detail-body
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+chart chart-body chart-data item div a
+{
+    color: black !important;
+}
+
+chart chart-body chart-data item:hover div.chart-detail
+{
+    visibility: visible;
+}
+
 @media only screen and (orientation: landscape)
 {
 
