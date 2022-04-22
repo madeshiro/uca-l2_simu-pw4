@@ -110,6 +110,31 @@ function hidePopup(obj) {
     }
 }
 
+function registerUsingForm(formId) {
+    /**
+     *
+     * @type {HTMLFormElement}
+     */
+    let formHtml = document.getElementById(formId);
+    formHtml.submit();
+}
+
+function loginUsingForm(formId) {
+    /**
+     * @type {HTMLFormElement}
+     */
+    let formHtml = document.getElementById(formId);
+    let username = formHtml.elements['username'].value;
+    let password = formHtml.elements['userpwd'].value;
+
+    let ajax = new XMLHttpRequest();
+    ajax.open('get', `/htbin/login.py?username=${username}&userpwd=${password}`, true)
+    ajax.send();
+    ajax.onload = function () {
+        alert(ajax.responseText);
+    }
+}
+
 window.onload = function () {
     detectColorScheme();
     document.documentElement.dataset.scroll = window.scrollY;
@@ -127,13 +152,4 @@ window.onload = function () {
 
 document.onscroll = function () {
     document.documentElement.dataset.scroll = window.scrollY;
-}
-
-function al() {
-    let a = {"a":"b", "c": {
-            "d": [10,11,12],
-            "e": false
-        }
-    };
-    alert(JSON.stringify(a));
 }
