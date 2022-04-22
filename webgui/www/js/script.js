@@ -67,6 +67,24 @@ function detectCppApplication() {
     return null;
 }
 
+function isLocal() {
+    return window.location.hostname === "";
+}
+
+/**
+ *
+ * @param location {string}
+ * @param exploit {function(string)}
+ */
+function readResource(location, exploit) {
+    let ajaxFile = new XMLHttpRequest();
+    ajaxFile.open('GET','/'+ location, true);
+    ajaxFile.onload = function () {
+        exploit(ajaxFile.responseText);
+    }
+    ajaxFile.send();
+}
+
 function displayPopup(msg, icon)
 {
     let popup = document.getElementsByTagName("popup-window")[0];

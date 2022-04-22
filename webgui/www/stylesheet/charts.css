@@ -198,8 +198,7 @@ chart.linechart chart-body .axis-x-label
 }
 
 chart.barchart chart-body .axis-y-label,
-chart.linechart chart-body .axis-y-label
-{
+chart.linechart chart-body .axis-y-label {
     display: flex;
 
     position: absolute;

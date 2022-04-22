@@ -34,11 +34,11 @@ class Chart {
 
     /**
      *
-     * @param {HTMLElement} htmlParent
+     * @param {HTMLElement} htmlChart
      * @returns {HTMLElement}
      */
-    loadIn(htmlParent) {
-        this.htmlChart = document.createElement("chart");
+    loadIn(htmlChart) {
+        this.htmlChart = htmlChart
         this.htmlChart.setAttribute("type", this.type);
         this.htmlChart.appendChild(this.createHeader());
         this.htmlChart.appendChild(this.htmlBody);
@@ -80,7 +80,6 @@ class Chart {
             colorPickerHtml.appendChild(aPicker);
         }
         this.htmlHeader.appendChild(colorPickerHtml);
-
         return this.htmlHeader;
     }
 
@@ -109,21 +108,21 @@ class Chart {
     }
 
     /**
-     * @param {string} jsonData
+     * @param {string|Object} jsonData
      */
     static fromJson(jsonData) {
-        let obj = JSON.parse(jsonData);
-        if (obj === null) {
+        if (typeof jsonData === 'string' || jsonData instanceof String)
+            jsonData = JSON.parse(jsonData);
+        else if (!(jsonData instanceof Object))
             return null;
-        }
 
-        switch (obj.chart.type) {
+        switch (jsonData.chart.type) {
             case 'linechart':
-                return new LineChart(obj);
+                return new LineChart(jsonData);
             case 'barchart':
-                return new BarChart(obj);
+                return new BarChart(jsonData);
             case 'histogram':
-                return new Histogram(obj);
+                return new Histogram(jsonData);
             default:
                 return null;
         }
@@ -159,6 +158,8 @@ class LineChart extends Chart {
         let yLabel = document.createElement("a");
         let xText  = document.createTextNode(this.xLabel);
         let yText  = document.createTextNode(this.yLabel);
+        xLabel.classList.add("axis-x-label");
+        yLabel.classList.add("axis-y-label");
         xLabel.appendChild(xText);
         yLabel.appendChild(yText);
         this.htmlBody.appendChild(xLabel);
@@ -168,6 +169,9 @@ class LineChart extends Chart {
         this.htmlChartData.setAttribute("max-x", this.xMax);
         this.htmlChartData.setAttribute("min-y", this.yMin);
         this.htmlChartData.setAttribute("max-y", this.yMax);
+        for (let axis of this.createAxis()) {
+            this.htmlChartData.appendChild(axis);
+        }
     }
 
     get xLabel() {
@@ -195,10 +199,10 @@ class LineChart extends Chart {
     }
 
     createCaption() {
-        document.createElement("chart-caption");
+        let captionHtml = document.createElement("chart-caption");
 
         let colorpickerNb = 1;
-        for (let set in this.sets) {
+        for (let set of this.sets) {
             let item = document.createElement("item");
             let emptyDiv = document.createElement("div");
             let text = document.createTextNode(set.name);
@@ -207,8 +211,43 @@ class LineChart extends Chart {
             item.appendChild(emptyDiv);
             item.appendChild(text);
 
+            captionHtml.appendChild(item);
             colorpickerNb++;
         }
+
+        return captionHtml;
+    }
+
+    createAxis() {
+        let incrementX = (this.xMax - this.xMin) / 10;
+        let incrementY = (this.yMax - this.yMin) / 10;
+
+        let axisHorizontal = document.createElement("axis");
+        axisHorizontal.classList.add("axis-horizontal");
+        let axisHLabel = document.createElement("label");
+        for (let i = 1; i <= 10; i++) {
+            let a = document.createElement("a");
+            let aText = document.createTextNode((this.xMin+(incrementX*(i))).toString());
+            a.appendChild(aText);
+            axisHLabel.appendChild(a);
+        }
+        axisHorizontal.appendChild(axisHLabel);
+
+        let axisVertical = document.createElement("axis");
+        axisVertical.classList.add("axis-vertical");
+        let axisVLabel = document.createElement("label");
+        for (let i = 10; i > 0; i--) {
+            let a = document.createElement("a");
+            let value = this.yMin+(incrementY*(i));
+            value = (value >= 10000) ? value.toExponential(1) : value.toString();
+
+            let aText = document.createTextNode(value);
+            a.appendChild(aText);
+            axisVLabel.appendChild(a);
+        }
+        axisVertical.appendChild(axisVLabel);
+
+        return [axisHorizontal, axisVertical];
     }
 
     /**
@@ -278,8 +317,53 @@ class LineChart extends Chart {
 
     loadIn(htmlParent) {
         super.loadIn(htmlParent)
+
+        this.htmlChart.classList.add("linechart");
+
         this.drawPoints();
         return this.htmlChart;
+    }
+
+    /**
+     *
+     * @param point {{x: number, y: number}}
+     * @param setName {string}
+     * @returns {HTMLElement}
+     */
+    createPoint(point, setName) {
+        let pointItem = document.createElement("item");
+        pointItem.classList.add("linechart-dot");
+        pointItem.setAttribute("x", point.x.toString());
+        pointItem.setAttribute("y", point.y.toString());
+        pointItem.style.setProperty("--point-x", (this.xRatio(point)*100).toString() + "%");
+        pointItem.style.setProperty("--point-y", (this.yRatio(point)*100).toString() + "%");
+
+        let pointDetail  = document.createElement("div");
+        let detailHeader = document.createElement("div");
+        let detailBody   = document.createElement("div");
+        pointDetail.classList.add("chart-detail");
+        detailHeader.classList.add("detail-header");
+        detailBody.classList.add("detail-body");
+
+        let a1 = document.createElement("a");
+        let a1Text = document.createTextNode(setName);
+        a1.appendChild(a1Text);
+
+        let a2 = document.createElement("a");
+        let a2Text = document.createTextNode(`${this.xLabel}: ${point.x.toString()}`);
+        a2.appendChild(a2Text);
+
+        let a3 = document.createElement("a");
+        let a3Text = document.createTextNode(`${this.yLabel}: ${point.y.toString()}`);
+        a3.appendChild(a3Text);
+
+        detailHeader.appendChild(a1);
+        detailBody.appendChild(a2);
+        detailBody.appendChild(a3);
+        pointDetail.appendChild(detailHeader);
+        pointDetail.appendChild(detailBody);
+        pointItem.appendChild(pointDetail);
+        return pointItem;
     }
 
     drawPoints(clearItems = true) {
@@ -287,14 +371,25 @@ class LineChart extends Chart {
         let htmlChartData = this.htmlBody.getElementsByTagName("chart-data")[0];
 
         if (clearItems) {
-            for (let items in htmlChartData.getElementsByTagName("items")) {
+            for (let items of htmlChartData.getElementsByTagName("items")) {
                 htmlChartData.removeChild(items);
             }
+
+            for (let caption of this.htmlBody.getElementsByTagName("chart-caption")) {
+                this.htmlBody.removeChild(caption);
+            }
+            this.htmlBody.appendChild(this.createCaption());
         }
 
         let colorId = 1;
         for (let set of this.sets) {
-            let htmlItems = document.createElement("items");
+            let htmlItems;
+            if (clearItems) {
+                htmlItems = document.createElement("items");
+                this.htmlChartData.appendChild(htmlItems);
+            } else {
+                htmlItems = document.getElementsByTagName("items")[colorId-1]
+            }
             htmlItems.style.setProperty("--chart-draw-color", `var(--colorpicker-${colorId})`);
             let points = set.points;
 
@@ -321,13 +416,7 @@ class LineChart extends Chart {
                         this.xRatio(dp), this.yRatio(dp));
                 }
 
-                let pointItem = document.createElement("item");
-                pointItem.classList.add("linechart-dot");
-                pointItem.setAttribute("x", point.x.toString());
-                pointItem.setAttribute("y", point.y.toString());
-                pointItem.style.setProperty("--point-x", (this.xRatio(point)*100).toString() + "%");
-                pointItem.style.setProperty("--point-y", (this.yRatio(point)*100).toString() + "%");
-
+                htmlItems.appendChild(this.createPoint(point, set.name));
                 prevPoint = point;
             }
 
@@ -369,7 +458,7 @@ class LineChart extends Chart {
         segHtml.style.setProperty('--seg-angle', angle.toString() + "rad");
         segHtml.style.setProperty('--seg-hyp', sideHyp.toString( )+ "px");
 
-        let itemsHtml = this.htmlBody.getElementsByTagName("items").item(set-1);
+        let itemsHtml = this.htmlBody.getElementsByTagName("items")[set-1];
         itemsHtml.appendChild(segHtml);
         return segHtml;
     }
@@ -401,3 +490,16 @@ window.onresize = function() {
     }
 }
 
+for (let htmlChart of document.getElementsByTagName('chart')) {
+    if (htmlChart.getAttribute("href")) {
+        let href = htmlChart.getAttribute("href");
+        if (href !== "") {
+            readResource(href, (buf) => {
+                let chart = Chart.fromJson(buf);
+                if (chart) {
+                    chart.loadIn(htmlChart);
+                }
+            });
+        }
+    }
+}

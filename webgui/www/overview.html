@@ -52,9 +52,9 @@
         </div>
         <div class="page-title">UCA-L2 SIMU -- Home</div>
         <div class="flex-container" id="util-buttons">
-            <util-button id="parameter-button">
+            <util-button id="login-button">
                 <label>
-                    <input type="button" value="Account" onclick="al();">
+                    <input type="button" value="Account" onclick="showLoginPopup();">
                     <span><ion-icon name="person-outline"></ion-icon></span>
                 </label>
             </util-button>
@@ -72,6 +72,10 @@
         </div>
     </header>
     <div id="main-content">
+        <chart href="charts/linechart-1.json" style="width: 50%">
+
+        </chart>
+        <div style="height: 100px"></div>
         <chart class="linechart" style="width: 50%">
             <chart-header>
                 <a class="flex-space"></a>

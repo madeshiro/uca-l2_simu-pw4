@@ -498,7 +498,7 @@ footer .foot-flex-container a
         filter: none;
     }
 
-    #parameter-button label
+    #login-button label
     {
         display: flex;
         transition: filter 0.5s;
@@ -513,17 +513,17 @@ footer .foot-flex-container a
         background-color: #6e6f7a;
     }
 
-    #parameter-button label:hover
+    #login-button label:hover
     {
         filter: brightness(130%);
     }
 
-    #parameter-button label span
+    #login-button label span
     {
         font-size: 2em;
     }
 
-    #parameter-button label input
+    #login-button label input
     {
         appearance: none;
         display: none;
