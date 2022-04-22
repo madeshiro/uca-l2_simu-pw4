@@ -26,8 +26,10 @@ class Chart {
          * @type {Array}
          */
         this.data = jsonObject.data;
-
+        this.isdraw = false;
         this.htmlBody = document.createElement("chart-body");
+        this.htmlChartData = document.createElement("chart-data");
+        this.htmlBody.appendChild(this.htmlChartData);
     }
 
     /**
@@ -40,6 +42,9 @@ class Chart {
         this.htmlChart.setAttribute("type", this.type);
         this.htmlChart.appendChild(this.createHeader());
         this.htmlChart.appendChild(this.htmlBody);
+
+        this.htmlChartData.setAttribute("frame-height", this.htmlChartData.offsetHeight.toString());
+        this.htmlChartData.setAttribute("frame-width", this.htmlChartData.offsetWidth.toString());
 
         return this.htmlChart;
     }
@@ -81,6 +86,10 @@ class Chart {
 
     createCaption() {
         return null;
+    }
+
+    get isDraw() {
+        return this.meta.isdraw;
     }
 
     /**
@@ -152,6 +161,13 @@ class LineChart extends Chart {
         let yText  = document.createTextNode(this.yLabel);
         xLabel.appendChild(xText);
         yLabel.appendChild(yText);
+        this.htmlBody.appendChild(xLabel);
+        this.htmlBody.appendChild(yLabel);
+
+        this.htmlChartData.setAttribute("min-x", this.xMin);
+        this.htmlChartData.setAttribute("max-x", this.xMax);
+        this.htmlChartData.setAttribute("min-y", this.yMin);
+        this.htmlChartData.setAttribute("max-y", this.yMax);
     }
 
     get xLabel() {
@@ -193,8 +209,6 @@ class LineChart extends Chart {
 
             colorpickerNb++;
         }
-
-
     }
 
     /**
@@ -216,15 +230,36 @@ class LineChart extends Chart {
     }
 
     /**
-     * @param {number} setNumber
+     * @param {number} set
      * @param {number} x
      * @param {number} y
      */
-    addPoint(setNumber, x, y) {
-        if (setNumber > this.sets.length)
+    addPoint(set, x, y) {
+        if (set > this.sets.length)
             return false;
 
-        this.sets[setNumber-1].points.add({"x": x, "y": y});
+        let setname = this.sets[set-1].name;
+        this.sets[set-1].points.add({"x": x, "y": y});
+
+        if (this.isdraw) {
+            if (this.sets[set-1].points.length > 1) {
+                /**
+                 *
+                 * @type {{x: number, y: number}}
+                 */
+                let prevPoint = this.sets[set-1].points.getItem(this.sets[set-1].points.length-2);
+                let dp = {
+                    "x": x - prevPoint.x,
+                    "y": y - prevPoint.y
+                }
+
+                this.drawSegment(set,
+                    this.xRatio(prevPoint), this.yRatio(prevPoint),
+                    this.xRatio(dp), this.yRatio(dp)
+                );
+            }
+        }
+
         return true;
     }
 
@@ -241,17 +276,27 @@ class LineChart extends Chart {
         return this.sets.length;
     }
 
+    loadIn(htmlParent) {
+        super.loadIn(htmlParent)
+        this.drawPoints();
+        return this.htmlChart;
+    }
+
     drawPoints(clearItems = true) {
+        this.isdraw = true;
+        let htmlChartData = this.htmlBody.getElementsByTagName("chart-data")[0];
+
+        if (clearItems) {
+            for (let items in htmlChartData.getElementsByTagName("items")) {
+                htmlChartData.removeChild(items);
+            }
+        }
+
         let colorId = 1;
         for (let set of this.sets) {
-            let htmlChartData = this.htmlBody.getElementsByTagName("chart-data")[0];
+            let htmlItems = document.createElement("items");
+            htmlItems.style.setProperty("--chart-draw-color", `var(--colorpicker-${colorId})`);
             let points = set.points;
-
-            if (clearItems) {
-                for (let items in htmlChartData.getElementsByTagName("items")) {
-                    htmlChartData.removeChild(items);
-                }
-            }
 
             points.sort((a, b) => {
                 if (a.x < b.x) return -1;
@@ -259,25 +304,74 @@ class LineChart extends Chart {
                 else return 0;
             });
 
+            /**
+             *
+             * @type {{x: number, y: number}|null}
+             */
             let prevPoint = null;
-            for (let point of points) {
+            for (let /** @type {{x: number, y: number}} */ point of points) {
                 if (prevPoint != null) {
-                    let segItem = document.createElement("item");
-                    segItem.classList.add("linechart-seg");
+                    let dp = {
+                        "x": point.x - prevPoint.x,
+                        "y": point.y - prevPoint.y
+                    };
 
-
+                    this.drawSegment(colorId,
+                        this.xRatio(prevPoint), this.yRatio(prevPoint),
+                        this.xRatio(dp), this.yRatio(dp));
                 }
 
                 let pointItem = document.createElement("item");
                 pointItem.classList.add("linechart-dot");
-                pointItem.setAttribute("x", point.x);
-                pointItem.setAttribute("y", point.y);
+                pointItem.setAttribute("x", point.x.toString());
+                pointItem.setAttribute("y", point.y.toString());
+                pointItem.style.setProperty("--point-x", (this.xRatio(point)*100).toString() + "%");
+                pointItem.style.setProperty("--point-y", (this.yRatio(point)*100).toString() + "%");
 
                 prevPoint = point;
             }
 
             colorId++;
         }
+    }
+
+    drawSegments(clearItems = true) {
+        if (clearItems) {
+
+        }
+    }
+
+    /**
+     *
+     * @param set {number}
+     * @param x {number}
+     * @param y {number}
+     * @param dx {number}
+     * @param dy {number}
+     * @returns {HTMLElement}
+     */
+    drawSegment(set, x, y, dx, dy) {
+        x = x*100;
+        y = y*100;
+
+        let segHtml = document.createElement("item");
+        segHtml.classList.add("linechart-seg");
+        segHtml.setAttribute("dx", dx.toPrecision(2));
+        segHtml.setAttribute("dy", dy.toPrecision(2));
+        segHtml.style.setProperty("--point-x", x.toString() + "%");
+        segHtml.style.setProperty("--point-y", y.toString() + "%");
+
+        let sideXpx = dx * this.htmlChartData.offsetWidth;
+        let sideYpx = dy * this.htmlChartData.offsetHeight;
+        let sideHyp = Math.sqrt(Math.pow(sideXpx, 2) + Math.pow(sideYpx, 2));
+        let angle = -Math.asin(sideYpx / sideHyp);
+
+        segHtml.style.setProperty('--seg-angle', angle.toString() + "rad");
+        segHtml.style.setProperty('--seg-hyp', sideHyp.toString( )+ "px");
+
+        let itemsHtml = this.htmlBody.getElementsByTagName("items").item(set-1);
+        itemsHtml.appendChild(segHtml);
+        return segHtml;
     }
 }
 
@@ -306,3 +400,4 @@ window.onresize = function() {
         }
     }
 }
+

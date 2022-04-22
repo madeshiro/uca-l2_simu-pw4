@@ -28,7 +28,6 @@
 <body>
     <script src="js/apps/application.js"></script>
     <script src="js/script.js"></script>
-    <script src="js/webchart.js"></script>
     <header>
         <a id="website-logo" href="/"><img src="images/logo.png" alt="website logo"/></a>
         <div class="flex-container" id="nav-menu">
@@ -85,8 +84,6 @@
                 </chart-colorpicker>
             </chart-header>
             <chart-body>
-                <a class="axis-x-label">Month</a>
-                <a class="axis-y-label">Population</a>
                 <chart-data frame-height="400" frame-width="542" min-x="0" max-x="240" min-y="0" max-y="100">
                     <axis class="axis-horizontal">
                         <label>
@@ -112,11 +109,41 @@
                         </label>
                     </axis>
                     <items style="--chart-draw-color: var(--colorpicker-1);">
-                        <item class="linechart-dot" style="--point-x: 10%; --point-y: 10%"></item>
+                        <item class="linechart-dot" style="--point-x: 10%; --point-y: 10%">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Males</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>month: 24</a>
+                                    <a>population: 10%</a>
+                                </div>
+                            </div>
+                        </item>
                         <item class="linechart-seg" dx="0.10" dy="0.10" style="--point-x: 10%; --point-y: 10%;"></item>
-                        <item class="linechart-dot" style="--point-x: 20%; --point-y: 20%"></item>
+                        <item class="linechart-dot" style="--point-x: 20%; --point-y: 20%">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Males</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>month: 48</a>
+                                    <a>population: 20%</a>
+                                </div>
+                            </div>
+                        </item>
                         <item class="linechart-seg" dx="0.15" dy="0.25" style="--point-x: 20%; --point-y: 20%;"></item>
-                        <item class="linechart-dot" style="--point-x: 35%; --point-y: 45%"></item>
+                        <item class="linechart-dot" style="--point-x: 35%; --point-y: 45%">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Males</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>month: 84</a>
+                                    <a>population: 45%</a>
+                                </div>
+                            </div>
+                        </item>
                     </items>
                 </chart-data>
                 <chart-caption>
@@ -130,6 +157,8 @@
                         <div></div>Intersex
                     </item>
                 </chart-caption>
+                <a class="axis-x-label">Month</a>
+                <a class="axis-y-label">Population</a>
             </chart-body>
         </chart>
         <div style="height: 100px;" id="debug"></div>
@@ -201,6 +230,7 @@
             <a href="about.html">about</a>
         </div>
     </footer>
+    <script src="js/webchart.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     </body>
