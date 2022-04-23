@@ -70,6 +70,42 @@
                 </util-button>
             </div>
         </header>
+        <div id="main-content">
+
+        </div>
+        <label id="chatbox-display-button">
+            <input type="button" class="chatbox-display-button" onclick="showChatbox(true);">
+            <ion-icon name="chatbox-outline"></ion-icon>
+        </label>
+        <chatbox id="chatbox">
+            <chatbox-header>
+                <ion-icon name="chatbox-outline"></ion-icon>
+                <a class="chatbox-title">My chatbox</a>
+                <label class="animated-on-hover">
+                    <input type="button" onclick="refreshChatbox();">
+                    <ion-icon name="refresh-outline"></ion-icon>
+                </label>
+                <label>
+                    <input type="button" onclick="showChatbox(false);">
+                    <ion-icon name="close-outline"></ion-icon>
+                </label>
+            </chatbox-header>
+            <chatbox-body>
+                <section id="chatbox-messages">
+                    <div class="chatbox-message">
+                    </div>
+                </section>
+                <section class="chatbox-input">
+                    <label class="chatbox-input-text">
+                        <input type="text" placeholder="Envoyer un message..." id="chatbox-send-text" onkeyup="sendMsgChatbox(this)" name="msg">
+                    </label>
+                    <label class="chatbox-input-button">
+                        <input type="button" onclick="sendMsgChatbox(document.getElementById('chatbox-send-text'));">
+                        <ion-icon name="send-outline"></ion-icon>
+                    </label>
+                </section>
+            </chatbox-body>
+        </chatbox>
         <popup-window>
             <label id="popup-close-button">
                 <input type="checkbox" onchange="hidePopup(this)" checked>
