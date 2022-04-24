@@ -162,8 +162,8 @@ function loginUsingForm(formId) {
         document.getElementById('login-welcome').innerText = ajax.responseText;
         showLoginForm(null, 'login-welcome');
     }
-    ajax.send();
 
+    ajax.send();
     return false;
 }
 

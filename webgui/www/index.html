@@ -81,12 +81,24 @@
             <div class="column-flex-container">
                 <img src="images/cpp_logo.svg" alt="Cpp Apps button"/>
                 <h1>A Cpp Simulation Application</h1>
+                <p>
+                    Ce site web a été conçu dans l'objectif de présenter et de servir d'interface utilisateur&middot;rice pour l'application
+                    en utilisant un système de communication pouvant faire penser au fonction de X11/Server
+                </p>
             </div>
             <div class="column-flex-container">
-                <a href="#chart-presentation">&lt;chart&gt;&lt;/chart&gt;</a>
+                <a id="chart-icon" href="#chart-presentation">&lt;chart&gt;&lt;/chart&gt;</a>
                 <p>
-
+                    Ce site a été conçu avec un système de génération de graphe intégré !
                 </p>
+                <p>
+                    Les différents types de graphes sont 'linechart', 'barchart' et 'histogram'. <br/><br/>
+                    Chacuns sont générables à partir d'un fichier json contenant les données du graphes.
+                </p>
+            </div>
+            <div id="website_orga">
+                <h2>Website Organisation</h2>
+                <img src="images/www.svg" alt="website graph" >
             </div>
             <div id="chart-presentation" class="flex-container">
                 <div class="text-content">
@@ -95,16 +107,16 @@
                         Some description
                     </p>
                 </div>
-                <chart href="charts/example_linechart.json" name="example_linechart" style="--chart-height: 400px; --chart-width: 600px"></chart>
+                <chart href="charts/example_linechart.json" name="example_linechart" style="--chart-height: 400px; --chart-width: 800px"></chart>
             </div>
-            <div class="flex-container">
+            <div class="invert-flex-container">
                 <div class="text-content">
                     <h2>Other title</h2>
                     <p>
                         Some description
                     </p>
                 </div>
-                <chart href="charts/example_barchart.json" name="example_barchart" style="--chart-height: 400px; --chart-width: 600px"></chart>
+                <chart href="charts/example_barchart.json" name="example_barchart" style="--chart-height: 400px; --chart-width: 800px"></chart>
             </div>
         </div>
         <label id="chatbox-display-button">

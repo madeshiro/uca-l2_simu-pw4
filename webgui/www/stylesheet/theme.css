@@ -126,6 +126,63 @@ body
     margin-left: 10%;
 }
 
+.flex-container,
+.column-flex-container
+{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.flex-container
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+
+    width: 100%;
+}
+
+.invert-flex-container
+{
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+    align-items: center;
+
+
+    width: 100%;
+}
+
+.column-flex-container
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#chart-icon
+{
+    text-decoration: none;
+    font-size: 48px;
+
+    margin-top: 100px;
+    margin-bottom: 50px;
+}
+
+div.text-content
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: 100%;
+}
+
+
 #cpp-apps-button img
 {
     filter: brightness(40%);
@@ -510,6 +567,7 @@ label#chatbox-display-button input
 #popup-login-form
 {
     z-index: 0;
+    visibility: hidden;
 
     position: fixed;
     height: 100vh;
@@ -694,6 +752,18 @@ label#chatbox-display-button input
     display: none;
 }
 
+#website_orga
+{
+    margin-top: 100px;
+    margin-bottom: 100px;
+}
+
+#website_orga img
+{
+    width: 600px;
+    height: 600px;
+}
+
 @media only screen and (orientation: landscape) {
 
     #chatbox
@@ -746,5 +816,11 @@ label#chatbox-display-button input
         margin-top: 100px;
         height: 80%;
         width: 80%;
+    }
+
+    .invert-flex-container,
+    .flex-container
+    {
+        flex-direction: column;
     }
 }
