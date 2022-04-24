@@ -99,6 +99,7 @@ chart
 
     display: flex;
     flex-direction: column;
+    width: var(--chart-width);
 }
 
 chart-header
@@ -194,7 +195,6 @@ chart chart-body
     justify-content: space-between;
     align-items: center;
 
-    min-height: 200px;
     background-color: var(--cframe-body-background);
 
     border-bottom-right-radius: 13px;
@@ -243,8 +243,10 @@ chart chart-body chart-data
     position: relative;
     display: flex;
 
+    z-index: 0;
+
     min-width: 80%;
-    height: 400px; /* Todo var(--chart-height); */;
+    height: var(--chart-height);
 
     --chart-frame-height: attr(frame-height number);
     --chart-frame-width: attr(frame-width number);
@@ -279,11 +281,12 @@ chart chart-data axis.axis-horizontal
     width: 100%;
 }
 
-chart.linechart chart-data axis.axis-horizontal
+chart.linechart chart-data axis.axis-horizontal,
+chart.histogram chart-data axis.axis-horizontal
 {
     background: repeating-linear-gradient(to right,
         transparent, transparent calc(2.5% - 1px), lightblue calc(2.5% - 1px), lightblue 2.5%
-    ), repeating-linear-gradient(to top, lightgray, lightgray 1px, transparent 1px, transparent 100%);;
+    ), repeating-linear-gradient(to top, lightgray, lightgray 1px, transparent 1px, transparent 100%);
 }
 
 chart-data axis.axis-horizontal label
@@ -410,14 +413,73 @@ chart chart-body chart-data item.linechart-seg
     transform-origin: left bottom;
 }
 
+chart chart-body chart-data item.barchart-bar:hover,
 chart chart-body chart-data item.linechart-dot:hover
 {
     filter: drop-shadow(0 0 2px white);
 }
 
-chart chart-body chart-data item div.chart-detail
+/* BARCHART SPECS */
+
+chart.barchart chart-body chart-data
+{
+    background:
+            repeating-linear-gradient(to top, transparent, transparent calc(20% - 1px), rgba(211, 211, 211, 0.5) calc(20% - 1px), rgba(211, 211, 211, 0.5) calc(20%)),
+            repeating-linear-gradient(gray, gray);
+    border: 1px solid rgba(211, 211, 211, 0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 0 6px 0 6px;
+    width: 100%;
+}
+
+chart.barchart chart-body chart-data items
+{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 6px;
+
+    height: 100%;
+    width: 100%;
+
+    padding: 0 6px 0 6px;
+}
+
+chart.barchart chart-body chart-data items.barchart-section-border-left
+{
+    border-left: 1px dashed rgba(211, 211, 211, 0.5);
+}
+
+chart.barchart chart-body chart-data items.barchart-section-border-right
+{
+    border-right: 1px dashed rgba(211, 211, 211, 0.5);
+}
+
+chart.barchart chart-body chart-data a.barchart-items-title
+{
+    position: absolute;
+    bottom: -28px;
+    font-weight: bold;
+}
+
+chart.barchart chart-body chart-data items item
 {
     position: relative;
+    height: var(--bar-y);
+    width: 100%;
+    background-color: var(--chart-draw-color);
+}
+
+
+/* CHART DETAIL */
+
+chart chart-body chart-data item div.chart-detail
+{
+    position: absolute;
     left: 20px;
     top: 20px;
 
@@ -431,6 +493,15 @@ chart chart-body chart-data item div.chart-detail
     min-width: 150px;
     border-radius: 10px;
     background-color: var(--chart-draw-color);
+}
+
+chart.barchart chart-body chart-data item div.chart-detail,
+chart.histogram chart-body chart-data item div.chart-detail
+{
+    left: 0;
+    top: calc(100% + 20px);
+    transform-origin: center;
+    transform: translateX(-25%);
 }
 
 chart chart-body chart-data item div.detail-header

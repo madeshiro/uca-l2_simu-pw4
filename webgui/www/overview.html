@@ -72,11 +72,10 @@
         </div>
     </header>
     <div id="main-content">
-        <chart href="charts/linechart-1.json" style="width: 70%"></chart>
+        <chart href="charts/linechart-1.json" style="--chart-width: 60%; --chart-height: 400px;"></chart>
         <div style="height: 100px"></div>
-        <chart class="linechart" style="width: 50%">
+        <chart class="linechart" style="--chart-width: 60%; --chart-height: 400px;">
             <chart-header>
-                <a class="flex-space"></a>
                 <chart-title>Line Chart -- Sample</chart-title>
                 <chart-colorpicker>
                     <a class="colorpicker-classic" onclick="toggleColorPicker(null);"></a>
@@ -164,9 +163,8 @@
             </chart-body>
         </chart>
         <div style="height: 100px;" id="debug"></div>
-        <chart class="barchart" style="width: 50%">
+        <chart class="barchart" style="--chart-width: 60%; --chart-height: 400px;">
             <chart-header>
-                <a class="flex-space"></a>
                 <chart-title>Bar Chart -- Sample</chart-title>
                 <chart-colorpicker>
                     <a class="colorpicker-classic" onclick="toggleColorPicker(null);"></a>
@@ -176,29 +174,106 @@
                 </chart-colorpicker>
             </chart-header>
             <chart-body>
-                <axis-x>Month</axis-x>
-                <axis-y>Population</axis-y>
                 <chart-data>
-                    <axis class="axis-horizontal">
+                    <axis class="axis-vertical">
                         <label>
-                            <a>24</a>
-                            <a>48</a>
-                            <a>72</a>
-                            <a>96</a>
-                            <a>120</a>
-                            <a>144</a>
-                            <a>168</a>
-                            <a>192</a>
-                            <a>216</a>
-                            <a>240</a>
+                            <a>100%</a>
+                            <a>80%</a>
+                            <a>60%</a>
+                            <a>40%</a>
+                            <a>20%</a>
                         </label>
                     </axis>
-                    <axis class="axis-vertical"></axis>
-
-                    <item style="--chart-draw-color: var(--colorpicker-1);" class="linechart-dot"></item>
-                    <item style="--chart-draw-color: var(--colorpicker-1);" class="linechart-seg"></item>
-                    <item style="--chart-draw-color: var(--colorpicker-1);" class="linechart-dot"></item>
+                    <axis class="axis-horizontal">
+                    </axis>
+                    <items class="barchart-section-border-right">
+                        <a class="barchart-items-title">Q1</a>
+                        <item class="barchart-bar" style="--bar-y: 10%;--chart-draw-color: var(--colorpicker-1);">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Males</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>Q1</a>
+                                    <a>population: 10%</a>
+                                </div>
+                            </div>
+                        </item>
+                        <item class="barchart-bar" style="--bar-y: 15%;--chart-draw-color: var(--colorpicker-2);">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Females</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>Q1</a>
+                                    <a>population: 15%</a>
+                                </div>
+                            </div>
+                        </item>
+                        <item class="barchart-bar" style="--bar-y: 75%;--chart-draw-color: var(--colorpicker-3);">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Intersex</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>Q1</a>
+                                    <a>population: 75%</a>
+                                </div>
+                            </div>
+                        </item>
+                    </items>
+                    <items class="barchart-section-border-left barchart-section-border-right">
+                        <a class="barchart-items-title">Q2</a>
+                        <item class="barchart-bar" style="--bar-y: 10%;--chart-draw-color: var(--colorpicker-1);">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Males</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>Q1</a>
+                                    <a>population: 10%</a>
+                                </div>
+                            </div>
+                        </item>
+                        <item class="barchart-bar" style="--bar-y: 15%;--chart-draw-color: var(--colorpicker-2);">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Females</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>Q1</a>
+                                    <a>population: 15%</a>
+                                </div>
+                            </div>
+                        </item>
+                    </items>
+                    <items class="barchart-section-border-left">
+                        <a class="barchart-items-title">Q2</a>
+                        <item class="barchart-bar" label="" style="--bar-y: 10%;--chart-draw-color: var(--colorpicker-1);">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Males</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>Q1</a>
+                                    <a>population: 10%</a>
+                                </div>
+                            </div>
+                        </item>
+                        <item class="barchart-bar" style="--bar-y: 15%;--chart-draw-color: var(--colorpicker-2);">
+                            <div class="chart-detail">
+                                <div class="detail-header">
+                                    <a>Females</a>
+                                </div>
+                                <div class="detail-body">
+                                    <a>Q1</a>
+                                    <a>population: 15%</a>
+                                </div>
+                            </div>
+                        </item>
+                    </items>
                 </chart-data>
+                <a class="axis-y-label">Population</a>
                 <chart-caption>
                     <item style="--chart-draw-color: var(--colorpicker-1);">
                         <div></div>Males
@@ -212,6 +287,9 @@
                 </chart-caption>
             </chart-body>
         </chart>
+        <chart href="charts/barchart-1.json" style="--chart-width: 60%; --chart-height: 400px;">
+        </chart>
+        <div style="height: 100px;"></div>
     </div>
     <label id="chatbox-display-button">
         <input type="button" class="chatbox-display-button" onclick="showChatbox(true);">
@@ -221,7 +299,7 @@
         <chatbox-header>
             <ion-icon name="chatbox-outline"></ion-icon>
             <a class="chatbox-title">My chatbox</a>
-            <label class="animated-on-hover">
+            <label class="animated-on-click" onclick="toggleClass(event, this, 'animated-on-click', 'animated-clicked');">
                 <input type="button" onclick="refreshChatbox();">
                 <ion-icon name="refresh-outline"></ion-icon>
             </label>

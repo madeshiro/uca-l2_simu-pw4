@@ -67,8 +67,19 @@ function detectCppApplication() {
     return null;
 }
 
-function isLocal() {
-    return window.location.hostname === "";
+/**
+ * @param event {Event}
+ * @param element {HTMLElement}
+ * @param class1 {string}
+ * @param class2 {string}
+ */
+function toggleClass(event, element, class1, class2) {
+    element.classList.replace(class1, class2)
+    setTimeout(function() {
+        element.classList.replace(class2, class1)
+    }, 700);
+    event.stopImmediatePropagation()
+    event.preventDefault()
 }
 
 /**

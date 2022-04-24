@@ -1,26 +1,25 @@
 {
   "chart": {
-    "title": "Death rate",
+    "title": "Bar Chart -- Sample",
     "type": "barchart",
     "orientation": "vertical",
     "dimension": {
-      "minV": 0, "__comment": "minV = 0 per default for horizontal barchart",
-      "maxV": 100
+      "minY": 0,
+      "maxY": 100
+    },
+    "axis" : {
+      "y": "rate"
     },
     "labels": [
-      "To make a barchart without multiple row, leave this array empty"
+      "males", "females", "intersex"
     ]
   },
   "data": [
-    [
-      {
-        "name": "males",
-        "value": 50
-      },
-      {
-        "name": "females",
-        "value": 20
-      }
-    ]
+    {
+      "name": "",
+      "value" : [
+        49.25, 49.25, 1.5
+      ]
+    }
   ]
 }

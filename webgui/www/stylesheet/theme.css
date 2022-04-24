@@ -237,15 +237,17 @@ footer .foot-flex-container a
     margin-right: 10px;
 }
 
-.animated-on-hover ion-icon
+.animated-on-click ion-icon
 {
-    transition: 0.5s transform;
+    transition: 0s transform;
 }
 
-.animated-on-hover:hover ion-icon
+.animated-clicked ion-icon
 {
     transform: rotate(360deg);
+    transition: 0.70s transform;
 }
+
 
 label#chatbox-display-button
 {
@@ -353,7 +355,7 @@ chatbox#chatbox chatbox-body section#chatbox-messages
     max-height: 90%;
 
     width: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
 
     background-color: var(--chatbox-msg-backgrnd);
 }
