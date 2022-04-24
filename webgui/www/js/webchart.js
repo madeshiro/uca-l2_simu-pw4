@@ -420,7 +420,7 @@ class BarChart extends Chart {
         let captionHtml = document.createElement("chart-caption");
 
         let colorpickerNb = 1;
-        for (let set of this.sets) {
+        for (let label of this.labels) {
             let item = document.createElement("item");
             let emptyDiv = document.createElement("div");
             let text = document.createTextNode(this.labels[colorpickerNb-1]);

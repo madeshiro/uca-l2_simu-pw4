@@ -19,6 +19,8 @@
 :root
 {
     --background-color: #CCCCCC;
+    --body-background-ray: #DDDDDD;
+
     --text-color: #000000;
     --link-color: blue;
     --visited-color: purple;
@@ -42,6 +44,8 @@
 [data-theme="dark"]
 {
     --background-color: #2b2b2b;
+    --body-background-ray: #404040;
+
     --text-color: #FFFFFF;
     --link-color: #56b3ff;
     --visited-color: hotpink;
@@ -93,18 +97,23 @@ header
 
 body
 {
-    background-color: var(--background-color);
+    background: repeating-linear-gradient(to top left,
+        var(--background-color), var(--background-color) 20px,
+        var(--body-background-ray) 20px, var(--body-background-ray) 40px);
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-items: center;
 }
 
 #main-content
 {
-    margin-top: 30px;
+    padding-top: 180px;
 
-    width: 100%;
-    height: auto;
+    background-color: var(--background-color);
+
+    width: 95%;
     display: flex;
 
     flex-direction: column;
@@ -113,7 +122,13 @@ body
     align-items: center;
     text-align: center;
 
-    min-height: calc(100vh - 150px - 130px);
+    min-height: calc(100vh - 100px);
+}
+
+#main-content hr
+{
+    width: 80%;
+    margin-left: 10%;
 }
 
 #cpp-apps-button img
@@ -276,8 +291,8 @@ label#chatbox-display-button
     justify-content: center;
 
     position: fixed;
-    right: 5%;
-    bottom: 5%;
+    right: 3%;
+    bottom: 11%;
 
     background-color: var(--chatbox-display-button);
     height: 100px;
@@ -530,14 +545,12 @@ label#chatbox-display-button input
         top: 0;
         width: 100%;
         height: 150px;
-        padding: 10px;
 
         transition: 700ms transform;
     }
 
     body
     {
-        padding-top: 150px;
         transition: 700ms padding-top;
     }
 
