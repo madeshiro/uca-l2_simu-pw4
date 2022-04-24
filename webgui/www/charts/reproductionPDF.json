@@ -1,0 +1,23 @@
+{
+  "chart": {
+    "title": "PDF of rabbit's reproduction per litter",
+    "type": "histogram",
+    "dimension": {
+      "minY": 0,
+      "maxY": 100,
+      "minX": 0,
+      "maxX": 8,
+    },
+    "axis" : {
+      "x": "kitten amount",
+      "y": "%"
+    }
+  },
+  "data": [
+    {"x": 2, "y": 0.125},
+    {"x": 3, "y": 0.25},
+    {"x": 4, "y": 0.25},
+    {"x": 5, "y": 0.25},
+    {"x": 6, "y": 0.125}
+  ]
+}

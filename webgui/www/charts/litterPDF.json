@@ -1,0 +1,25 @@
+{
+  "chart": {
+    "title": "PDF of rabbit's litter per year",
+    "type": "histogram",
+    "dimension": {
+      "minY": 0,
+      "maxY": 100,
+      "minX": 0,
+      "maxX": 12,
+    },
+    "axis" : {
+      "x": "litter amount",
+      "y": "rate"
+    }
+  },
+  "data": [
+    {"x": 3, "y": 0.08},
+    {"x": 4, "y": 0.13},
+    {"x": 5, "y": 0.18},
+    {"x": 6, "y": 0.22},
+    {"x": 7, "y": 0.18},
+    {"x": 8, "y": 0.13},
+    {"x": 9, "y": 0.08}
+  ]
+}

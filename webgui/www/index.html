@@ -74,38 +74,38 @@
 
         </div>
         <label id="chatbox-display-button">
-            <input type="button" class="chatbox-display-button" onclick="showChatbox(true);">
+            <input type="button" value="show chatbox" class="chatbox-display-button" onclick="showChatbox(true);">
             <ion-icon name="chatbox-outline"></ion-icon>
         </label>
-        <chatbox id="chatbox">
+        <chat-box id="chatbox">
             <chatbox-header>
                 <ion-icon name="chatbox-outline"></ion-icon>
                 <a class="chatbox-title">My chatbox</a>
-                <label class="animated-on-hover">
-                    <input type="button" onclick="refreshChatbox();">
+                <label class="animated-on-click" onclick="toggleClass(event, this, 'animated-on-click', 'animated-clicked');">
+                    <input type="button" value="refresh chatbox" onclick="refreshChatbox();">
                     <ion-icon name="refresh-outline"></ion-icon>
                 </label>
                 <label>
-                    <input type="button" onclick="showChatbox(false);">
+                    <input type="button" value="close chatbox" onclick="showChatbox(false);">
                     <ion-icon name="close-outline"></ion-icon>
                 </label>
             </chatbox-header>
             <chatbox-body>
-                <section id="chatbox-messages">
+                <div id="chatbox-messages">
                     <div class="chatbox-message">
                     </div>
-                </section>
-                <section class="chatbox-input">
+                </div>
+                <div class="chatbox-input">
                     <label class="chatbox-input-text">
-                        <input type="text" placeholder="Envoyer un message..." id="chatbox-send-text" onkeyup="sendMsgChatbox(this)" name="msg">
+                        <input type="text" placeholder="Send a message..." id="chatbox-send-text" onkeyup="sendMsgChatbox(this)" name="msg">
                     </label>
                     <label class="chatbox-input-button">
-                        <input type="button" onclick="sendMsgChatbox(document.getElementById('chatbox-send-text'));">
+                        <input type="button" value="send message chatbox" onclick="sendMsgChatbox(document.getElementById('chatbox-send-text'));">
                         <ion-icon name="send-outline"></ion-icon>
                     </label>
-                </section>
+                </div>
             </chatbox-body>
-        </chatbox>
+        </chat-box>
         <popup-window>
             <label id="popup-close-button">
                 <input type="checkbox" onchange="hidePopup(this)" checked>
@@ -120,11 +120,12 @@
         </popup-window>
         <footer>
             <div class="foot-flex-container">
-                <a href="/"><img src="images/4logo.png" alt="website logo"/></a>
+                <a href="/"><img src="images/logo.png" alt="website logo"/></a>
                 <a>Rin Baudelet 2022 ©</a>
                 <a href="about.html">about</a>
             </div>
         </footer>
+        <script src="js/webchart.js"></script>
         <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
         <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     </body>

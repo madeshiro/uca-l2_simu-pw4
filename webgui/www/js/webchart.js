@@ -110,6 +110,7 @@ class Chart {
      */
     loadIn(htmlChart) {
         this.htmlChart = htmlChart
+        this.htmlChart.innerHTML = '';
         this.htmlChart.setAttribute("type", this.type);
         this.htmlChart.appendChild(this.createHeader());
         this.htmlChart.appendChild(this.htmlBody);
@@ -194,7 +195,9 @@ class Chart {
         for (let caption of this.htmlBody.getElementsByTagName("chart-caption")) {
             this.htmlBody.removeChild(caption);
         }
-        this.htmlBody.appendChild(this.createCaption());
+        if (this.createCaption) {
+            this.htmlBody.appendChild(this.createCaption());
+        }
     }
 
     get isDraw() {
@@ -488,7 +491,7 @@ class LineChart extends Chart {
             return false;
 
         let setname = this.sets[set-1].name;
-        this.sets[set-1].points.add({"x": x, "y": y});
+        this.sets[set-1].points += {"x": x, "y": y};
 
         if (this.isdraw) {
             if (this.sets[set-1].points.length > 1) {
@@ -496,7 +499,7 @@ class LineChart extends Chart {
                  *
                  * @type {{x: number, y: number}}
                  */
-                let prevPoint = this.sets[set-1].points.getItem(this.sets[set-1].points.length-2);
+                let prevPoint = this.sets[set-1].points[this.sets[set-1].points.length-2];
                 let dp = {
                     "x": x - prevPoint.x,
                     "y": y - prevPoint.y
@@ -520,8 +523,8 @@ class LineChart extends Chart {
      *
      * @returns {number} the setNumber
      */
-    addSet() {
-        this.sets.push([]);
+    addSet(name) {
+        this.sets.push({name: name, points: []});
         return this.sets.length;
     }
 
@@ -711,7 +714,6 @@ function getChartsByType(type) {
     }
 
     return chartsList;
-
 }
 
 window.onresize = function() {

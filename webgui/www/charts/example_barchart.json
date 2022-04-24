@@ -1,0 +1,43 @@
+{
+  "chart": {
+    "title": "Amount of population at the end of simulations",
+    "type": "barchart",
+    "orientation": "vertical",
+    "dimension": {
+      "minY": 0,
+      "maxY": 2500
+    },
+    "axis" : {
+      "y": "population"
+    },
+    "labels": [
+      "males", "females"
+    ]
+  },
+  "data": [
+    {
+      "name": "Simulation 1",
+      "value" : [
+        1141, 532
+      ]
+    },
+    {
+      "name": "Simulation 2",
+      "value" : [
+        1523, 1501
+      ]
+    },
+    {
+      "name": "Simulation 3",
+      "value" : [
+        1024, 2041
+      ]
+    },
+    {
+      "name": "Simulation 4",
+      "value" : [
+        1235, 2345
+      ]
+    }
+  ]
+}

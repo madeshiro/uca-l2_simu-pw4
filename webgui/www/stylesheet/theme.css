@@ -94,6 +94,9 @@ header
 body
 {
     background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #main-content
@@ -110,7 +113,7 @@ body
     align-items: center;
     text-align: center;
 
-    min-height: calc(100vh - 230px);
+    min-height: calc(100vh - 150px - 130px);
 }
 
 #cpp-apps-button img
@@ -210,15 +213,13 @@ form input::placeholder
 footer
 {
     display: flex;
-    position: relative;
     align-items: center;
+    justify-content: space-between;
 
     background-color: var(--footer-background);
 
-    height: 50px;
+    height: 100px;
     width: 100%;
-
-    bottom: 0;
 }
 
 footer .foot-flex-container
@@ -233,8 +234,27 @@ footer .foot-flex-container
 
 footer .foot-flex-container a
 {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+
+
     margin-left: 10px;
     margin-right: 10px;
+
+    width: 200px;
+    height: 100px;
+
+    padding: 2px 5px 2px 5px;
+
+    border-radius: 10px;
+}
+
+footer .foot-flex-container a img
+{
+    width: 80px;
+    height: 100px;
 }
 
 .animated-on-click ion-icon
@@ -281,7 +301,7 @@ label#chatbox-display-button input
     appearance: none;
 }
 
-chatbox#chatbox
+#chatbox
 {
     position: fixed;
     visibility: hidden;
@@ -295,7 +315,7 @@ chatbox#chatbox
     align-items: center;
 }
 
-chatbox#chatbox chatbox-header
+#chatbox chatbox-header
 {
     display: flex;
     justify-content: space-between;
@@ -308,7 +328,7 @@ chatbox#chatbox chatbox-header
     background-color: var(--chatbox-background);
 }
 
-chatbox#chatbox chatbox-header a
+#chatbox chatbox-header a
 {
     display: flex;
     align-items: center;
@@ -320,7 +340,7 @@ chatbox#chatbox chatbox-header a
     font-family: sans-serif;
 }
 
-chatbox#chatbox chatbox-header label
+#chatbox chatbox-header label
 {
     display: flex;
     align-items: center;
@@ -330,13 +350,13 @@ chatbox#chatbox chatbox-header label
     cursor: pointer;
 }
 
-chatbox#chatbox chatbox-header label input
+#chatbox chatbox-header label input
 {
     display: none;
     appearance: none;
 }
 
-chatbox#chatbox chatbox-body
+#chatbox chatbox-body
 {
     display: flex;
     justify-content: center;
@@ -349,7 +369,7 @@ chatbox#chatbox chatbox-body
     height: 90%;
 }
 
-chatbox#chatbox chatbox-body section#chatbox-messages
+#chatbox chatbox-body div#chatbox-messages
 {
     height: 90%;
     max-height: 90%;
@@ -360,7 +380,7 @@ chatbox#chatbox chatbox-body section#chatbox-messages
     background-color: var(--chatbox-msg-backgrnd);
 }
 
-chatbox#chatbox chatbox-body section#chatbox-messages div.chatbox-message
+#chatbox chatbox-body div#chatbox-messages div.chatbox-message
 {
     background-color: var(--chatbox-msg-backgrnd);
 
@@ -374,12 +394,12 @@ chatbox#chatbox chatbox-body section#chatbox-messages div.chatbox-message
     padding: 5px;
 }
 
-chatbox#chatbox chatbox-body section#chatbox-messages div.chatbox-message:hover
+#chatbox chatbox-body div#chatbox-messages div.chatbox-message:hover
 {
     filter: brightness(110%);
 }
 
-chatbox#chatbox chatbox-body section#chatbox-messages div.chatbox-message div.chatbox-msginfo
+#chatbox chatbox-body div#chatbox-messages div.chatbox-message div.chatbox-msginfo
 {
     display: flex;
     justify-content: left;
@@ -389,7 +409,7 @@ chatbox#chatbox chatbox-body section#chatbox-messages div.chatbox-message div.ch
     width: 100%;
 }
 
-chatbox#chatbox chatbox-body section#chatbox-messages div.chatbox-message div.chatbox-msginfo a
+#chatbox chatbox-body div#chatbox-messages div.chatbox-message div.chatbox-msginfo a
 {
     font-size: 12px;
     font-family: sans-serif;
@@ -401,7 +421,7 @@ chatbox#chatbox chatbox-body section#chatbox-messages div.chatbox-message div.ch
     color: white !important;
 }
 
-chatbox#chatbox chatbox-body section#chatbox-messages div.chatbox-message p.chatbox-msgcontent
+#chatbox chatbox-body div#chatbox-messages div.chatbox-message p.chatbox-msgcontent
 {
     text-align: left;
     font-size: 14px;
@@ -409,7 +429,7 @@ chatbox#chatbox chatbox-body section#chatbox-messages div.chatbox-message p.chat
     width: 100%;
 }
 
-chatbox#chatbox chatbox-body section.chatbox-input
+#chatbox chatbox-body div.chatbox-input
 {
     display: flex;
     justify-content: space-between;
@@ -418,7 +438,7 @@ chatbox#chatbox chatbox-body section.chatbox-input
     width: 100%;
     height: 10%;
 }
-chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-text
+#chatbox chatbox-body div.chatbox-input .chatbox-input-text
 {
     align-items: center;
     width: 80%;
@@ -426,7 +446,7 @@ chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-text
     padding-left: 5px;
 }
 
-chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-text input
+#chatbox chatbox-body div.chatbox-input .chatbox-input-text input
 {
     width: 100%;
     height: 100%;
@@ -440,12 +460,12 @@ chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-text input
     padding-left: 4px;
 }
 
-chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-text input::placeholder
+#chatbox chatbox-body div.chatbox-input .chatbox-input-text input::placeholder
 {
     color: var(--text-color) !important;
 }
 
-chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-button
+#chatbox chatbox-body div.chatbox-input .chatbox-input-button
 {
     display: flex;
     align-items: center;
@@ -461,26 +481,27 @@ chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-button
     cursor: pointer;
 }
 
-chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-button ion-icon
+#chatbox chatbox-body div.chatbox-input .chatbox-input-button ion-icon
 {
     transition: 0.5s filter;
 }
 
-chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-button:hover ion-icon
+#chatbox chatbox-body div.chatbox-input .chatbox-input-button:hover ion-icon
 {
     filter: drop-shadow(0 0 5px #FFFFFF) drop-shadow(0 0 10px #FFFFFF);
 }
 
-chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-button input
+#chatbox chatbox-body div.chatbox-input .chatbox-input-button input
 {
     appearance: none;
     display: none;
 }
 
 
+
 @media only screen and (orientation: landscape) {
 
-    chatbox#chatbox
+    #chatbox
     {
         height: 40%;
         width: 350px;
@@ -795,5 +816,26 @@ chatbox#chatbox chatbox-body section.chatbox-input .chatbox-input-button input
 }
 
 @media only screen and (orientation: portrait) {
-    
+    #chatbox
+    {
+        height: 90%;
+        width: 90%;
+
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+
+        z-index: 3;
+
+        bottom: 5%;
+        right: 5%;
+    }
+
+    #chatbox chatbox-header
+    {
+        font-size: 3em;
+    }
+    #chatbox chatbox-header a.chatbox-title
+    {
+        font-size: 1.0em !important;
+    }
 }

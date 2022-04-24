@@ -1,0 +1,22 @@
+{
+  "chart": {
+    "title": "PDF of rabbit's maturity",
+    "type": "histogram",
+    "dimension": {
+      "minY": 0,
+      "maxY": 100,
+      "minX": 3,
+      "maxX": 10
+    },
+    "axis" : {
+      "x": "maturity (month)",
+      "y": "%"
+    }
+  },
+  "data": [
+    {"x": 5, "y": 0.25},
+    {"x": 6, "y": 0.20},
+    {"x": 7, "y": 0.25},
+    {"x": 8, "y": 0.30}
+  ]
+}
