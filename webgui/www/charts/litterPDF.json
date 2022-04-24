@@ -6,7 +6,7 @@
       "minY": 0,
       "maxY": 100,
       "minX": 0,
-      "maxX": 12,
+      "maxX": 12
     },
     "axis" : {
       "x": "litter amount",

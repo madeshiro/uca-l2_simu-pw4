@@ -1,0 +1,43 @@
+{
+  "chart": {
+    "title": "Evolution of rabbit population through time",
+    "type": "linechart",
+    "axis": {
+      "x": "Month",
+      "y": "Population"
+    },
+    "dimension": {
+      "minX": 0,
+      "maxX": 240,
+      "minY": 0,
+      "maxY": 10000
+    }
+  },
+  "data": [
+    {
+      "name": "males",
+      "points": [
+        {"x": 0, "y": 50},
+        {"x": 10, "y": 1050},
+        {"x": 20, "y": 1543},
+        {"x": 30, "y": 2345},
+        {"x": 40, "y": 2536},
+        {"x": 50, "y": 2678},
+        {"x": 60, "y": 2845}
+      ]
+    },
+    {
+      "name": "females",
+      "points": [
+        {"x": 0, "y": 100},
+        {"x": 10, "y": 3050},
+        {"x": 20, "y": 4143},
+        {"x": 30, "y": 4345},
+        {"x": 40, "y": 4236},
+        {"x": 50, "y": 4478},
+        {"x": 60, "y": 4678},
+        {"x": 70, "y": 8678}
+      ]
+    }
+  ]
+}

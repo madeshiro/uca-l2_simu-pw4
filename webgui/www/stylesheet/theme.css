@@ -36,6 +36,7 @@
     --chatbox-display-button: #8c552a;
     --chatbox-background: #3c3f41;
     --chatbox-border: #3c3f41;
+    --chatbox-msg-backgrnd: gray;
 
     --login-form-bacground: rgba(57, 60, 63, 0.6);
 }
@@ -625,7 +626,7 @@ label#chatbox-display-button input
     border: 2px solid var(--header-button-color);
     background-color: var(--header-button-color);
 
-    color: white !important;
+    color: var(--text-color) !important;
 
     height: 50px;
     width: 100px;
