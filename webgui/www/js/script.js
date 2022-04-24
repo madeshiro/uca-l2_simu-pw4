@@ -152,16 +152,19 @@ function loginUsingForm(formId) {
     /**
      * @type {HTMLFormElement}
      */
-    let formHtml = document.getElementById(formId);
-    let username = formHtml.elements['username'].value;
-    let password = formHtml.elements['userpwd'].value;
+    let formHtml = document.forms[formId];
+    let username = formHtml['username'].value;
+    let password = formHtml['userpwd'].value;
 
     let ajax = new XMLHttpRequest();
-    ajax.open('get', `/htbin/login.py?username=${username}&userpwd=${password}`, true)
-    ajax.send();
+    ajax.open('get', `/htbin/login.py?username=${username}&userpwd=${password}`, false)
     ajax.onload = function () {
-        alert(ajax.responseText);
+        document.getElementById('login-welcome').innerText = ajax.responseText;
+        showLoginForm(null, 'login-welcome');
     }
+    ajax.send();
+
+    return false;
 }
 
 /**
@@ -266,6 +269,10 @@ function addMsgChatbox(user, msg, date= null) {
  * @returns {boolean}
  */
 function isValidForm(form) {
+    for (let elem of form.elements) {
+        elem.classList.remove('input-error');
+    }
+
     let notNullable = ['lastname', 'firstname', 'username', 'useremail', 'userpwd'];
     for (let elemName of notNullable) {
         let input = form[elemName];
@@ -283,7 +290,7 @@ function isValidForm(form) {
     }
 
     let email = form['useremail'].value;
-    if (!email.match('^([A-Za-z0-9-_])+@([A-Za-z0-9_-])+\\.([a-zA-Z])+$')) {
+    if (!email.match('^([A-Za-z0-9-_\.])+@([A-Za-z0-9_-])+\\.([a-zA-Z])+$')) {
         form['useremail'].classList.add('input-error');
         return false;
     }
@@ -294,9 +301,6 @@ function isValidForm(form) {
         return false;
     }
 
-    for (let elem of form.elements) {
-        elem.classList.remove('input-error');
-    }
     return true;
 }
 
@@ -306,6 +310,27 @@ function showLoginPopup(show) {
         popup.style.visibility = 'visible';
     } else {
         popup.style.visibility = 'hidden';
+    }
+}
+
+function showLoginForm(button, form) {
+    for (let b of document.getElementById('login-form-selector').getElementsByTagName('button')) {
+        b.classList.remove('selected_button');
+    }
+
+    if (button) {
+        button.classList.add('selected_button');
+    }
+
+    let formNames = ['signin-form', 'login-form', 'login-welcome'];
+    for (let name of formNames) {
+        let formHtml = document.getElementById(name);
+
+        if (name !== form) {
+            formHtml.style.display = 'none';
+        } else {
+            formHtml.style.display = 'flex';
+        }
     }
 }
 

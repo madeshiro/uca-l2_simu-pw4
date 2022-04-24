@@ -144,8 +144,8 @@
             <div id="popup-login-frame">
                 <div id="login-header">
                     <div id="login-form-selector">
-                        <button value="login" onclick="showLoginForm('login-form');">Log in</button>
-                        <button value="signin" onclick="showLoginForm('signin-form');">Sign in</button>
+                        <button value="login" onclick="showLoginForm(this, 'login-form');">Log in</button>
+                        <button value="signin" class="selected_button" onclick="showLoginForm(this, 'signin-form');">Sign in</button>
                     </div>
                     <label>
                         <input type="button" value="close-login" onclick="showLoginPopup(false);">
@@ -154,21 +154,24 @@
                 </div>
                 <div id="login-body">
                     <div id="login-welcome"></div>
-                    <div id="login-form">
-                        <form name="login" onsubmit="return isValidForm(this);" action="htbin/register.py">
+                    <div id="signin-form" class="login-form">
+                        <h2>Sign In</h2>
+                        <form name="signin" onsubmit="return isValidForm(this);" action="htbin/register.py">
                             <label><input type="text" name="lastname" placeholder="last name"></label>
                             <label><input type="text" name="firstname" placeholder="first name"></label>
                             <label><input type="text" name="username" placeholder="username"></label>
                             <label><input type="text" name="birthdate" placeholder="jj/mm/yyyy"></label>
                             <label><input type="email" name="useremail" placeholder="user@yourdomain.com"></label>
                             <label><input type="password" name="userpwd" placeholder="password"></label>
-                            <label><input type="submit">Sign In</label>
+                            <label><input type="submit" value="Sign In"></label>
                         </form>
                     </div>
-                    <div id="signin-form">
-                        <form name="signin">
+                    <div id="login-form"  class="login-form">
+                        <h2>Log In</h2>
+                        <form name="login" onsubmit="return loginUsingForm('login');" action="htbin/login.py">
                             <label><input type="text" name="username" placeholder="username"></label>
-                            <label><input type="password" name="userpwd" placeholder="Last name"></label>
+                            <label><input type="password" name="userpwd" placeholder="password"></label>
+                            <label><input type="submit" value="Log in"></label>
                         </form>
                     </div>
                 </div>
