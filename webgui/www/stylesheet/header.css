@@ -1,0 +1,532 @@
+/*
+ * UCA-L2 simulation "practical work #4" : a realistic simulation of rabbit population growth
+ * Copyright (C) 2022 -- Rin Baudelet
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+:root
+{
+    --header-background: #3c3f41;
+    --header-button-color: #8c552a;
+    --header-icon-color: white;
+    --header-button-hover-color: white;
+    --header-background-mobile: rgba(54, 57, 60, 1);
+
+    --header-button-color-mobile: #3c3f41;
+}
+
+[data-theme="dark"]
+{
+    --header-background: #3c3f41;
+    --header-button-color: #8c552a;
+    --header-icon-color: white;
+    --header-button-hover-color: white;
+    --header-background-mobile: rgba(54, 57, 60, 1);
+
+    --header-button-color-mobile: #3c3f41;
+}
+
+header
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 125px;
+
+    transition: 500ms height;
+}
+
+#header
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+    gap: 50px;
+
+    color: white !important;
+}
+
+.nav-button,
+.nav-button span,
+.nav-button ion-icon,
+.util-button ion-icon,
+.page-title
+{
+    color: white;
+}
+
+
+
+@media screen and (min-width: 1424px)
+{
+    header div#header
+    {
+        visibility: visible !important;
+    }
+
+    header div#header-phone-responsive
+    {
+        display: none;
+        visibility: hidden;
+    }
+
+    html:not([data-scroll='0']) header
+    {
+        height: 75px;
+    }
+
+    html:not([data-scroll='0']) div#header #nav-menu div.nav-button
+    {
+        height: 60px;
+        width: 60px;
+
+        min-height: 60px;
+        min-width: 60px;
+    }
+
+    html:not([data-scroll='0']) div#header img
+    {
+        height: 60px;
+        width: 60px;
+    }
+
+    html:not([data-scroll='0']) div#header #nav-menu div.nav-button img
+    {
+        height: 50px;
+        width: 50px;
+    }
+
+    html:not([data-scroll='0']) div#header #nav-menu div.nav-button a:hover ~ span
+    {
+        opacity: 1;
+        width: 170px;
+        font-size: 12px;
+        padding-left: 0;
+    }
+
+    html:not([data-scroll='0']) div#header #nav-menu div.current-page span
+    {
+        width: 170px;
+        font-size: 12px;
+        padding-left: 0;
+    }
+
+    #header img
+    {
+        height: 100px;
+        width: 100px;
+    }
+
+    div#header #nav-menu
+    {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        flex: 1;
+
+        gap: 180px;
+    }
+
+    div#header #nav-menu div.nav-button
+    {
+        position: relative;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: var(--header-icon-color) !important;
+
+        height: 110px;
+        width: 110px;
+
+        min-height: 110px;
+        min-width: 110px;
+
+        border-radius: 50%;
+        transition: 0.5s height, 0.5s width;
+    }
+
+    div#header #nav-menu div.nav-button a
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        font-size: 2em;
+
+        border-radius: 50%;
+        background-color: var(--header-button-color);
+        transition: 0.5s filter, 0.5s transform;
+    }
+
+    div#header #nav-menu div.nav-button span
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 0;
+        opacity: 0;
+
+        border-bottom-right-radius: 20px;
+        border-top-right-radius: 20px;
+
+        position: absolute;
+        left: 50%;
+        height: 100%;
+        width: 0;
+
+        text-align: right;
+        padding-left: 50px;
+
+        background-color: var(--header-button-color);
+        filter: brightness(90%);
+
+        transition: 0.5s width, 0.5s opacity;
+    }
+
+    div#header #nav-menu div.current-page span
+    {
+        width: 210px;
+        opacity: 1;
+    }
+
+    div#header #nav-menu div.nav-button:hover
+    {
+        filter: drop-shadow(0 0 2px var(--header-button-hover-color));
+    }
+
+    div#header #nav-menu div.nav-button a:hover
+    {
+        transform: rotate(360deg);
+    }
+
+    div#header #nav-menu div.nav-button a:hover ~ span
+    {
+        opacity: 1;
+        width: 210px;
+    }
+
+    div#header h1
+    {
+        flex: 2;
+        z-index: 0;
+        text-align: center;
+        padding-left: 5%;
+    }
+
+    div#header #util-menu
+    {
+        flex: 1;
+        display: flex;
+        justify-content: right;
+        align-items: center;
+        gap: 5px;
+    }
+
+    div#header #util-menu .util-button
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        font-size: 2em;
+
+        height: 60px;
+        width: 60px;
+
+        background-color: var(--header-button-color);
+        border-radius: 50%;
+
+        cursor: pointer;
+        transition: 0.3s filter;
+    }
+
+    div#header #util-menu .util-button:hover
+    {
+        filter: drop-shadow(0 0 2px var(--header-button-hover-color));
+    }
+}
+
+div#header #util-menu #theme-button
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div#header #util-menu #theme-button label input
+{
+    appearance: none;
+    display: none;
+}
+
+div#header #util-menu #theme-button label ion-icon
+{
+    color: white;
+}
+
+div#header #util-menu #theme-button label input:checked ~ ion-icon
+{
+    color: black;
+}
+
+@media screen and (max-width: 1424px)
+{
+    header
+    {
+        height: 100px;
+    }
+
+    header div#header-phone-responsive
+    {
+        display: flex;
+        align-items: center;
+        justify-content: left;
+
+        width: 100%;
+    }
+
+    header div#header-phone-responsive #header-phone-display
+    {
+        margin-left: 10px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 90px;
+        min-width: 90px;
+
+        background-color: var(--header-button-color);
+        border-radius: 50%;
+        font-size: 3em;
+
+        cursor: pointer;
+    }
+
+    header div#header-phone-responsive #header-phone-display input
+    {
+        appearance: none;
+        display: none;
+    }
+
+    header div#header-phone-responsive #header-phone-display ion-icon
+    {
+        transition: 0.4s transform;
+    }
+
+    header div#header-phone-responsive #header-phone-display input:checked ~ ion-icon
+    {
+        transform: rotate(90deg);
+    }
+
+    header div#header-phone-responsive .page-title
+    {
+        width: 100%;
+        text-align: center;
+        font-size: 2em;
+        font-weight: bold;
+    }
+
+    header #header
+    {
+        position: fixed;
+        visibility: hidden;
+        flex-direction: column;
+        justify-content: left;
+        align-items: flex-start;
+
+        top: 100px;
+        left: 0;
+        width: 80%;
+        height: calc(100% - 100px);
+
+        overflow-y: auto;
+        background-color: var(--header-background-mobile);
+    }
+
+    header #header #util-menu #theme-button
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        visibility: visible;
+        position: fixed;
+        right: 10px;
+        top: 5px;
+
+        width: 90px;
+        height: 90px;
+
+        padding-top: 15px;
+        font-size: 4em;
+
+        cursor: pointer;
+        border-radius: 50%;
+    }
+
+    header #header #util-menu #theme-button:hover
+    {
+        filter: drop-shadow(0 0 2px var(--header-button-hover-color));
+    }
+
+    #website-logo
+    {
+        visibility: hidden;
+        display: none;
+    }
+
+    #header div#nav-menu
+    {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        flex-direction: column;
+
+        width: 100%;
+
+        border-bottom: 1px solid black;
+        padding-bottom: 5%;
+    }
+
+    #header div#nav-menu div.nav-button
+    {
+        position: relative;
+
+        display: flex;
+        justify-content: left;
+        align-items: center;
+
+        height: 50px;
+        width: 95%;
+
+        margin-top: 15px;
+        margin-bottom: 15px;
+        margin-left: 12px;
+
+        border-radius: 30px;
+        background-color: var(--header-button-color-mobile);
+    }
+
+    #header div#nav-menu div.nav-button:hover
+    {
+        filter: drop-shadow(0 0 2px var(--header-button-hover-color));
+    }
+
+    #header div#nav-menu div.current-page
+    {
+        background-color: var(--header-button-color) !important;
+    }
+
+    #header div#nav-menu div.nav-button a
+    {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+
+        z-index: 2;
+        width: 100%;
+        height: 70px;
+    }
+
+    #header div#nav-menu div.nav-button a img
+    {
+        width: 70px;
+        height: 70px;
+        background-color: var(--header-button-color-mobile);
+        padding: 10px;
+        border-radius: 50%;
+    }
+
+    #header div#nav-menu div.nav-button a ion-icon
+    {
+        font-size: 14px !important;
+
+        width: 70px;
+        height: 70px;
+        background-color: var(--header-button-color-mobile);
+        border-radius: 50%;
+    }
+
+    #header div#nav-menu div.nav-button span
+    {
+        position: absolute;
+        left: 90px;
+        z-index: 1;
+
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    #header .page-title
+    {
+        visibility: collapse;
+        display: none;
+    }
+
+    #header div#util-menu
+    {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+
+        height: 100%;
+        width: 100%;
+    }
+
+    #header div#util-menu .util-button
+    {
+        height: 200px;
+        width: 200px;
+    }
+
+    #header div#util-menu .util-button:hover
+    {
+        filter: drop-shadow(0 0 2px var(--header-button-hover-color));
+    }
+
+    #header div#util-menu #cpp-apps-button img
+    {
+        height: 200px;
+        width: 200px;
+    }
+
+    #header div#util-menu #login-button
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background-color: var(--header-button-color-mobile);
+        border-radius: 50%;
+
+        font-size: 5em;
+        cursor: pointer;
+    }
+}

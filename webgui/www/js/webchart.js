@@ -164,7 +164,9 @@ class Chart {
         let axisHLabel = document.createElement("label");
         for (let i = 1; i <= 10; i++) {
             let a = document.createElement("a");
-            let aText = document.createTextNode((this.xMin+(incrementX*(i))).toString());
+            let xValue = this.xMin + (incrementX*i);
+            xValue = xValue % 1 === 0 ? xValue.toString() : xValue.toPrecision(2);
+            let aText = document.createTextNode(xValue);
             a.appendChild(aText);
             axisHLabel.appendChild(a);
         }

@@ -25,9 +25,6 @@
     --link-color: blue;
     --visited-color: purple;
 
-    --nav-button-color: #6394d2;
-    --nav-button-font-color: #ffffff;
-
     --header-background: #999999;
     --footer-background: #999999;
     --popup-background: gray;
@@ -36,9 +33,11 @@
     --form-textbox-color: inherit;
     --form-textbox-background: inherit;
 
-    --chatbox-display-button: lightgreen;
+    --chatbox-display-button: #8c552a;
     --chatbox-background: #3c3f41;
     --chatbox-border: #3c3f41;
+
+    --login-form-bacground: rgba(57, 60, 63, 0.6);
 }
 
 [data-theme="dark"]
@@ -50,10 +49,6 @@
     --link-color: #56b3ff;
     --visited-color: hotpink;
 
-    --nav-button-color: #6394d2;
-    --nav-button-font-color: #ffffff;
-
-    --header-background: #8c552a;
     --footer-background: #8c552a;
     --popup-background: lightgray;
     --popup-border: gray;
@@ -61,7 +56,7 @@
     --form-textbox-color: white;
     --form-textbox-background: #3c3f41;
 
-    --chatbox-display-button: orange;
+    --chatbox-display-button: #8c552a;
     --chatbox-background: #3c3f41;
     --chatbox-border: #3c3f41;
     --chatbox-msg-backgrnd: #4a4e50;
@@ -512,7 +507,94 @@ label#chatbox-display-button input
     display: none;
 }
 
+#popup-login-form
+{
+    z-index: 0;
 
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+
+    background-color: var(--login-form-bacground);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#popup-login-frame
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border: 2px solid var(--chatbox-border);
+    height: 60%;
+    width: 30%;
+
+    background-color: var(--chatbox-background);
+    border-radius: 20px;
+
+    z-index: 3;
+}
+
+#popup-login-frame #login-header
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    height: 100px;
+    width: 100%;
+}
+
+#popup-login-frame #login-header #login-form-selector
+{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+
+    gap: 20px;
+    width: 100%;
+}
+
+#popup-login-frame #login-header label
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 3em;
+
+    cursor: pointer;
+    margin-right: 20px;
+
+    height: 80px;
+    width: 80px;
+
+    transition: 0.4s transform;
+}
+
+#popup-login-frame #login-header label:hover
+{
+    transform: rotate(180deg);
+}
+
+#popup-login-frame #login-header label input
+{
+    display: none;
+    appearance: none;
+}
+
+#popup-login-frame #login-body
+{
+    height: 100%;
+    padding: 5px;
+
+    background-color: var(--chatbox-msg-backgrnd);
+    border-radius: 0 0 20px 20px;
+}
 
 @media only screen and (orientation: landscape) {
 
@@ -534,297 +616,6 @@ label#chatbox-display-button input
     {
         width: 50%;
         left: 25%;
-    }
-
-    header {
-        z-index: 3;
-        display: flex;
-        justify-content: space-between;
-
-        position: fixed;
-        top: 0;
-        width: 100%;
-        height: 150px;
-
-        transition: 700ms transform;
-    }
-
-    body
-    {
-        transition: 700ms padding-top;
-    }
-
-    html:not([data-scroll='0']) header
-    {
-        /*height: 75px;*/
-        transform: scaleY(50%) translateY(-75px);
-    }
-
-
-    html:not([data-scroll='0']) #website-logo
-    {
-        /*transform: scale(50%) translateY(-55%);*/
-        transform: scaleX(50%);
-    }
-
-    html:not([data-scroll='0']) body
-    {
-        padding-top: 75px;
-    }
-
-    html:not([data-scroll='0']) #nav-menu
-    {
-        /*transform: translateX(-30%) translateY(-45%) scale(66%);*/
-        transform: scaleX(50%);
-        margin-left: -20%;
-    }
-
-    html:not([data-scroll='0']) #util-buttons
-    {
-        /*transform: translateX(25%) scale(50%);*/
-        transform: scaleX(50%);
-        margin-right: -5%;
-    }
-
-    #website-logo
-    {
-        transition: transform 700ms, translate 700ms;
-        width: 150px;
-        height: 150px;
-    }
-
-    #website-logo img
-    {
-        width: 100px;
-        height: 120px;
-    }
-
-    .flex-container
-    {
-        display: flex;
-        transition: 700ms;
-    }
-
-    #nav-menu
-    {
-        display: flex;
-        width: 50%;
-    }
-
-    #nav-menu nav-button
-    {
-        display: flex;
-        height: 95px;
-        width: 95px;
-
-        margin: 15px;
-        border-radius: 45px;
-
-        justify-content: center;
-        align-items: center;
-
-        transition: transform 1.5s, width 1.5s;
-    }
-
-    #nav-menu nav-button a
-    {
-        position: relative;
-        transition: transform 1.5s;
-
-        display: flex;
-        min-height: 95px;
-        min-width: 95px;
-        border-radius: 45px;
-        background-color: var(--nav-button-color);
-
-        font-size: 4em;
-        text-decoration: none;
-
-        justify-content: center;
-        align-items: center;
-    }
-
-    #nav-menu nav-button span
-    {
-        color: lightgray;
-        font-family: Arial, sans-serif;
-        font-size: 1.3em;
-        font-weight: bolder;
-
-        position: relative;
-        z-index: -1;
-        height: 95px;
-        width: 0;
-        left: -45px;
-
-        opacity: 0;
-
-        visibility: visible;
-        display: flex;
-
-        border-bottom-right-radius: 16px;
-        border-top-right-radius: 16px;
-
-        background-color: cadetblue;
-
-        transition: 1.5s;
-        align-items: center;
-        align-content: center;
-        justify-content: center;
-    }
-
-    #nav-menu nav-button:hover
-    {
-        width: 275px;
-    }
-
-    #nav-menu nav-button:hover a
-    {
-        transform: rotate(360deg);
-    }
-
-    .page-title
-    {
-        visibility: hidden;
-    }
-
-    .current-page
-    {
-        width: 275px !important;
-    }
-
-    .current-page span
-    {
-        opacity: 1 !important;
-        width: 180px !important;
-    }
-
-    #nav-menu nav-button:hover span
-    {
-        opacity: 1;
-        width: 180px;
-    }
-
-    .github-button img
-    {
-        height: 83px;
-        width: 100px;
-    }
-
-    #util-buttons
-    {
-        justify-content: space-between;
-    }
-
-    #util-buttons util-button
-    {
-        display: flex;
-        height: auto;
-
-        min-width: 125px;
-        width: auto;
-        max-width: 150px;
-
-        margin-left: 20px;
-
-        align-items: center;
-        justify-content: center;
-    }
-
-    #cpp-apps-button
-    {
-        transition: 0.5s filter;
-    }
-
-    #cpp-apps-button:hover
-    {
-        filter: brightness(120%);
-    }
-
-    #cpp-apps-button img
-    {
-        height: 125px;
-        width: 125px;
-    }
-
-    #light-button label
-    {
-        display: flex;
-        width: 150px;
-        height: 75px;
-        border-radius: 10px;
-        background-color: #6e6f7a;
-        cursor: pointer;
-    }
-
-    #light-button label input
-    {
-        appearance: none;
-    }
-
-    #light-button label span
-    {
-        display: flex;
-        position: relative;
-        left: 0;
-        width: 75px;
-        height: 75px;
-        background-color: #3D3E3A;
-        border: 6px solid #6e6f7a;
-        border-radius: 14px;
-        align-items: center;
-        justify-content: center;
-        transition: 0.5s;
-    }
-
-    #light-button label input:checked ~ span
-    {
-        left: 75px;
-    }
-
-    #light-button label span ion-icon
-    {
-        color: rgba(255, 255, 255, 0.75);
-        font-size: 2em;
-        filter: drop-shadow(0 0 5px #FFFFFF) drop-shadow(0 0 10px #FFFFFF);
-        transition: 0.5s;
-    }
-
-    #light-button label input:checked ~ span ion-icon {
-        left: 75px;
-        color: rgba(255, 255, 255, 0.25);
-        filter: none;
-    }
-
-    #login-button label
-    {
-        display: flex;
-        transition: filter 0.5s;
-
-        justify-content: center;
-        align-items: center;
-
-        min-width: 75px;
-        min-height: 75px;
-        border-radius: 50%;
-        cursor: pointer;
-        background-color: #6e6f7a;
-    }
-
-    #login-button label:hover
-    {
-        filter: brightness(130%);
-    }
-
-    #login-button label span
-    {
-        font-size: 2em;
-    }
-
-    #login-button label input
-    {
-        appearance: none;
-        display: none;
     }
 }
 
@@ -850,5 +641,12 @@ label#chatbox-display-button input
     #chatbox chatbox-header a.chatbox-title
     {
         font-size: 1.0em !important;
+    }
+
+    #popup-login-frame
+    {
+        margin-top: 100px;
+        height: 80%;
+        width: 80%;
     }
 }

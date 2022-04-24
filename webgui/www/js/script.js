@@ -30,7 +30,7 @@ function detectColorScheme() {
 
     if(theme === "dark") {
         document.documentElement.setAttribute("data-theme", "dark");
-        document.getElementById("input-light-button").checked = true;
+        document.getElementById("theme-button-input").checked = true;
     }
 }
 
@@ -260,6 +260,64 @@ function addMsgChatbox(user, msg, date= null) {
     msgsHtml.scrollTo(0, msgsHtml.scrollHeight)
 }
 
+/**
+ *
+ * @param form {HTMLFormElement}
+ * @returns {boolean}
+ */
+function isValidForm(form) {
+    let notNullable = ['lastname', 'firstname', 'username', 'useremail', 'userpwd'];
+    for (let elemName of notNullable) {
+        let input = form[elemName];
+
+        if (input.value === '') {
+            input.classList.add('input-error');
+            return false;
+        }
+    }
+
+    let date = Date.parse(form['birthdate'].value)
+    if (!date) {
+        form['birthdate'].classList.add('input-error');
+        return false;
+    }
+
+    let email = form['useremail'].value;
+    if (!email.match('^([A-Za-z0-9-_])+@([A-Za-z0-9_-])+\\.([a-zA-Z])+$')) {
+        form['useremail'].classList.add('input-error');
+        return false;
+    }
+
+    let pwd = form['userpwd'].value;
+    if (pwd.length < 8 || !pwd.match('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).+$')) {
+        form['userpwd'].classList.add('input-error');
+        return false;
+    }
+
+    for (let elem of form.elements) {
+        elem.classList.remove('input-error');
+    }
+    return true;
+}
+
+function showLoginPopup(show) {
+    let popup = document.getElementById('popup-login-form');
+    if (show) {
+        popup.style.visibility = 'visible';
+    } else {
+        popup.style.visibility = 'hidden';
+    }
+}
+
+function showHeader(show) {
+    let header = document.getElementById("header");
+    if (show) {
+        header.style.visibility = 'visible';
+    } else {
+        header.style.visibility = 'hidden';
+    }
+}
+
 window.onload = function () {
     detectColorScheme();
     document.documentElement.dataset.scroll = window.scrollY;
@@ -277,6 +335,17 @@ window.onload = function () {
     document.getElementById('chatbox-send-text').onkeyup = function(e) {
         if (e.keyCode === 13) {
             sendMsgChatbox(document.getElementById('chatbox-send-text'));
+        }
+    }
+
+    for (let form of document.forms) {
+        let pwdInput = form['userpwd'];
+        if (pwdInput) {
+            pwdInput.onkeyup = function (e) {
+                if (e.keyCode === 13) {
+                    form.submit();
+                }
+            }
         }
     }
 }

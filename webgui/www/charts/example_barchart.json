@@ -16,25 +16,25 @@
   },
   "data": [
     {
-      "name": "Simulation 1",
+      "name": "S1",
       "value" : [
         1141, 532
       ]
     },
     {
-      "name": "Simulation 2",
+      "name": "S2",
       "value" : [
         1523, 1501
       ]
     },
     {
-      "name": "Simulation 3",
+      "name": "S3",
       "value" : [
         1024, 2041
       ]
     },
     {
-      "name": "Simulation 4",
+      "name": "S4",
       "value" : [
         1235, 2345
       ]
